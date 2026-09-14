@@ -1,1 +1,44 @@
+local Event = game:GetService("ReplicatedStorage")
+    ["307D0912-4609-4190-B07C-739143B666D3"]
 
+-- SETTINGS
+local REQUEST_LIMIT = 90000000000000000 -- Total requests before stopping
+local DELAY = 0.05         -- Seconds between requests
+
+local Colors = {
+    Color3.new(0.33333334326744, 0, 0),
+    Color3.new(0, 0, 0),
+    Color3.new(0, 0.33333334326744, 0),
+    Color3.new(0.33333334326744, 1, 1),
+    Color3.new(0.66274511814117, 0.66666668653488, 0.50196081399918),
+    Color3.new(0, 0, 0.49803921580315),
+    Color3.new(0, 1, 0.0039215688593686),
+    Color3.new(1, 0.33333334326744, 0),
+    Color3.new(1, 1, 1),
+    Color3.new(1, 0, 0.99607843160629),
+    Color3.new(0, 0.33333334326744, 0.99607843160629),
+    Color3.new(0.99607843160629, 0, 0)
+}
+
+local sent = 0
+local startTime = os.clock()
+
+while sent < REQUEST_LIMIT do
+    for _, color in ipairs(Colors) do
+        if sent >= REQUEST_LIMIT then
+            break
+        end
+
+        Event:FireServer("colo", color)
+        sent += 1
+
+        task.wait(DELAY)
+    end
+end
+
+local elapsed = os.clock() - startTime
+
+print("Stress test finished!")
+print("Requests sent:", sent)
+print("Time:", elapsed, "seconds")
+print("Requests/sec:", sent / math.max(elapsed, 0.001))

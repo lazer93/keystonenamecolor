@@ -1,5 +1,6 @@
---// Add rovmb on discord
---// Request limit: 9000000000000000000
+
+--// Lazer Made Ts FN 🕶️
+--// Safe GUI version
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -9,10 +10,10 @@ local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
 --// Remote
-local Event = ReplicatedStorage["307D0912-4609-4190-B07C-739143B666D3"]
+local Event = ReplicatedStorage:FindFirstChild("307D0912-4609-4190-B07C-739143B666D3")
 
 --// SETTINGS
-local REQUEST_LIMIT = 9000000000000000000
+local REQUEST_LIMIT = 909909090900000099009889800988
 local DELAY = 0
 
 local Colors = {
@@ -20,7 +21,7 @@ local Colors = {
     Color3.new(0, 0, 0),
     Color3.new(0, 0.33333334326744, 0),
     Color3.new(0.33333334326744, 1, 1),
-    Color3.new(0.66274511814117, 0.66666668653488, 0.50196081399918),
+    Color3.new(0.66274511814117, 0.66666668653488, 0.50196081399998),
     Color3.new(0, 0, 0.49803921580315),
     Color3.new(0, 1, 0.0039215688593686),
     Color3.new(1, 0.33333334326744, 0),
@@ -32,7 +33,7 @@ local Colors = {
 
 --// GUI
 local Gui = Instance.new("ScreenGui")
-Gui.Name = "LazerMadeTsFN🕶️"
+Gui.Name = "LazerMadeTsFN"
 Gui.ResetOnSpawn = false
 Gui.Parent = PlayerGui
 
@@ -50,50 +51,43 @@ Corner.Parent = Main
 
 --// Animated background
 local AnimatedGlow = Instance.new("Frame")
-AnimatedGlow.Size = UDim2.new(1, 0, 1, 0)
-AnimatedGlow.Position = UDim2.fromScale(0, 0)
-AnimatedGlow.BackgroundTransparency = 1
-AnimatedGlow.ClipsDescendants = true
+AnimatedGlow.Size = UDim2.fromScale(1, 1)
+AnimatedGlow.BackgroundTransparency = 0
+AnimatedGlow.BackgroundColor3 = Color3.fromRGB(3, 3, 3)
+AnimatedGlow.BorderSizePixel = 0
 AnimatedGlow.ZIndex = 0
 AnimatedGlow.Parent = Main
 
 local GlowGradient = Instance.new("UIGradient")
 GlowGradient.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(5, 5, 5)),
+    ColorSequenceKeypoint.new(0.25, Color3.fromRGB(3, 3, 3)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(0.75, Color3.fromRGB(3, 3, 3)),
     ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
 })
 
 GlowGradient.Transparency = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.9),
+    NumberSequenceKeypoint.new(0, 0.94),
     NumberSequenceKeypoint.new(0.5, 0.98),
-    NumberSequenceKeypoint.new(1, 0.9)
+    NumberSequenceKeypoint.new(1, 0.94)
 })
 
-GlowGradient.Rotation = 0
 GlowGradient.Parent = AnimatedGlow
 
+--// Smooth animation
 task.spawn(function()
+    local Rotation = 0
+
     while Gui.Parent do
-        local Tween = TweenService:Create(
-            GlowGradient,
-            TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-            {Rotation = 180}
-        )
+        Rotation += 1
 
-        Tween:Play()
-        Tween.Completed:Wait()
+        if Rotation >= 360 then
+            Rotation = 0
+        end
 
-        local TweenBack = TweenService:Create(
-            GlowGradient,
-            TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-            {Rotation = 360}
-        )
-
-        TweenBack:Play()
-        TweenBack.Completed:Wait()
-
-        GlowGradient.Rotation = 0
+        GlowGradient.Rotation = Rotation
+        task.wait(0.03)
     end
 end)
 
@@ -163,7 +157,7 @@ local Status = Instance.new("TextLabel")
 Status.Size = UDim2.new(1, -30, 0, 30)
 Status.Position = UDim2.fromOffset(15, 130)
 Status.BackgroundTransparency = 1
-Status.Text = "Requests: 0 / 12"
+Status.Text = "Requests: 0 / " .. REQUEST_LIMIT
 Status.TextColor3 = Color3.fromRGB(200, 200, 200)
 Status.TextSize = 14
 Status.Font = Enum.Font.GothamMedium
@@ -183,25 +177,25 @@ Close.Font = Enum.Font.GothamBold
 Close.ZIndex = 3
 Close.Parent = Main
 
---// Toggle button
+--// Smaller Open button
 local OpenButton = Instance.new("TextButton")
-OpenButton.Size = UDim2.fromOffset(110, 42)
+OpenButton.Size = UDim2.fromOffset(80, 34)
 OpenButton.Position = UDim2.fromOffset(25, 250)
 OpenButton.BackgroundColor3 = Color3.fromRGB(3, 3, 3)
 OpenButton.BorderSizePixel = 0
-OpenButton.Text = "LAZER GUI"
+OpenButton.Text = "Open"
 OpenButton.TextColor3 = Color3.new(1, 1, 1)
-OpenButton.TextSize = 14
+OpenButton.TextSize = 13
 OpenButton.Font = Enum.Font.GothamBold
 OpenButton.Parent = Gui
 
 local OpenCorner = Instance.new("UICorner")
-OpenCorner.CornerRadius = UDim.new(0, 10)
+OpenCorner.CornerRadius = UDim.new(0, 9)
 OpenCorner.Parent = OpenButton
 
 local OpenStroke = Instance.new("UIStroke")
 OpenStroke.Color = Color3.new(1, 1, 1)
-OpenStroke.Thickness = 2
+OpenStroke.Thickness = 1.5
 OpenStroke.Parent = OpenButton
 
 --// Draggable function
@@ -291,6 +285,7 @@ local function Notify()
 
     Out:Play()
     Out.Completed:Wait()
+
     Notification:Destroy()
 end
 
@@ -317,10 +312,13 @@ ToggleScript.MouseButton1Click:Connect(function()
                             break
                         end
 
-                        Event:FireServer("colo", Color)
+                        if Event then
+                            Event:FireServer("colo", Color)
+                        end
 
                         Sent += 1
-                        Status.Text = "Requests: " .. Sent .. " / " .. REQUEST_LIMIT
+                        Status.Text =
+                            "Requests: " .. Sent .. " / " .. REQUEST_LIMIT
 
                         task.wait(DELAY)
                     end
@@ -329,7 +327,8 @@ ToggleScript.MouseButton1Click:Connect(function()
                 Running = false
 
                 if Enabled then
-                    Status.Text = "Finished: 900000000000000 / 9000000000000000000"
+                    Status.Text =
+                        "Finished: " .. REQUEST_LIMIT .. " / " .. REQUEST_LIMIT
                 end
             end)
         end

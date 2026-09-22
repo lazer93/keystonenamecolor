@@ -263,9 +263,9 @@ local function Notify()
     Text.Size = UDim2.new(1, -20, 1, 0)
     Text.Position = UDim2.fromOffset(10, 0)
     Text.BackgroundTransparency = 1
-    Text.Text = "made by rovmb on discord 👀"
+    Text.Text = "made by rovmb and rxlet on discord 👀"
     Text.TextColor3 = Color3.new(1, 1, 1)
-    Text.TextSize = 10
+    Text.TextSize = 8
     Text.Font = Enum.Font.GothamBold
     Text.Parent = Notification
 

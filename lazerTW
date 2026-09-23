@@ -1,5 +1,5 @@
 --// Lazer Made Ts FN 🕶️
---// Small + Smooth GUI
+--// Polished + Smooth GUI
 --// Owner: krampus_159
 
 local Players = game:GetService("Players")
@@ -12,7 +12,7 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 
 --// SETTINGS
 local OWNER_USERNAME = "krampus_159"
-local REQUEST_LIMIT = 9099999999099999999998989999999
+local REQUEST_LIMIT = 10000000000000000000000
 local DELAY = 0
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
 
@@ -48,81 +48,90 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = PlayerGui
 
 --//==================================================
---// MAIN GUI - SMALL
+--// MAIN GUI
 --//==================================================
 
 local Main = Instance.new("Frame")
 Main.Name = "Main"
-Main.Size = UDim2.new(0, 290, 0, 215)
-Main.Position = UDim2.new(0.5, -145, 0.5, -108)
-Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Main.BackgroundTransparency = 0.82
+Main.Size = UDim2.new(0, 300, 0, 225)
+Main.Position = UDim2.new(0.5, -150, 0.5, -112)
+Main.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
+Main.BackgroundTransparency = 0.18
 Main.BorderSizePixel = 0
 Main.ClipsDescendants = true
+Main.ZIndex = 2
 Main.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 16)
+MainCorner.CornerRadius = UDim.new(0, 18)
 MainCorner.Parent = Main
 
 local MainStroke = Instance.new("UIStroke")
 MainStroke.Color = Color3.fromRGB(255, 255, 255)
-MainStroke.Thickness = 1.5
-MainStroke.Transparency = 0.05
+MainStroke.Thickness = 1.2
+MainStroke.Transparency = 0.35
 MainStroke.Parent = Main
 
 --//==================================================
---// SMOOTH MOVING BACKGROUND
+--// ANIMATED BACKGROUND
 --//==================================================
 
 local Background = Instance.new("Frame")
 Background.Name = "AnimatedBackground"
-Background.Size = UDim2.new(1, 160, 1, 160)
-Background.Position = UDim2.new(0, -80, 0, -80)
+Background.Size = UDim2.new(1, 180, 1, 180)
+Background.Position = UDim2.new(0, -90, 0, -90)
 Background.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Background.BackgroundTransparency = 0.1
+Background.BackgroundTransparency = 0.08
 Background.BorderSizePixel = 0
-Background.ZIndex = 0
+Background.ZIndex = 2
 Background.Parent = Main
 
-local BackgroundCorner = Instance.new("UICorner")
-BackgroundCorner.CornerRadius = UDim.new(0, 20)
-BackgroundCorner.Parent = Background
-
-local Gradient = Instance.new("UIGradient")
-Gradient.Rotation = 35
-Gradient.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-	ColorSequenceKeypoint.new(0.2, Color3.fromRGB(90, 90, 90)),
-	ColorSequenceKeypoint.new(0.4, Color3.fromRGB(255, 255, 255)),
-	ColorSequenceKeypoint.new(0.6, Color3.fromRGB(70, 70, 70)),
-	ColorSequenceKeypoint.new(0.8, Color3.fromRGB(255, 255, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
+local BackgroundGradient = Instance.new("UIGradient")
+BackgroundGradient.Rotation = 35
+BackgroundGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(5, 5, 5)),
+	ColorSequenceKeypoint.new(0.18, Color3.fromRGB(75, 75, 75)),
+	ColorSequenceKeypoint.new(0.36, Color3.fromRGB(255, 255, 255)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(45, 45, 45)),
+	ColorSequenceKeypoint.new(0.68, Color3.fromRGB(255, 255, 255)),
+	ColorSequenceKeypoint.new(0.84, Color3.fromRGB(65, 65, 65)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(5, 5, 5))
 })
-Gradient.Parent = Background
+BackgroundGradient.Parent = Background
 
 task.spawn(function()
 	local Offset = -1
 
 	while ScreenGui.Parent do
-		Offset += 0.004
+		Offset += 0.0035
 
 		if Offset > 1 then
 			Offset = -1
 		end
 
-		Gradient.Offset = Vector2.new(Offset, 0)
-		task.wait(0.016)
+		BackgroundGradient.Offset = Vector2.new(Offset, 0)
+		task.wait()
 	end
 end)
+
+--// DARK GLASS OVERLAY
+
+local Glass = Instance.new("Frame")
+Glass.Name = "Glass"
+Glass.Size = UDim2.new(1, 0, 1, 0)
+Glass.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Glass.BackgroundTransparency = 0.48
+Glass.BorderSizePixel = 0
+Glass.ZIndex = 3
+Glass.Parent = Main
 
 --//==================================================
 --// TITLE
 --//==================================================
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -50, 0, 28)
-Title.Position = UDim2.new(0, 12, 0, 8)
+Title.Size = UDim2.new(1, -55, 0, 29)
+Title.Position = UDim2.new(0, 14, 0, 9)
 Title.BackgroundTransparency = 1
 Title.Text = "Lazer Made Ts FN 🕶️"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -130,112 +139,154 @@ Title.TextSize = 17
 Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-Title.TextStrokeTransparency = 0.45
-Title.ZIndex = 5
+Title.TextStrokeTransparency = 0.25
+Title.ZIndex = 6
 Title.Parent = Main
 
+local Accent = Instance.new("Frame")
+Accent.Size = UDim2.new(0, 34, 0, 3)
+Accent.Position = UDim2.new(0, 15, 0, 38)
+Accent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Accent.BorderSizePixel = 0
+Accent.ZIndex = 6
+Accent.Parent = Main
+
+local AccentCorner = Instance.new("UICorner")
+AccentCorner.CornerRadius = UDim.new(1, 0)
+AccentCorner.Parent = Accent
+
 local Subtitle = Instance.new("TextLabel")
-Subtitle.Size = UDim2.new(1, -24, 0, 18)
-Subtitle.Position = UDim2.new(0, 12, 0, 34)
+Subtitle.Size = UDim2.new(1, -30, 0, 18)
+Subtitle.Position = UDim2.new(0, 14, 0, 44)
 Subtitle.BackgroundTransparency = 1
-Subtitle.Text = "NAME COLOR"
-Subtitle.TextColor3 = Color3.fromRGB(245, 245, 245)
-Subtitle.TextSize = 10
+Subtitle.Text = "NAME COLOR CONTROL"
+Subtitle.TextColor3 = Color3.fromRGB(205, 205, 205)
+Subtitle.TextSize = 9
 Subtitle.Font = Enum.Font.GothamMedium
 Subtitle.TextXAlignment = Enum.TextXAlignment.Left
-Subtitle.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-Subtitle.TextStrokeTransparency = 0.5
-Subtitle.ZIndex = 5
+Subtitle.ZIndex = 6
 Subtitle.Parent = Main
+
+--//==================================================
+--// CLOSE
+--//==================================================
+
+local Close = Instance.new("TextButton")
+Close.Size = UDim2.new(0, 30, 0, 30)
+Close.Position = UDim2.new(1, -38, 0, 6)
+Close.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Close.BackgroundTransparency = 0.82
+Close.BorderSizePixel = 0
+Close.Text = "×"
+Close.TextColor3 = Color3.fromRGB(255, 255, 255)
+Close.TextSize = 20
+Close.Font = Enum.Font.GothamBold
+Close.AutoButtonColor = false
+Close.ZIndex = 7
+Close.Parent = Main
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 9)
+CloseCorner.Parent = Close
+
+--//==================================================
+--// BUTTON CREATOR
+--//==================================================
+
+local function CreateButton(Name, Position, Height)
+
+	local Button = Instance.new("TextButton")
+	Button.Name = Name
+	Button.Size = UDim2.new(1, -28, 0, Height)
+	Button.Position = Position
+	Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Button.BackgroundTransparency = 0.82
+	Button.BorderSizePixel = 0
+	Button.AutoButtonColor = false
+	Button.ZIndex = 6
+	Button.Parent = Main
+
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(0, 11)
+	Corner.Parent = Button
+
+	local Stroke = Instance.new("UIStroke")
+	Stroke.Color = Color3.fromRGB(255, 255, 255)
+	Stroke.Thickness = 1
+	Stroke.Transparency = 0.38
+	Stroke.Parent = Button
+
+	return Button
+end
 
 --//==================================================
 --// NAME COLOR BUTTON
 --//==================================================
 
-local ToggleScript = Instance.new("TextButton")
-ToggleScript.Name = "NameColorToggle"
-ToggleScript.Size = UDim2.new(1, -24, 0, 40)
-ToggleScript.Position = UDim2.new(0, 12, 0, 57)
-ToggleScript.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ToggleScript.BackgroundTransparency = 0.78
-ToggleScript.BorderSizePixel = 0
+local ToggleScript = CreateButton(
+	"NameColorToggle",
+	UDim2.new(0, 14, 0, 67),
+	41
+)
+
 ToggleScript.Text = "NAME COLOR: OFF"
 ToggleScript.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleScript.TextSize = 12
 ToggleScript.Font = Enum.Font.GothamBold
-ToggleScript.AutoButtonColor = false
-ToggleScript.ZIndex = 5
-ToggleScript.Parent = Main
 
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 10)
-ToggleCorner.Parent = ToggleScript
+--// STATUS DOT
 
-local ToggleStroke = Instance.new("UIStroke")
-ToggleStroke.Color = Color3.fromRGB(255, 255, 255)
-ToggleStroke.Thickness = 1
-ToggleStroke.Transparency = 0.15
-ToggleStroke.Parent = ToggleScript
+local StatusDot = Instance.new("Frame")
+StatusDot.Size = UDim2.new(0, 8, 0, 8)
+StatusDot.Position = UDim2.new(1, -22, 0.5, -4)
+StatusDot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+StatusDot.BorderSizePixel = 0
+StatusDot.ZIndex = 7
+StatusDot.Parent = ToggleScript
+
+local DotCorner = Instance.new("UICorner")
+DotCorner.CornerRadius = UDim.new(1, 0)
+DotCorner.Parent = StatusDot
 
 --//==================================================
 --// REQUEST STATUS
 --//==================================================
 
 local Status = Instance.new("TextLabel")
-Status.Size = UDim2.new(1, -24, 0, 18)
-Status.Position = UDim2.new(0, 12, 0, 102)
+Status.Size = UDim2.new(1, -28, 0, 18)
+Status.Position = UDim2.new(0, 14, 0, 113)
 Status.BackgroundTransparency = 1
-Status.Text = "Requests: 0"
-Status.TextColor3 = Color3.fromRGB(255, 255, 255)
-Status.TextSize = 10
+Status.Text = "REQUESTS    0 / " .. REQUEST_LIMIT
+Status.TextColor3 = Color3.fromRGB(220, 220, 220)
+Status.TextSize = 9
 Status.Font = Enum.Font.GothamMedium
 Status.TextXAlignment = Enum.TextXAlignment.Left
-Status.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-Status.TextStrokeTransparency = 0.5
-Status.ZIndex = 5
+Status.ZIndex = 6
 Status.Parent = Main
 
 --//==================================================
 --// DISCORD BUTTON
 --//==================================================
 
-local DiscordButton = Instance.new("TextButton")
-DiscordButton.Name = "DiscordButton"
-DiscordButton.Size = UDim2.new(1, -24, 0, 38)
-DiscordButton.Position = UDim2.new(0, 12, 0, 124)
-DiscordButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-DiscordButton.BackgroundTransparency = 0.78
-DiscordButton.BorderSizePixel = 0
-DiscordButton.Text = ""
-DiscordButton.AutoButtonColor = false
-DiscordButton.ZIndex = 5
-DiscordButton.Parent = Main
-
-local DiscordCorner = Instance.new("UICorner")
-DiscordCorner.CornerRadius = UDim.new(0, 10)
-DiscordCorner.Parent = DiscordButton
-
-local DiscordStroke = Instance.new("UIStroke")
-DiscordStroke.Color = Color3.fromRGB(255, 255, 255)
-DiscordStroke.Thickness = 1
-DiscordStroke.Transparency = 0.15
-DiscordStroke.Parent = DiscordButton
+local DiscordButton = CreateButton(
+	"DiscordButton",
+	UDim2.new(0, 14, 0, 137),
+	40
+)
 
 local DiscordLogo = Instance.new("TextLabel")
-DiscordLogo.Size = UDim2.new(0, 38, 1, 0)
-DiscordLogo.Position = UDim2.new(0, 5, 0, 0)
+DiscordLogo.Size = UDim2.new(0, 35, 1, 0)
+DiscordLogo.Position = UDim2.new(0, 7, 0, 0)
 DiscordLogo.BackgroundTransparency = 1
 DiscordLogo.Text = "☁"
 DiscordLogo.TextColor3 = Color3.fromRGB(255, 255, 255)
-DiscordLogo.TextSize = 21
+DiscordLogo.TextSize = 19
 DiscordLogo.Font = Enum.Font.GothamBlack
-DiscordLogo.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-DiscordLogo.TextStrokeTransparency = 0.5
-DiscordLogo.ZIndex = 6
+DiscordLogo.ZIndex = 7
 DiscordLogo.Parent = DiscordButton
 
 local DiscordText = Instance.new("TextLabel")
-DiscordText.Size = UDim2.new(1, -48, 1, 0)
+DiscordText.Size = UDim2.new(1, -55, 1, 0)
 DiscordText.Position = UDim2.new(0, 45, 0, 0)
 DiscordText.BackgroundTransparency = 1
 DiscordText.Text = "JOIN DISCORD"
@@ -243,71 +294,19 @@ DiscordText.TextColor3 = Color3.fromRGB(255, 255, 255)
 DiscordText.TextSize = 11
 DiscordText.Font = Enum.Font.GothamBold
 DiscordText.TextXAlignment = Enum.TextXAlignment.Left
-DiscordText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-DiscordText.TextStrokeTransparency = 0.5
-DiscordText.ZIndex = 6
+DiscordText.ZIndex = 7
 DiscordText.Parent = DiscordButton
 
---//==================================================
---// COPIED TEXT
---//==================================================
-
-local CopiedText = Instance.new("TextLabel")
-CopiedText.Name = "CopiedText"
-CopiedText.Size = UDim2.new(1, -24, 0, 18)
-CopiedText.Position = UDim2.new(0, 12, 0, 165)
-CopiedText.BackgroundTransparency = 1
-CopiedText.Text = "✓ COPIED"
-CopiedText.TextColor3 = Color3.fromRGB(0, 255, 80)
-CopiedText.TextSize = 11
-CopiedText.Font = Enum.Font.GothamBold
-CopiedText.TextTransparency = 1
-CopiedText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-CopiedText.TextStrokeTransparency = 1
-CopiedText.ZIndex = 6
-CopiedText.Parent = Main
-
-local CopiedToken = 0
-
-local function ShowCopied()
-	CopiedToken += 1
-	local ThisToken = CopiedToken
-
-	CopiedText.TextTransparency = 0
-	CopiedText.TextStrokeTransparency = 0.35
-
-	task.delay(5, function()
-		if ThisToken ~= CopiedToken then
-			return
-		end
-
-		local Fade = TweenService:Create(
-			CopiedText,
-			TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-			{
-				TextTransparency = 1,
-				TextStrokeTransparency = 1
-			}
-		)
-
-		Fade:Play()
-	end)
-end
-
---//==================================================
---// CLOSE BUTTON
---//==================================================
-
-local Close = Instance.new("TextButton")
-Close.Size = UDim2.new(0, 28, 0, 28)
-Close.Position = UDim2.new(1, -34, 0, 5)
-Close.BackgroundTransparency = 1
-Close.Text = "×"
-Close.TextColor3 = Color3.fromRGB(255, 255, 255)
-Close.TextSize = 22
-Close.Font = Enum.Font.GothamBold
-Close.ZIndex = 6
-Close.Parent = Main
+local DiscordArrow = Instance.new("TextLabel")
+DiscordArrow.Size = UDim2.new(0, 25, 1, 0)
+DiscordArrow.Position = UDim2.new(1, -31, 0, 0)
+DiscordArrow.BackgroundTransparency = 1
+DiscordArrow.Text = "›"
+DiscordArrow.TextColor3 = Color3.fromRGB(200, 200, 200)
+DiscordArrow.TextSize = 20
+DiscordArrow.Font = Enum.Font.GothamBold
+DiscordArrow.ZIndex = 7
+DiscordArrow.Parent = DiscordButton
 
 --//==================================================
 --// OPEN BUTTON
@@ -315,25 +314,27 @@ Close.Parent = Main
 
 local OpenButton = Instance.new("TextButton")
 OpenButton.Name = "OpenButton"
-OpenButton.Size = UDim2.new(0, 65, 0, 30)
-OpenButton.Position = UDim2.new(0, 20, 0, 210)
-OpenButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-OpenButton.BackgroundTransparency = 0.78
+OpenButton.Size = UDim2.new(0, 67, 0, 31)
+OpenButton.Position = UDim2.new(0, 18, 0, 205)
+OpenButton.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+OpenButton.BackgroundTransparency = 0.18
 OpenButton.BorderSizePixel = 0
 OpenButton.Text = "Open"
 OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-OpenButton.TextSize = 12
+OpenButton.TextSize = 11
 OpenButton.Font = Enum.Font.GothamBold
-OpenButton.ZIndex = 5
+OpenButton.AutoButtonColor = false
+OpenButton.ZIndex = 10
 OpenButton.Parent = ScreenGui
 
 local OpenCorner = Instance.new("UICorner")
-OpenCorner.CornerRadius = UDim.new(0, 9)
+OpenCorner.CornerRadius = UDim.new(0, 10)
 OpenCorner.Parent = OpenButton
 
 local OpenStroke = Instance.new("UIStroke")
 OpenStroke.Color = Color3.fromRGB(255, 255, 255)
 OpenStroke.Thickness = 1
+OpenStroke.Transparency = 0.3
 OpenStroke.Parent = OpenButton
 
 --//==================================================
@@ -388,7 +389,7 @@ MakeDraggable(Main)
 MakeDraggable(OpenButton)
 
 --//==================================================
---// BUTTON HOVER / PRESS EFFECT
+--// SMOOTH BUTTON EFFECTS
 --//==================================================
 
 local function SmoothButton(Button)
@@ -399,9 +400,9 @@ local function SmoothButton(Button)
 
 		TweenService:Create(
 			Button,
-			TweenInfo.new(0.18, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+			TweenInfo.new(0.16, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 			{
-				BackgroundTransparency = 0.65
+				BackgroundTransparency = 0.68
 			}
 		):Play()
 
@@ -411,9 +412,10 @@ local function SmoothButton(Button)
 
 		TweenService:Create(
 			Button,
-			TweenInfo.new(0.18, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+			TweenInfo.new(0.16, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 			{
-				BackgroundTransparency = 0.78
+				BackgroundTransparency = 0.82,
+				Size = NormalSize
 			}
 		):Play()
 
@@ -423,7 +425,7 @@ local function SmoothButton(Button)
 
 		TweenService:Create(
 			Button,
-			TweenInfo.new(0.08, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+			TweenInfo.new(0.07, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 			{
 				Size = UDim2.new(
 					NormalSize.X.Scale,
@@ -452,6 +454,61 @@ end
 SmoothButton(ToggleScript)
 SmoothButton(DiscordButton)
 SmoothButton(OpenButton)
+SmoothButton(Close)
+
+--//==================================================
+--// OPEN / CLOSE
+--//==================================================
+
+local GUIOpen = true
+
+local function SetGUI(State)
+
+	GUIOpen = State
+
+	if State then
+
+		Main.Visible = true
+		OpenButton.Visible = false
+
+		Main.Size = UDim2.new(0, 300, 0, 205)
+
+		TweenService:Create(
+			Main,
+			TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+			{
+				Size = UDim2.new(0, 300, 0, 225)
+			}
+		):Play()
+
+	else
+
+		TweenService:Create(
+			Main,
+			TweenInfo.new(0.22, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+			{
+				Size = UDim2.new(0, 300, 0, 0)
+			}
+		):Play()
+
+		task.delay(0.22, function()
+
+			if not GUIOpen then
+				Main.Visible = false
+				OpenButton.Visible = true
+			end
+
+		end)
+	end
+end
+
+Close.MouseButton1Click:Connect(function()
+	SetGUI(false)
+end)
+
+OpenButton.MouseButton1Click:Connect(function()
+	SetGUI(true)
+end)
 
 --//==================================================
 --// NOTIFICATION
@@ -468,26 +525,27 @@ local function SmallNotification(Message)
 	NotificationBusy = true
 
 	local Notification = Instance.new("Frame")
-	Notification.Size = UDim2.new(0, 245, 0, 44)
-	Notification.Position = UDim2.new(0.5, -122, 1, 15)
-	Notification.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	Notification.BackgroundTransparency = 0.8
+	Notification.Size = UDim2.new(0, 260, 0, 48)
+	Notification.Position = UDim2.new(0.5, -130, 1, 15)
+	Notification.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+	Notification.BackgroundTransparency = 0.12
 	Notification.BorderSizePixel = 0
 	Notification.ZIndex = 100
 	Notification.Parent = ScreenGui
 
 	local Corner = Instance.new("UICorner")
-	Corner.CornerRadius = UDim.new(0, 10)
+	Corner.CornerRadius = UDim.new(0, 12)
 	Corner.Parent = Notification
 
 	local Stroke = Instance.new("UIStroke")
 	Stroke.Color = Color3.fromRGB(255, 255, 255)
 	Stroke.Thickness = 1
+	Stroke.Transparency = 0.3
 	Stroke.Parent = Notification
 
 	local Text = Instance.new("TextLabel")
-	Text.Size = UDim2.new(1, -16, 1, 0)
-	Text.Position = UDim2.new(0, 8, 0, 0)
+	Text.Size = UDim2.new(1, -18, 1, 0)
+	Text.Position = UDim2.new(0, 9, 0, 0)
 	Text.BackgroundTransparency = 1
 	Text.Text = Message
 	Text.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -499,9 +557,9 @@ local function SmallNotification(Message)
 
 	local In = TweenService:Create(
 		Notification,
-		TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+		TweenInfo.new(0.32, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 		{
-			Position = UDim2.new(0.5, -122, 1, -60)
+			Position = UDim2.new(0.5, -130, 1, -65)
 		}
 	)
 
@@ -514,7 +572,7 @@ local function SmallNotification(Message)
 		Notification,
 		TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
 		{
-			Position = UDim2.new(0.5, -122, 1, 15)
+			Position = UDim2.new(0.5, -130, 1, 15)
 		}
 	)
 
@@ -522,7 +580,6 @@ local function SmallNotification(Message)
 	Out.Completed:Wait()
 
 	Notification:Destroy()
-
 	NotificationBusy = false
 end
 
@@ -546,8 +603,6 @@ DiscordButton.MouseButton1Click:Connect(function()
 	end
 
 	if Copied then
-		ShowCopied()
-
 		task.spawn(function()
 			SmallNotification("✓ Discord link copied!")
 		end)
@@ -559,79 +614,57 @@ DiscordButton.MouseButton1Click:Connect(function()
 end)
 
 --//==================================================
---// CLOSE / OPEN
---//==================================================
-
-Close.MouseButton1Click:Connect(function()
-
-	TweenService:Create(
-		Main,
-		TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
-		{
-			Size = UDim2.new(0, 290, 0, 0)
-		}
-	):Play()
-
-	task.delay(0.2, function()
-		Main.Visible = false
-	end)
-
-end)
-
-OpenButton.MouseButton1Click:Connect(function()
-
-	Main.Visible = true
-	Main.Size = UDim2.new(0, 290, 0, 0)
-
-	TweenService:Create(
-		Main,
-		TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-		{
-			Size = UDim2.new(0, 290, 0, 215)
-		}
-	):Play()
-
-end)
-
---//==================================================
 --// OWNER NOTIFICATION
 --//==================================================
 
 local function OwnerNotify(Message)
 
 	local Notification = Instance.new("Frame")
-	Notification.Size = UDim2.new(0, 285, 0, 55)
-	Notification.Position = UDim2.new(0, -300, 0, 8)
-	Notification.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	Notification.BackgroundTransparency = 0.82
+	Notification.Size = UDim2.new(0, 290, 0, 58)
+	Notification.Position = UDim2.new(0, -305, 0, 8)
+	Notification.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+	Notification.BackgroundTransparency = 0.12
 	Notification.BorderSizePixel = 0
 	Notification.ZIndex = 50
 	Notification.Parent = ScreenGui
 
 	local Corner = Instance.new("UICorner")
-	Corner.CornerRadius = UDim.new(0, 11)
+	Corner.CornerRadius = UDim.new(0, 12)
 	Corner.Parent = Notification
 
 	local Stroke = Instance.new("UIStroke")
 	Stroke.Color = Color3.fromRGB(255, 215, 0)
 	Stroke.Thickness = 1.5
+	Stroke.Transparency = 0.15
 	Stroke.Parent = Notification
 
+	local Crown = Instance.new("TextLabel")
+	Crown.Size = UDim2.new(0, 45, 1, 0)
+	Crown.Position = UDim2.new(0, 5, 0, 0)
+	Crown.BackgroundTransparency = 1
+	Crown.Text = "👑"
+	Crown.TextColor3 = Color3.fromRGB(255, 215, 0)
+	Crown.TextSize = 22
+	Crown.Font = Enum.Font.GothamBold
+	Crown.ZIndex = 51
+	Crown.Parent = Notification
+
 	local Text = Instance.new("TextLabel")
-	Text.Size = UDim2.new(1, -16, 1, -8)
-	Text.Position = UDim2.new(0, 8, 0, 4)
+	Text.Size = UDim2.new(1, -55, 1, -8)
+	Text.Position = UDim2.new(0, 50, 0, 4)
 	Text.BackgroundTransparency = 1
 	Text.Text = Message
 	Text.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Text.TextSize = 12
+	Text.TextSize = 11
 	Text.Font = Enum.Font.GothamBold
 	Text.TextWrapped = true
+	Text.TextXAlignment = Enum.TextXAlignment.Left
 	Text.ZIndex = 51
 	Text.Parent = Notification
 
 	local In = TweenService:Create(
 		Notification,
-		TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+		TweenInfo.new(0.42, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 		{
 			Position = UDim2.new(0, 8, 0, 8)
 		}
@@ -646,7 +679,7 @@ local function OwnerNotify(Message)
 		Notification,
 		TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
 		{
-			Position = UDim2.new(0, -300, 0, 8)
+			Position = UDim2.new(0, -305, 0, 8)
 		}
 	)
 
@@ -665,7 +698,7 @@ local function CheckOwner(PlayerToCheck)
 	if PlayerToCheck.Name:lower() == OWNER_USERNAME:lower() then
 
 		task.spawn(function()
-			OwnerNotify("👑 OWNER krampus_159 JOINED THE SERVER")
+			OwnerNotify("OWNER " .. OWNER_USERNAME .. " JOINED THE SERVER")
 		end)
 
 	end
@@ -712,7 +745,6 @@ local function CreateCustomNametag(TargetPlayer)
 	Billboard.MaxDistance = 150
 	Billboard.Parent = Head
 
-	--// CROWN
 	if TargetPlayer.Name:lower() == OWNER_USERNAME:lower() then
 
 		local Crown = Instance.new("TextLabel")
@@ -744,13 +776,4 @@ local function CreateCustomNametag(TargetPlayer)
 		Owner.Parent = Billboard
 	end
 
-	--// USERNAME
-	local Username = Instance.new("TextLabel")
-	Username.Name = "Username"
-	Username.Size = UDim2.new(1, 0, 0, 27)
-	Username.Position = UDim2.new(0, 0, 0, 18)
-	Username.BackgroundTransparency = 1
-	Username.Text = TargetPlayer.Name
-	Username.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Username.TextSize = 18
-	Username.Font = Enum.Font.GothamBold
+

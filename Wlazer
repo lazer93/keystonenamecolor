@@ -16,7 +16,7 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 
 local OWNER_USERNAME = "krampus_159"
 
-local REQUEST_LIMIT = 90202929292920394993930393999049490300099909909999999
+local REQUEST_LIMIT = 90484838834838338484839384747389
 local DELAY = 0
 
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
@@ -705,4 +705,5 @@ local function CreateCustomNametag(TargetPlayer)
 		Owner.TextSize = 15
 		Owner.Font = Enum.Font.GothamBlack
 		Owner.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-		Owner.TextStrokeTransparency =
+		Owner.TextStrokeTransparency = 0.1
+		Owner.ZIndex =

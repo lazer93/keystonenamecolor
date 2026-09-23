@@ -12,6 +12,8 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 
 --// SETTINGS
 local OWNER_USERNAME = "krampus_159"
+local REQUEST_LIMIT = 9099999999099999999998989999999
+local DELAY = 0
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
 
 --// REMOTE
@@ -46,7 +48,7 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = PlayerGui
 
 --//==================================================
---// MAIN
+--// MAIN GUI - SMALL
 --//==================================================
 
 local Main = Instance.new("Frame")
@@ -70,7 +72,7 @@ MainStroke.Transparency = 0.05
 MainStroke.Parent = Main
 
 --//==================================================
---// SMOOTH BACKGROUND
+--// SMOOTH MOVING BACKGROUND
 --//==================================================
 
 local Background = Instance.new("Frame")
@@ -247,7 +249,7 @@ DiscordText.ZIndex = 6
 DiscordText.Parent = DiscordButton
 
 --//==================================================
---// GREEN COPIED TEXT
+--// COPIED TEXT
 --//==================================================
 
 local CopiedText = Instance.new("TextLabel")
@@ -255,18 +257,45 @@ CopiedText.Name = "CopiedText"
 CopiedText.Size = UDim2.new(1, -24, 0, 18)
 CopiedText.Position = UDim2.new(0, 12, 0, 165)
 CopiedText.BackgroundTransparency = 1
-CopiedText.Text = "✓ Copied"
-CopiedText.TextColor3 = Color3.fromRGB(0, 255, 100)
+CopiedText.Text = "✓ COPIED"
+CopiedText.TextColor3 = Color3.fromRGB(0, 255, 80)
 CopiedText.TextSize = 11
 CopiedText.Font = Enum.Font.GothamBold
 CopiedText.TextTransparency = 1
 CopiedText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
 CopiedText.TextStrokeTransparency = 1
-CopiedText.ZIndex = 7
+CopiedText.ZIndex = 6
 CopiedText.Parent = Main
 
+local CopiedToken = 0
+
+local function ShowCopied()
+	CopiedToken += 1
+	local ThisToken = CopiedToken
+
+	CopiedText.TextTransparency = 0
+	CopiedText.TextStrokeTransparency = 0.35
+
+	task.delay(5, function()
+		if ThisToken ~= CopiedToken then
+			return
+		end
+
+		local Fade = TweenService:Create(
+			CopiedText,
+			TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{
+				TextTransparency = 1,
+				TextStrokeTransparency = 1
+			}
+		)
+
+		Fade:Play()
+	end)
+end
+
 --//==================================================
---// CLOSE
+--// CLOSE BUTTON
 --//==================================================
 
 local Close = Instance.new("TextButton")
@@ -359,7 +388,7 @@ MakeDraggable(Main)
 MakeDraggable(OpenButton)
 
 --//==================================================
---// SMOOTH BUTTON EFFECT
+--// BUTTON HOVER / PRESS EFFECT
 --//==================================================
 
 local function SmoothButton(Button)
@@ -425,59 +454,80 @@ SmoothButton(DiscordButton)
 SmoothButton(OpenButton)
 
 --//==================================================
---// DISCORD COPIED EFFECT
+--// NOTIFICATION
 --//==================================================
 
-local CopyNumber = 0
+local NotificationBusy = false
 
-local function ShowCopied()
+local function SmallNotification(Message)
 
-	CopyNumber += 1
-	local ThisCopy = CopyNumber
+	if NotificationBusy then
+		return
+	end
 
-	CopiedText.TextTransparency = 1
-	CopiedText.TextStrokeTransparency = 1
+	NotificationBusy = true
 
-	local Show = TweenService:Create(
-		CopiedText,
-		TweenInfo.new(
-			0.25,
-			Enum.EasingStyle.Quint,
-			Enum.EasingDirection.Out
-		),
+	local Notification = Instance.new("Frame")
+	Notification.Size = UDim2.new(0, 245, 0, 44)
+	Notification.Position = UDim2.new(0.5, -122, 1, 15)
+	Notification.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Notification.BackgroundTransparency = 0.8
+	Notification.BorderSizePixel = 0
+	Notification.ZIndex = 100
+	Notification.Parent = ScreenGui
+
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(0, 10)
+	Corner.Parent = Notification
+
+	local Stroke = Instance.new("UIStroke")
+	Stroke.Color = Color3.fromRGB(255, 255, 255)
+	Stroke.Thickness = 1
+	Stroke.Parent = Notification
+
+	local Text = Instance.new("TextLabel")
+	Text.Size = UDim2.new(1, -16, 1, 0)
+	Text.Position = UDim2.new(0, 8, 0, 0)
+	Text.BackgroundTransparency = 1
+	Text.Text = Message
+	Text.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Text.TextSize = 11
+	Text.Font = Enum.Font.GothamBold
+	Text.TextWrapped = true
+	Text.ZIndex = 101
+	Text.Parent = Notification
+
+	local In = TweenService:Create(
+		Notification,
+		TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 		{
-			TextTransparency = 0,
-			TextStrokeTransparency = 0.5
+			Position = UDim2.new(0.5, -122, 1, -60)
 		}
 	)
 
-	Show:Play()
+	In:Play()
+	In.Completed:Wait()
 
-	task.delay(5, function()
+	task.wait(2)
 
-		if ThisCopy ~= CopyNumber then
-			return
-		end
+	local Out = TweenService:Create(
+		Notification,
+		TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+		{
+			Position = UDim2.new(0.5, -122, 1, 15)
+		}
+	)
 
-		local Hide = TweenService:Create(
-			CopiedText,
-			TweenInfo.new(
-				0.35,
-				Enum.EasingStyle.Quint,
-				Enum.EasingDirection.In
-			),
-			{
-				TextTransparency = 1,
-				TextStrokeTransparency = 1
-			}
-		)
+	Out:Play()
+	Out.Completed:Wait()
 
-		Hide:Play()
-	end)
+	Notification:Destroy()
+
+	NotificationBusy = false
 end
 
 --//==================================================
---// DISCORD BUTTON
+--// DISCORD
 --//==================================================
 
 DiscordButton.MouseButton1Click:Connect(function()
@@ -497,9 +547,50 @@ DiscordButton.MouseButton1Click:Connect(function()
 
 	if Copied then
 		ShowCopied()
+
+		task.spawn(function()
+			SmallNotification("✓ Discord link copied!")
+		end)
 	else
-		ShowCopied()
+		task.spawn(function()
+			SmallNotification("Discord: " .. DISCORD_LINK)
+		end)
 	end
+end)
+
+--//==================================================
+--// CLOSE / OPEN
+--//==================================================
+
+Close.MouseButton1Click:Connect(function()
+
+	TweenService:Create(
+		Main,
+		TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+		{
+			Size = UDim2.new(0, 290, 0, 0)
+		}
+	):Play()
+
+	task.delay(0.2, function()
+		Main.Visible = false
+	end)
+
+end)
+
+OpenButton.MouseButton1Click:Connect(function()
+
+	Main.Visible = true
+	Main.Size = UDim2.new(0, 290, 0, 0)
+
+	TweenService:Create(
+		Main,
+		TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+		{
+			Size = UDim2.new(0, 290, 0, 215)
+		}
+	):Play()
+
 end)
 
 --//==================================================
@@ -663,100 +754,3 @@ local function CreateCustomNametag(TargetPlayer)
 	Username.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Username.TextSize = 18
 	Username.Font = Enum.Font.GothamBold
-	Username.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-	Username.TextStrokeTransparency = 0.15
-	Username.ZIndex = 10
-	Username.Parent = Billboard
-
-	--// LOGO
-	local Logo = Instance.new("TextLabel")
-	Logo.Name = "Logo"
-	Logo.Size = UDim2.new(1, 0, 0, 23)
-	Logo.Position = UDim2.new(0, 0, 0, 43)
-	Logo.BackgroundTransparency = 1
-	Logo.Text = "✦ LM ✦"
-	Logo.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Logo.TextSize = 15
-	Logo.Font = Enum.Font.GothamBlack
-	Logo.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-	Logo.TextStrokeTransparency = 0.2
-	Logo.ZIndex = 10
-	Logo.Parent = Billboard
-
-	--// SCRIPT USER
-	local ScriptUser = Instance.new("TextLabel")
-	ScriptUser.Name = "ScriptUser"
-	ScriptUser.Size = UDim2.new(1, 0, 0, 22)
-	ScriptUser.Position = UDim2.new(0, 0, 0, 65)
-	ScriptUser.BackgroundTransparency = 1
-	ScriptUser.Text =
-		TargetPlayer.Name:lower() == OWNER_USERNAME:lower()
-		and ""
-		or "SCRIPT USER"
-	ScriptUser.TextColor3 = Color3.fromRGB(235, 235, 235)
-	ScriptUser.TextSize = 11
-	ScriptUser.Font = Enum.Font.GothamMedium
-	ScriptUser.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-	ScriptUser.TextStrokeTransparency = 0.2
-	ScriptUser.ZIndex = 10
-	ScriptUser.Parent = Billboard
-
-	--// SMOOTH FLOAT
-	task.spawn(function()
-
-		local BaseHeight = 3.5
-
-		while Billboard.Parent do
-
-			local Float = math.sin(os.clock() * 1.8) * 0.06
-
-			Billboard.StudsOffset = Vector3.new(
-				0,
-				BaseHeight + Float,
-				0
-			)
-
-			task.wait()
-		end
-	end)
-end
-
---//==================================================
---// LOCAL PLAYER NAMETAG
---//==================================================
-
-local function SetupLocalNametag()
-
-	local Character = Player.Character or Player.CharacterAdded:Wait()
-	local Head = Character:WaitForChild("Head", 10)
-
-	if Head then
-		CreateCustomNametag(Player)
-	end
-end
-
-SetupLocalNametag()
-
-Player.CharacterAdded:Connect(function()
-
-	task.wait(0.5)
-
-	SetupLocalNametag()
-end)
-
---//==================================================
---// NAME COLOR
---//==================================================
-
-local Enabled = false
-local Running = false
-local Sent = 0
-
-ToggleScript.MouseButton1Click:Connect(function()
-
-	Enabled = not Enabled
-
-	if Enabled then
-
-		ToggleScript.Text = "NAME COLOR: ON"
-		ToggleScript.Te

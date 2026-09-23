@@ -1,10 +1,11 @@
 --// Lazer Made Ts FN 🕶️
---// Safe GUI version
---// Owner Join Notification: client-side only
+--// Client-Side GUI + Custom Nametag + Discord Button
+--// Owner: krampus_159
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
@@ -15,8 +16,10 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 
 local OWNER_USERNAME = "krampus_159"
 
-local REQUEST_LIMIT = 90000099900990039494949303949099990009939393939393
+local REQUEST_LIMIT = 90202929292920394993930393999049490300099909909999999
 local DELAY = 0
+
+local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
 
 --//==================================================
 --// REMOTE
@@ -61,8 +64,8 @@ ScreenGui.Parent = PlayerGui
 
 local Main = Instance.new("Frame")
 Main.Name = "Main"
-Main.Size = UDim2.new(0, 350, 0, 225)
-Main.Position = UDim2.new(0.5, -175, 0.5, -112)
+Main.Size = UDim2.new(0, 350, 0, 275)
+Main.Position = UDim2.new(0.5, -175, 0.5, -137)
 Main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 Main.BorderSizePixel = 0
 Main.ClipsDescendants = true
@@ -73,7 +76,7 @@ MainCorner.CornerRadius = UDim.new(0, 14)
 MainCorner.Parent = Main
 
 --//==================================================
---// MOVING BLACK / WHITE BACKGROUND
+--// ANIMATED BACKGROUND
 --//==================================================
 
 local Background = Instance.new("Frame")
@@ -107,12 +110,14 @@ task.spawn(function()
 		end
 
 		BackgroundGradient.Offset = Vector2.new(Offset, 0)
-
 		task.wait(0.01)
 	end
 end)
 
---// Dark transparent overlay so text stays readable
+--//==================================================
+--// OVERLAY
+--//==================================================
+
 local Overlay = Instance.new("Frame")
 Overlay.Name = "Overlay"
 Overlay.Size = UDim2.new(1, 0, 1, 0)
@@ -127,13 +132,12 @@ OverlayCorner.CornerRadius = UDim.new(0, 14)
 OverlayCorner.Parent = Overlay
 
 --//==================================================
---// WHITE NEON OUTLINE
+--// OUTLINE
 --//==================================================
 
 local Stroke = Instance.new("UIStroke")
 Stroke.Color = Color3.fromRGB(255, 255, 255)
 Stroke.Thickness = 2
-Stroke.Transparency = 0
 Stroke.Parent = Main
 
 --//==================================================
@@ -165,7 +169,7 @@ Subtitle.ZIndex = 3
 Subtitle.Parent = Main
 
 --//==================================================
---// TOGGLE BUTTON
+--// NAME COLOR BUTTON
 --//==================================================
 
 local ToggleScript = Instance.new("TextButton")
@@ -205,6 +209,57 @@ Status.TextSize = 13
 Status.Font = Enum.Font.GothamMedium
 Status.ZIndex = 3
 Status.Parent = Main
+
+--//==================================================
+--// DISCORD BUTTON
+--//==================================================
+
+local DiscordButton = Instance.new("TextButton")
+DiscordButton.Name = "DiscordButton"
+DiscordButton.Size = UDim2.new(1, -40, 0, 48)
+DiscordButton.Position = UDim2.new(0, 20, 0, 165)
+DiscordButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+DiscordButton.BackgroundTransparency = 0.05
+DiscordButton.BorderSizePixel = 0
+DiscordButton.Text = ""
+DiscordButton.ZIndex = 4
+DiscordButton.Parent = Main
+
+local DiscordCorner = Instance.new("UICorner")
+DiscordCorner.CornerRadius = UDim.new(0, 10)
+DiscordCorner.Parent = DiscordButton
+
+local DiscordStroke = Instance.new("UIStroke")
+DiscordStroke.Color = Color3.fromRGB(255, 255, 255)
+DiscordStroke.Thickness = 1.5
+DiscordStroke.Parent = DiscordButton
+
+--// Discord logo
+local DiscordLogo = Instance.new("TextLabel")
+DiscordLogo.Name = "DiscordLogo"
+DiscordLogo.Size = UDim2.new(0, 42, 1, 0)
+DiscordLogo.Position = UDim2.new(0, 5, 0, 0)
+DiscordLogo.BackgroundTransparency = 1
+DiscordLogo.Text = "☁"
+DiscordLogo.TextColor3 = Color3.fromRGB(255, 255, 255)
+DiscordLogo.TextSize = 25
+DiscordLogo.Font = Enum.Font.GothamBlack
+DiscordLogo.ZIndex = 5
+DiscordLogo.Parent = DiscordButton
+
+--// Discord text
+local DiscordText = Instance.new("TextLabel")
+DiscordText.Name = "DiscordText"
+DiscordText.Size = UDim2.new(1, -55, 1, 0)
+DiscordText.Position = UDim2.new(0, 50, 0, 0)
+DiscordText.BackgroundTransparency = 1
+DiscordText.Text = "JOIN DISCORD"
+DiscordText.TextColor3 = Color3.fromRGB(255, 255, 255)
+DiscordText.TextSize = 14
+DiscordText.Font = Enum.Font.GothamBold
+DiscordText.TextXAlignment = Enum.TextXAlignment.Left
+DiscordText.ZIndex = 5
+DiscordText.Parent = DiscordButton
 
 --//==================================================
 --// CLOSE BUTTON
@@ -273,15 +328,7 @@ local function MakeDraggable(Object)
 		end
 	end)
 
-	Object.InputChanged:Connect(function(Input)
-		if Input.UserInputType == Enum.UserInputType.MouseMovement
-			or Input.UserInputType == Enum.UserInputType.Touch then
-
-			DragStart = DragStart or Input.Position
-		end
-	end)
-
-	game:GetService("UserInputService").InputChanged:Connect(function(Input)
+	UserInputService.InputChanged:Connect(function(Input)
 		if Dragging and (
 			Input.UserInputType == Enum.UserInputType.MouseMovement
 			or Input.UserInputType == Enum.UserInputType.Touch
@@ -303,7 +350,123 @@ MakeDraggable(Main)
 MakeDraggable(OpenButton)
 
 --//==================================================
---// NORMAL NOTIFICATION - BOTTOM RIGHT
+--// SMALL ROBLOX-STYLE NOTIFICATION
+--//==================================================
+
+local function SmallNotification(Message)
+	local Notification = Instance.new("Frame")
+	Notification.Name = "SmallNotification"
+	Notification.Size = UDim2.new(0, 260, 0, 48)
+	Notification.Position = UDim2.new(0.5, -130, 1, 20)
+	Notification.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	Notification.BackgroundTransparency = 0.05
+	Notification.BorderSizePixel = 0
+	Notification.ZIndex = 100
+	Notification.Parent = ScreenGui
+
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(0, 10)
+	Corner.Parent = Notification
+
+	local NotificationStroke = Instance.new("UIStroke")
+	NotificationStroke.Color = Color3.fromRGB(255, 255, 255)
+	NotificationStroke.Thickness = 1
+	NotificationStroke.Parent = Notification
+
+	local Text = Instance.new("TextLabel")
+	Text.Size = UDim2.new(1, -20, 1, 0)
+	Text.Position = UDim2.new(0, 10, 0, 0)
+	Text.BackgroundTransparency = 1
+	Text.Text = Message
+	Text.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Text.TextSize = 13
+	Text.Font = Enum.Font.GothamBold
+	Text.TextXAlignment = Enum.TextXAlignment.Center
+	Text.ZIndex = 101
+	Text.Parent = Notification
+
+	local In = TweenService:Create(
+		Notification,
+		TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+		{
+			Position = UDim2.new(0.5, -130, 1, -70)
+		}
+	)
+
+	In:Play()
+	In.Completed:Wait()
+
+	task.wait(2)
+
+	local Out = TweenService:Create(
+		Notification,
+		TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+		{
+			Position = UDim2.new(0.5, -130, 1, 20)
+		}
+	)
+
+	Out:Play()
+	Out.Completed:Wait()
+
+	Notification:Destroy()
+end
+
+--//==================================================
+--// DISCORD BUTTON FUNCTION
+--//==================================================
+
+DiscordButton.MouseButton1Click:Connect(function()
+
+	--// Try clipboard where the environment provides it
+	local Copied = false
+
+	if typeof(setclipboard) == "function" then
+		local Success = pcall(function()
+			setclipboard(DISCORD_LINK)
+		end)
+
+		if Success then
+			Copied = true
+		end
+	end
+
+	if Copied then
+		task.spawn(function()
+			SmallNotification("✓ Discord link copied!")
+		end)
+	else
+		task.spawn(function()
+			SmallNotification("Discord: " .. DISCORD_LINK)
+		end)
+	end
+
+	--// Small button animation
+	local OriginalSize = DiscordButton.Size
+
+	local Shrink = TweenService:Create(
+		DiscordButton,
+		TweenInfo.new(0.08),
+		{
+			Size = UDim2.new(1, -46, 0, 44)
+		}
+	)
+
+	local Grow = TweenService:Create(
+		DiscordButton,
+		TweenInfo.new(0.12),
+		{
+			Size = OriginalSize
+		}
+	)
+
+	Shrink:Play()
+	Shrink.Completed:Wait()
+	Grow:Play()
+end)
+
+--//==================================================
+--// NORMAL NOTIFICATION
 --//==================================================
 
 local function Notify(Message)
@@ -341,7 +504,9 @@ local function Notify(Message)
 	local In = TweenService:Create(
 		Notification,
 		TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-		{Position = UDim2.new(1, -325, 1, -85)}
+		{
+			Position = UDim2.new(1, -325, 1, -85)
+		}
 	)
 
 	In:Play()
@@ -352,7 +517,9 @@ local function Notify(Message)
 	local Out = TweenService:Create(
 		Notification,
 		TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
-		{Position = UDim2.new(1, 20, 1, -85)}
+		{
+			Position = UDim2.new(1, 20, 1, -85)
+		}
 	)
 
 	Out:Play()
@@ -362,8 +529,7 @@ local function Notify(Message)
 end
 
 --//==================================================
---// OWNER NOTIFICATION - TOP LEFT
---// CLIENT-SIDE ONLY
+--// OWNER NOTIFICATION
 --//==================================================
 
 local function OwnerNotify(Message)
@@ -382,7 +548,7 @@ local function OwnerNotify(Message)
 	Corner.Parent = Notification
 
 	local NotificationStroke = Instance.new("UIStroke")
-	NotificationStroke.Color = Color3.fromRGB(255, 255, 255)
+	NotificationStroke.Color = Color3.fromRGB(255, 215, 0)
 	NotificationStroke.Thickness = 2
 	NotificationStroke.Parent = Notification
 
@@ -401,7 +567,9 @@ local function OwnerNotify(Message)
 	local In = TweenService:Create(
 		Notification,
 		TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-		{Position = UDim2.new(0, 10, 0, 10)}
+		{
+			Position = UDim2.new(0, 10, 0, 10)
+		}
 	)
 
 	In:Play()
@@ -412,7 +580,9 @@ local function OwnerNotify(Message)
 	local Out = TweenService:Create(
 		Notification,
 		TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
-		{Position = UDim2.new(0, -330, 0, 10)}
+		{
+			Position = UDim2.new(0, -330, 0, 10)
+		}
 	)
 
 	Out:Play()
@@ -423,115 +593,116 @@ end
 
 --//==================================================
 --// OWNER JOIN DETECTOR
---// IMPORTANT:
---// This is entirely inside the LocalScript.
---// Only clients running this script create the notification.
 --//==================================================
 
 local function CheckOwner(PlayerToCheck)
 	if PlayerToCheck.Name:lower() == OWNER_USERNAME:lower() then
 		task.spawn(function()
-			OwnerNotify("OWNER krampus_159 JOINED THE SERVER 👑")
+			OwnerNotify("👑 OWNER krampus_159 JOINED THE SERVER")
 		end)
 	end
 end
 
--- Check players already in the server
 for _, PlayerToCheck in ipairs(Players:GetPlayers()) do
 	CheckOwner(PlayerToCheck)
 end
 
--- Check when someone joins
 Players.PlayerAdded:Connect(function(PlayerToCheck)
 	CheckOwner(PlayerToCheck)
 end)
 
 --//==================================================
---// COLOR LOOP
+--// CUSTOM CLEAR NAMETAG
 --//==================================================
 
-local Enabled = false
-local Running = false
+local function CreateCustomNametag(TargetPlayer)
+	local Character = TargetPlayer.Character
 
-ToggleScript.MouseButton1Click:Connect(function()
-	Enabled = not Enabled
-
-	if Enabled then
-		ToggleScript.Text = "NAME COLOR: ON"
-		ToggleScript.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		ToggleScript.TextColor3 = Color3.fromRGB(0, 0, 0)
-
-		if Running then
-			return
-		end
-
-		Running = true
-
-		task.spawn(function()
-			local Sent = 0
-
-			while Enabled and Sent < REQUEST_LIMIT do
-				for _, Color in ipairs(Colors) do
-					if not Enabled or Sent >= REQUEST_LIMIT then
-						break
-					end
-
-					if Event then
-						Event:FireServer("colo", Color)
-					end
-
-					Sent += 1
-					Status.Text = "Requests: " .. Sent .. " / " .. REQUEST_LIMIT
-
-					if DELAY > 0 then
-						task.wait(DELAY)
-					else
-						task.wait()
-					end
-				end
-			end
-
-			Running = false
-
-			if not Enabled then
-				ToggleScript.Text = "NAME COLOR: OFF"
-				ToggleScript.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-				ToggleScript.TextColor3 = Color3.fromRGB(255, 255, 255)
-			else
-				ToggleScript.Text = "NAME COLOR: OFF"
-				ToggleScript.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-				ToggleScript.TextColor3 = Color3.fromRGB(255, 255, 255)
-				Enabled = false
-			end
-		end)
-
-	else
-		ToggleScript.Text = "NAME COLOR: OFF"
-		ToggleScript.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-		ToggleScript.TextColor3 = Color3.fromRGB(255, 255, 255)
+	if not Character then
+		return
 	end
-end)
 
---//==================================================
---// OPEN / CLOSE
---//==================================================
+	local Head = Character:FindFirstChild("Head")
 
-local Open = true
+	if not Head then
+		return
+	end
 
-Close.MouseButton1Click:Connect(function()
-	Open = false
-	Main.Visible = false
-end)
+	local OldTag = Head:FindFirstChild("LazerCustomNametag")
 
-OpenButton.MouseButton1Click:Connect(function()
-	Open = not Open
-	Main.Visible = Open
-end)
+	if OldTag then
+		OldTag:Destroy()
+	end
 
---//==================================================
---// STARTUP NOTIFICATION
---//==================================================
+	local Billboard = Instance.new("BillboardGui")
+	Billboard.Name = "LazerCustomNametag"
+	Billboard.Adornee = Head
+	Billboard.Size = UDim2.new(0, 220, 0, 105)
+	Billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+	Billboard.AlwaysOnTop = true
+	Billboard.MaxDistance = 150
+	Billboard.ResetOnSpawn = false
+	Billboard.Parent = Head
 
-task.spawn(function()
-	Notify("made by rovmb and rxlet on discord 👀")
-end)
+	--// USERNAME
+	local Username = Instance.new("TextLabel")
+	Username.Name = "Username"
+	Username.Size = UDim2.new(1, 0, 0, 28)
+	Username.Position = UDim2.new(0, 0, 0, 0)
+	Username.BackgroundTransparency = 1
+	Username.Text = TargetPlayer.Name
+	Username.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Username.TextTransparency = 0
+	Username.TextSize = 19
+	Username.Font = Enum.Font.GothamBold
+	Username.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+	Username.TextStrokeTransparency = 0.15
+	Username.ZIndex = 10
+	Username.Parent = Billboard
+
+	--// LM LOGO
+	local Logo = Instance.new("TextLabel")
+	Logo.Name = "Logo"
+	Logo.Size = UDim2.new(1, 0, 0, 27)
+	Logo.Position = UDim2.new(0, 0, 0, 29)
+	Logo.BackgroundTransparency = 1
+	Logo.Text = "✦ LM ✦"
+	Logo.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Logo.TextTransparency = 0
+	Logo.TextSize = 18
+	Logo.Font = Enum.Font.GothamBlack
+	Logo.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+	Logo.TextStrokeTransparency = 0.15
+	Logo.ZIndex = 10
+	Logo.Parent = Billboard
+
+	--// OWNER TAG
+	if TargetPlayer.Name:lower() == OWNER_USERNAME:lower() then
+
+		local Crown = Instance.new("TextLabel")
+		Crown.Name = "Crown"
+		Crown.Size = UDim2.new(1, 0, 0, 30)
+		Crown.Position = UDim2.new(0, 0, 0, -31)
+		Crown.BackgroundTransparency = 1
+		Crown.Text = "👑"
+		Crown.TextColor3 = Color3.fromRGB(255, 215, 0)
+		Crown.TextTransparency = 0
+		Crown.TextSize = 27
+		Crown.Font = Enum.Font.GothamBold
+		Crown.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+		Crown.TextStrokeTransparency = 0.1
+		Crown.ZIndex = 12
+		Crown.Parent = Billboard
+
+		local Owner = Instance.new("TextLabel")
+		Owner.Name = "Owner"
+		Owner.Size = UDim2.new(1, 0, 0, 25)
+		Owner.Position = UDim2.new(0, 0, 0, 58)
+		Owner.BackgroundTransparency = 1
+		Owner.Text = "OWNER"
+		Owner.TextColor3 = Color3.fromRGB(255, 215, 0)
+		Owner.TextTransparency = 0
+		Owner.TextSize = 15
+		Owner.Font = Enum.Font.GothamBlack
+		Owner.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+		Owner.TextStrokeTransparency =

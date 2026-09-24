@@ -103,6 +103,10 @@ task.spawn(function()
 		Tween1:Play()
 		Tween1.Completed:Wait()
 
+		if not ScreenGui.Parent then
+			break
+		end
+
 		local Tween2 = TweenService:Create(
 			Gradient,
 			TweenInfo.new(2.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
@@ -250,11 +254,7 @@ local function ShowCopied()
 
 		local Fade = TweenService:Create(
 			CopiedText,
-			TweenInfo.new(
-				0.5,
-				Enum.EasingStyle.Quad,
-				Enum.EasingDirection.Out
-			),
+			TweenInfo.new(0.5, Enum.EasingStyle.Quad),
 			{
 				TextTransparency = 1,
 				TextStrokeTransparency = 1
@@ -310,16 +310,19 @@ OpenStroke.Transparency = 0.35
 OpenStroke.Parent = OpenButton
 
 --//==================================================
---// NOTIFICATION
+--// TOP NOTIFICATION
 --//==================================================
 
 local function SmallNotification(Message)
 	local Notification = Instance.new("TextLabel")
 
 	Notification.Size = UDim2.new(0, 250, 0, 34)
-	Notification.Position = UDim2.new(0.5, -125, 1, -55)
+
+	-- TOP OF SCREEN
+	Notification.Position = UDim2.new(0.5, -125, 0, 25)
+
 	Notification.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-	Notification.BackgroundTransparency = 0.15
+	Notification.BackgroundTransparency = 1
 	Notification.Text = Message
 	Notification.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Notification.TextSize = 11
@@ -338,16 +341,14 @@ local function SmallNotification(Message)
 	Stroke.Transparency = 0.5
 	Stroke.Parent = Notification
 
-	local In = TweenService:Create(
+	TweenService:Create(
 		Notification,
 		TweenInfo.new(0.25, Enum.EasingStyle.Quad),
 		{
 			TextTransparency = 0,
 			BackgroundTransparency = 0.15
 		}
-	)
-
-	In:Play()
+	):Play()
 
 	task.delay(3, function()
 		if not Notification.Parent then
@@ -381,9 +382,7 @@ local function SmoothButton(Button)
 		TweenService:Create(
 			Button,
 			TweenInfo.new(0.15, Enum.EasingStyle.Quad),
-			{
-				BackgroundTransparency = 0.05
-			}
+			{BackgroundTransparency = 0.05}
 		):Play()
 	end)
 
@@ -417,9 +416,7 @@ local function SmoothButton(Button)
 		TweenService:Create(
 			Button,
 			TweenInfo.new(0.1, Enum.EasingStyle.Quad),
-			{
-				Size = OriginalSize
-			}
+			{Size = OriginalSize}
 		):Play()
 	end)
 end
@@ -478,7 +475,7 @@ MakeDraggable(Main)
 MakeDraggable(OpenButton)
 
 --//==================================================
---// NAME COLOR TOGGLE
+--// NAME COLOR
 --//==================================================
 
 local NameColorEnabled = false
@@ -520,9 +517,7 @@ local function StartNameColor()
 				break
 			end
 
-			local Color = Colors[CurrentColorIndex]
-
-			SendColor(Color)
+			SendColor(Colors[CurrentColorIndex])
 
 			CurrentColorIndex += 1
 
@@ -569,14 +564,9 @@ DiscordButton.MouseButton1Click:Connect(function()
 
 	if Copied then
 		ShowCopied()
-
-		task.spawn(function()
-			SmallNotification("✓ Discord link copied!")
-		end)
+		SmallNotification("✓ Discord link copied!")
 	else
-		task.spawn(function()
-			SmallNotification("Discord: " .. DISCORD_LINK)
-		end)
+		SmallNotification("Discord: " .. DISCORD_LINK)
 	end
 end)
 
@@ -593,24 +583,6 @@ OpenButton.MouseButton1Click:Connect(function()
 	Main.Visible = true
 	OpenButton.Visible = false
 end)
-
---//==================================================
---// OWNER JOIN NOTIFICATION
---//==================================================
-
-local function CheckOwner(PlayerWhoJoined)
-	if PlayerWhoJoined.Name == OWNER_USERNAME then
-		SmallNotification("👑 OWNER " .. OWNER_USERNAME .. " JOINED THE SERVER")
-	end
-end
-
-Players.PlayerAdded:Connect(CheckOwner)
-
-for _, ExistingPlayer in ipairs(Players:GetPlayers()) do
-	if ExistingPlayer ~= Player then
-		CheckOwner(ExistingPlayer)
-	end
-end
 
 --//==================================================
 --// CUSTOM NAMETAG
@@ -647,9 +619,8 @@ local function CreateNametag(TargetPlayer, Character)
 	local Logo = Instance.new("TextLabel")
 	Logo.Name = "Logo"
 	Logo.Size = UDim2.new(1, 0, 0, 20)
-	Logo.Position = UDim2.new(0, 0, 0, 0)
 	Logo.BackgroundTransparency = 1
-	Logo.Text = "✦ LM ✦"
+	Logo.Text = "☄️ LM ☄️"
 	Logo.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Logo.TextSize = 11
 	Logo.Font = Enum.Font.GothamBold
@@ -686,12 +657,16 @@ local function CreateNametag(TargetPlayer, Character)
 		StatusTag.TextColor3 = Color3.fromRGB(0, 255, 80)
 	end
 
-	--// Smooth floating effect
-
 	task.spawn(function()
 		while Billboard.Parent do
 			local OffsetY = math.sin(os.clock() * 1.8) * 0.08
-			Billboard.StudsOffset = Vector3.new(0, 3.5 + OffsetY, 0)
+
+			Billboard.StudsOffset = Vector3.new(
+				0,
+				3.5 + OffsetY,
+				0
+			)
+
 			task.wait()
 		end
 	end)
@@ -716,6 +691,32 @@ Player.CharacterAdded:Connect(function(Character)
 end)
 
 SetupLocalNametag()
+
+--//==================================================
+--// OWNER JOIN NOTIFICATION
+--//==================================================
+
+local function CheckOwner(PlayerWhoJoined)
+	if PlayerWhoJoined == Player then
+		return
+	end
+
+	if PlayerWhoJoined.Name == OWNER_USERNAME then
+		SmallNotification(
+			"👑 OWNER " ..
+			OWNER_USERNAME ..
+			" JOINED THE SERVER"
+		)
+	end
+end
+
+Players.PlayerAdded:Connect(CheckOwner)
+
+for _, ExistingPlayer in ipairs(Players:GetPlayers()) do
+	if ExistingPlayer ~= Player then
+		CheckOwner(ExistingPlayer)
+	end
+end
 
 --//==================================================
 --// FINISHED

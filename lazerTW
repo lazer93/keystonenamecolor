@@ -1,6 +1,6 @@
---// Lazer Made Ts FN 🕶️
---// Small + Smooth GUI
---// Owner: krampus_159
+-- Lazer Made Ts FN
+-- Small + Smooth GUI
+-- Owner: krampus_159
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -10,26 +10,14 @@ local UserInputService = game:GetService("UserInputService")
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
---//==================================================
---// SETTINGS
---//==================================================
-
 local OWNER_USERNAME = "krampus_159"
 local REQUEST_LIMIT = 9099999999099999999998989999999
 local DELAY = 0
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
 
---//==================================================
---// REMOTE
---//==================================================
-
 local Event = ReplicatedStorage:FindFirstChild(
 	"307D0912-4609-4190-B07C-739143B666D3"
 )
-
---//==================================================
---// COLORS
---//==================================================
 
 local Colors = {
 	Color3.new(0.33333334326744, 0, 0),
@@ -45,10 +33,6 @@ local Colors = {
 	Color3.new(0, 0.33333334326744, 0.99607843160629),
 	Color3.new(0.99607843160629, 0, 0),
 }
-
---//==================================================
---// GUI
---//==================================================
 
 local OldGui = PlayerGui:FindFirstChild("LazerMadeTsFN")
 
@@ -81,8 +65,6 @@ MainStroke.Thickness = 1.5
 MainStroke.Transparency = 0.2
 MainStroke.Parent = Main
 
---// Animated background
-
 local Gradient = Instance.new("UIGradient")
 Gradient.Color = ColorSequence.new({
 	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
@@ -114,10 +96,6 @@ task.spawn(function()
 	end
 end)
 
---//==================================================
---// TITLE
---//==================================================
-
 local Title = Instance.new("TextLabel")
 Title.Name = "Title"
 Title.Size = UDim2.new(1, -45, 0, 30)
@@ -143,10 +121,6 @@ Subtitle.Font = Enum.Font.GothamMedium
 Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 Subtitle.Parent = Main
 
---//==================================================
---// TOGGLE BUTTON
---//==================================================
-
 local ToggleScript = Instance.new("TextButton")
 ToggleScript.Name = "ToggleScript"
 ToggleScript.Size = UDim2.new(1, -30, 0, 40)
@@ -171,10 +145,6 @@ ToggleStroke.Thickness = 1
 ToggleStroke.Transparency = 0.45
 ToggleStroke.Parent = ToggleScript
 
---//==================================================
---// STATUS
---//==================================================
-
 local Status = Instance.new("TextLabel")
 Status.Name = "Status"
 Status.Size = UDim2.new(1, -30, 0, 18)
@@ -186,10 +156,6 @@ Status.TextSize = 10
 Status.Font = Enum.Font.GothamMedium
 Status.TextXAlignment = Enum.TextXAlignment.Left
 Status.Parent = Main
-
---//==================================================
---// DISCORD BUTTON
---//==================================================
 
 local DiscordButton = Instance.new("TextButton")
 DiscordButton.Name = "DiscordButton"
@@ -214,10 +180,6 @@ DiscordStroke.Color = Color3.fromRGB(255, 255, 255)
 DiscordStroke.Thickness = 1
 DiscordStroke.Transparency = 0.5
 DiscordStroke.Parent = DiscordButton
-
---//==================================================
---// COPIED TEXT
---//==================================================
 
 local CopiedText = Instance.new("TextLabel")
 CopiedText.Name = "CopiedText"
@@ -250,11 +212,7 @@ local function ShowCopied()
 
 		local Fade = TweenService:Create(
 			CopiedText,
-			TweenInfo.new(
-				0.5,
-				Enum.EasingStyle.Quad,
-				Enum.EasingDirection.Out
-			),
+			TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 			{
 				TextTransparency = 1,
 				TextStrokeTransparency = 1
@@ -264,10 +222,6 @@ local function ShowCopied()
 		Fade:Play()
 	end)
 end
-
---//==================================================
---// CLOSE BUTTON
---//==================================================
 
 local CloseButton = Instance.new("TextButton")
 CloseButton.Name = "CloseButton"
@@ -279,10 +233,6 @@ CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseButton.TextSize = 22
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Parent = Main
-
---//==================================================
---// OPEN BUTTON
---//==================================================
 
 local OpenButton = Instance.new("TextButton")
 OpenButton.Name = "OpenButton"
@@ -309,15 +259,14 @@ OpenStroke.Thickness = 1
 OpenStroke.Transparency = 0.35
 OpenStroke.Parent = OpenButton
 
---//==================================================
---// NOTIFICATION
---//==================================================
-
 local function SmallNotification(Message)
 	local Notification = Instance.new("TextLabel")
 
 	Notification.Size = UDim2.new(0, 250, 0, 34)
-	Notification.Position = UDim2.new(0.5, -125, 1, -55)
+
+	-- TOP POSITION
+	Notification.Position = UDim2.new(0.5, -125, 0, 20)
+
 	Notification.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 	Notification.BackgroundTransparency = 0.15
 	Notification.Text = Message
@@ -369,10 +318,6 @@ local function SmallNotification(Message)
 		Notification:Destroy()
 	end)
 end
-
---//==================================================
---// BUTTON EFFECT
---//==================================================
 
 local function SmoothButton(Button)
 	local OriginalSize = Button.Size
@@ -428,10 +373,6 @@ SmoothButton(ToggleScript)
 SmoothButton(DiscordButton)
 SmoothButton(OpenButton)
 
---//==================================================
---// DRAGGING
---//==================================================
-
 local function MakeDraggable(Object)
 	local Dragging = false
 	local DragStart
@@ -476,10 +417,6 @@ end
 
 MakeDraggable(Main)
 MakeDraggable(OpenButton)
-
---//==================================================
---// NAME COLOR TOGGLE
---//==================================================
 
 local NameColorEnabled = false
 local CurrentColorIndex = 1
@@ -554,10 +491,6 @@ end)
 
 UpdateToggle()
 
---//==================================================
---// DISCORD
---//==================================================
-
 DiscordButton.MouseButton1Click:Connect(function()
 	local Copied = false
 
@@ -580,10 +513,6 @@ DiscordButton.MouseButton1Click:Connect(function()
 	end
 end)
 
---//==================================================
---// OPEN / CLOSE
---//==================================================
-
 CloseButton.MouseButton1Click:Connect(function()
 	Main.Visible = false
 	OpenButton.Visible = true
@@ -593,10 +522,6 @@ OpenButton.MouseButton1Click:Connect(function()
 	Main.Visible = true
 	OpenButton.Visible = false
 end)
-
---//==================================================
---// OWNER JOIN NOTIFICATION
---//==================================================
 
 local function CheckOwner(PlayerWhoJoined)
 	if PlayerWhoJoined.Name == OWNER_USERNAME then
@@ -611,10 +536,6 @@ for _, ExistingPlayer in ipairs(Players:GetPlayers()) do
 		CheckOwner(ExistingPlayer)
 	end
 end
-
---//==================================================
---// CUSTOM NAMETAG
---//==================================================
 
 local function CreateNametag(TargetPlayer, Character)
 	local Head = Character:FindFirstChild("Head")
@@ -686,8 +607,6 @@ local function CreateNametag(TargetPlayer, Character)
 		StatusTag.TextColor3 = Color3.fromRGB(0, 255, 80)
 	end
 
-	--// Smooth floating effect
-
 	task.spawn(function()
 		while Billboard.Parent do
 			local OffsetY = math.sin(os.clock() * 1.8) * 0.08
@@ -696,10 +615,6 @@ local function CreateNametag(TargetPlayer, Character)
 		end
 	end)
 end
-
---//==================================================
---// LOCAL PLAYER NAMETAG
---//==================================================
 
 local function SetupLocalNametag()
 	local Character = Player.Character
@@ -716,9 +631,5 @@ Player.CharacterAdded:Connect(function(Character)
 end)
 
 SetupLocalNametag()
-
---//==================================================
---// FINISHED
---//==================================================
 
 print("Lazer Made Ts FN loaded successfully.")

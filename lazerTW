@@ -7,7 +7,7 @@ local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
 local OWNER_USERNAME = "krampus_159"
-local REQUEST_LIMIT = 923
+local REQUEST_LIMIT = 9232029299292292929229292292200220209229292900000000100000
 local DELAY = 0
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
 

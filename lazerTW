@@ -1,7 +1,3 @@
--- Lazer Made Ts FN
--- Small + Smooth GUI
--- Owner: krampus_159
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -11,13 +7,55 @@ local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
 local OWNER_USERNAME = "krampus_159"
-local REQUEST_LIMIT = 9099999999099999999998989999999
+local REQUEST_LIMIT = 923
 local DELAY = 0
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
 
-local Event = ReplicatedStorage:FindFirstChild(
-	"307D0912-4609-4190-B07C-739143B666D3"
-)
+local COLOR_EVENT_NAME = "307D0912-4609-4190-B07C-739143B666D3"
+local REGISTER_EVENT_NAME = "LazerRegisteredPlayers"
+
+local Event = nil
+local RegisteredEvent = nil
+
+local RegisteredPlayers = {}
+local CharacterConnections = {}
+
+local function FindRemote(Name)
+	local Remote = ReplicatedStorage:FindFirstChild(Name)
+
+	if Remote and Remote:IsA("RemoteEvent") then
+		return Remote
+	end
+
+	return nil
+end
+
+Event = FindRemote(COLOR_EVENT_NAME)
+RegisteredEvent = FindRemote(REGISTER_EVENT_NAME)
+
+task.spawn(function()
+	while not Event do
+		Event = FindRemote(COLOR_EVENT_NAME)
+
+		if Event then
+			break
+		end
+
+		task.wait(0.1)
+	end
+end)
+
+task.spawn(function()
+	while not RegisteredEvent do
+		RegisteredEvent = FindRemote(REGISTER_EVENT_NAME)
+
+		if RegisteredEvent then
+			break
+		end
+
+		task.wait(0.1)
+	end
+end)
 
 local Colors = {
 	Color3.new(0.33333334326744, 0, 0),
@@ -31,7 +69,7 @@ local Colors = {
 	Color3.new(1, 1, 1),
 	Color3.new(1, 0, 0.99607843160629),
 	Color3.new(0, 0.33333334326744, 0.99607843160629),
-	Color3.new(0.99607843160629, 0, 0),
+	Color3.new(0.99607843160629, 0, 0)
 }
 
 local OldGui = PlayerGui:FindFirstChild("LazerMadeTsFN")
@@ -84,6 +122,10 @@ task.spawn(function()
 
 		Tween1:Play()
 		Tween1.Completed:Wait()
+
+		if not ScreenGui.Parent then
+			break
+		end
 
 		local Tween2 = TweenService:Create(
 			Gradient,
@@ -210,16 +252,18 @@ local function ShowCopied()
 			return
 		end
 
-		local Fade = TweenService:Create(
+		if not CopiedText.Parent then
+			return
+		end
+
+		TweenService:Create(
 			CopiedText,
-			TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			TweenInfo.new(0.5, Enum.EasingStyle.Quad),
 			{
 				TextTransparency = 1,
 				TextStrokeTransparency = 1
 			}
-		)
-
-		Fade:Play()
+		):Play()
 	end)
 end
 
@@ -263,10 +307,7 @@ local function SmallNotification(Message)
 	local Notification = Instance.new("TextLabel")
 
 	Notification.Size = UDim2.new(0, 250, 0, 34)
-
-	-- TOP POSITION
 	Notification.Position = UDim2.new(0.5, -125, 0, 20)
-
 	Notification.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 	Notification.BackgroundTransparency = 0.15
 	Notification.Text = Message
@@ -287,18 +328,16 @@ local function SmallNotification(Message)
 	Stroke.Transparency = 0.5
 	Stroke.Parent = Notification
 
-	local In = TweenService:Create(
+	TweenService:Create(
 		Notification,
 		TweenInfo.new(0.25, Enum.EasingStyle.Quad),
 		{
 			TextTransparency = 0,
 			BackgroundTransparency = 0.15
 		}
-	)
+	):Play()
 
-	In:Play()
-
-	task.delay(3, function()
+	task.delay(6, function()
 		if not Notification.Parent then
 			return
 		end
@@ -315,7 +354,9 @@ local function SmallNotification(Message)
 		Out:Play()
 		Out.Completed:Wait()
 
-		Notification:Destroy()
+		if Notification.Parent then
+			Notification:Destroy()
+		end
 	end)
 end
 
@@ -326,9 +367,7 @@ local function SmoothButton(Button)
 		TweenService:Create(
 			Button,
 			TweenInfo.new(0.15, Enum.EasingStyle.Quad),
-			{
-				BackgroundTransparency = 0.05
-			}
+			{BackgroundTransparency = 0.05}
 		):Play()
 	end)
 
@@ -362,9 +401,7 @@ local function SmoothButton(Button)
 		TweenService:Create(
 			Button,
 			TweenInfo.new(0.1, Enum.EasingStyle.Quad),
-			{
-				Size = OriginalSize
-			}
+			{Size = OriginalSize}
 		):Play()
 	end)
 end
@@ -435,13 +472,27 @@ local function UpdateToggle()
 end
 
 local function SendColor(Color)
-	if not Event then
+	local Remote = Event
+
+	if not Remote then
+		Remote = FindRemote(COLOR_EVENT_NAME)
+		Event = Remote
+	end
+
+	if not Remote then
 		SmallNotification("Color remote not found")
 		return
 	end
 
+	if RequestCount >= REQUEST_LIMIT then
+		NameColorEnabled = false
+		UpdateToggle()
+		SmallNotification("Request limit reached")
+		return
+	end
+
 	local Success = pcall(function()
-		Event:FireServer("colo", Color)
+		Remote:FireServer("colo", Color)
 	end)
 
 	if Success then
@@ -453,7 +504,10 @@ end
 local function StartNameColor()
 	task.spawn(function()
 		while NameColorEnabled do
-			if #Colors == 0 then
+			if RequestCount >= REQUEST_LIMIT then
+				NameColorEnabled = false
+				UpdateToggle()
+				SmallNotification("Request limit reached")
 				break
 			end
 
@@ -494,7 +548,7 @@ UpdateToggle()
 DiscordButton.MouseButton1Click:Connect(function()
 	local Copied = false
 
-	if setclipboard then
+	if typeof(setclipboard) == "function" then
 		Copied = pcall(function()
 			setclipboard(DISCORD_LINK)
 		end)
@@ -502,14 +556,9 @@ DiscordButton.MouseButton1Click:Connect(function()
 
 	if Copied then
 		ShowCopied()
-
-		task.spawn(function()
-			SmallNotification("✓ Discord link copied!")
-		end)
+		SmallNotification("✓ Discord link copied!")
 	else
-		task.spawn(function()
-			SmallNotification("Discord: " .. DISCORD_LINK)
-		end)
+		SmallNotification("Discord: " .. DISCORD_LINK)
 	end
 end)
 
@@ -523,21 +572,16 @@ OpenButton.MouseButton1Click:Connect(function()
 	OpenButton.Visible = false
 end)
 
-local function CheckOwner(PlayerWhoJoined)
-	if PlayerWhoJoined.Name == OWNER_USERNAME then
-		SmallNotification("👑 OWNER " .. OWNER_USERNAME .. " JOINED THE SERVER")
-	end
-end
-
-Players.PlayerAdded:Connect(CheckOwner)
-
-for _, ExistingPlayer in ipairs(Players:GetPlayers()) do
-	if ExistingPlayer ~= Player then
-		CheckOwner(ExistingPlayer)
-	end
-end
-
 local function CreateNametag(TargetPlayer, Character)
+	if not TargetPlayer or not Character then
+		return
+	end
+
+	if TargetPlayer ~= Player
+		and not RegisteredPlayers[TargetPlayer.UserId] then
+		return
+	end
+
 	local Head = Character:FindFirstChild("Head")
 
 	if not Head then
@@ -568,7 +612,6 @@ local function CreateNametag(TargetPlayer, Character)
 	local Logo = Instance.new("TextLabel")
 	Logo.Name = "Logo"
 	Logo.Size = UDim2.new(1, 0, 0, 20)
-	Logo.Position = UDim2.new(0, 0, 0, 0)
 	Logo.BackgroundTransparency = 1
 	Logo.Text = "LM 🕶️"
 	Logo.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -610,26 +653,132 @@ local function CreateNametag(TargetPlayer, Character)
 	task.spawn(function()
 		while Billboard.Parent do
 			local OffsetY = math.sin(os.clock() * 1.8) * 0.08
-			Billboard.StudsOffset = Vector3.new(0, 3.5 + OffsetY, 0)
+
+			Billboard.StudsOffset = Vector3.new(
+				0,
+				3.5 + OffsetY,
+				0
+			)
+
 			task.wait()
 		end
 	end)
 end
 
-local function SetupLocalNametag()
-	local Character = Player.Character
+local function RegisterPlayer(TargetPlayer)
+	if not TargetPlayer then
+		return
+	end
 
-	if Character then
-		CreateNametag(Player, Character)
+	RegisteredPlayers[TargetPlayer.UserId] = TargetPlayer
+
+	if CharacterConnections[TargetPlayer.UserId] then
+		CharacterConnections[TargetPlayer.UserId]:Disconnect()
+	end
+
+	CharacterConnections[TargetPlayer.UserId] =
+		TargetPlayer.CharacterAdded:Connect(function(Character)
+			Character:WaitForChild("Head", 10)
+			task.wait(0.2)
+
+			if RegisteredPlayers[TargetPlayer.UserId] then
+				CreateNametag(TargetPlayer, Character)
+			end
+		end)
+
+	if TargetPlayer.Character then
+		CreateNametag(TargetPlayer, TargetPlayer.Character)
 	end
 end
+
+local function SetupRegistration()
+	local Remote = RegisteredEvent or FindRemote(REGISTER_EVENT_NAME)
+
+	if not Remote then
+		return
+	end
+
+	RegisteredEvent = Remote
+
+	Remote.OnClientEvent:Connect(function(Action, UserId)
+		local TargetPlayer = Players:GetPlayerByUserId(UserId)
+
+		if not TargetPlayer then
+			return
+		end
+
+		if Action == "Registered"
+			or Action == "NewRegisteredPlayer" then
+
+			RegisterPlayer(TargetPlayer)
+		end
+	end)
+
+	RegisterPlayer(Player)
+
+	Remote:FireServer()
+end
+
+task.spawn(function()
+	while not RegisteredEvent do
+		RegisteredEvent = FindRemote(REGISTER_EVENT_NAME)
+
+		if RegisteredEvent then
+			break
+		end
+
+		task.wait(0.1)
+	end
+
+	SetupRegistration()
+end)
 
 Player.CharacterAdded:Connect(function(Character)
 	Character:WaitForChild("Head", 10)
 	task.wait(0.2)
-	CreateNametag(Player, Character)
+
+	if RegisteredPlayers[Player.UserId] then
+		CreateNametag(Player, Character)
+	end
 end)
 
+SetupLocalNametag = function()
+	RegisterPlayer(Player)
+end
+
 SetupLocalNametag()
+
+Players.PlayerAdded:Connect(function(PlayerWhoJoined)
+	if PlayerWhoJoined.Name == OWNER_USERNAME then
+		SmallNotification(
+			"👑 OWNER " .. OWNER_USERNAME .. " JOINED THE SERVER"
+		)
+	end
+end)
+
+for _, ExistingPlayer in ipairs(Players:GetPlayers()) do
+	if ExistingPlayer ~= Player
+		and ExistingPlayer.Name == OWNER_USERNAME then
+
+		task.delay(1, function()
+			if ExistingPlayer.Parent then
+				SmallNotification(
+					"👑 OWNER " .. OWNER_USERNAME .. " IS IN THE SERVER"
+				)
+			end
+		end)
+
+		break
+	end
+end
+
+Players.PlayerRemoving:Connect(function(PlayerWhoLeft)
+	RegisteredPlayers[PlayerWhoLeft.UserId] = nil
+
+	if CharacterConnections[PlayerWhoLeft.UserId] then
+		CharacterConnections[PlayerWhoLeft.UserId]:Disconnect()
+		CharacterConnections[PlayerWhoLeft.UserId] = nil
+	end
+end)
 
 print("Lazer Made Ts FN loaded successfully.")

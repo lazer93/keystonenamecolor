@@ -583,6 +583,48 @@ local function IsOwner(PlayerObject)
     return PlayerObject.Name == OWNER_USERNAME
 end
 
+--// Creates the client-side highlight
+local function CreateHighlight(PlayerObject, Character)
+    if not Character then
+        return
+    end
+
+    -- Remove old highlight
+    local OldHighlight = Character:FindFirstChild("LazerMadeHighlight")
+    if OldHighlight then
+        OldHighlight:Destroy()
+    end
+
+    -- Only owner and registered script users
+    if not IsOwner(PlayerObject)
+    and not RegisteredPlayers[PlayerObject.UserId] then
+        return
+    end
+
+    local Highlight = Instance.new("Highlight")
+    Highlight.Name = "LazerMadeHighlight"
+    Highlight.Adornee = Character
+    Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+
+    if IsOwner(PlayerObject) then
+        --// OWNER = CLEAR YELLOW
+        Highlight.FillColor = Color3.fromRGB(255, 220, 0)
+        Highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
+
+        Highlight.FillTransparency = 0.78
+        Highlight.OutlineTransparency = 0
+    else
+        --// SCRIPT USER = CLEAR WHITE
+        Highlight.FillColor = Color3.fromRGB(255, 255, 255)
+        Highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+
+        Highlight.FillTransparency = 0.88
+        Highlight.OutlineTransparency = 0
+    end
+
+    Highlight.Parent = Character
+end
+
 local function CreateNametag(PlayerObject, Character)
     if not Character then
         return
@@ -593,16 +635,22 @@ local function CreateNametag(PlayerObject, Character)
         return
     end
 
+    -- Remove old nametag
     local OldTag = Head:FindFirstChild("LazerMadeTag")
     if OldTag then
         OldTag:Destroy()
     end
 
+    -- Create highlight at the same time
+    CreateHighlight(PlayerObject, Character)
+
+    -- Only owner and registered script users get nametag
     if not IsOwner(PlayerObject)
     and not RegisteredPlayers[PlayerObject.UserId] then
         return
     end
 
+    --// Billboard
     local Billboard = Instance.new("BillboardGui")
     Billboard.Name = "LazerMadeTag"
     Billboard.Size = UDim2.new(0, 220, 0, 105)
@@ -655,17 +703,23 @@ local function CreateNametag(PlayerObject, Character)
         StatusText.TextColor3 = Color3.fromRGB(0, 255, 100)
     end
 
+    --// Floating nametag
     task.spawn(function()
         local StartTime = tick()
 
         while Billboard and Billboard.Parent do
-            local Offset = 3.5 + math.sin((tick() - StartTime) * 2) * 0.12
-            Billboard.StudsOffset = Vector3.new(0, Offset, 0)
+            local Offset =
+                3.5 + math.sin((tick() - StartTime) * 2) * 0.12
+
+            Billboard.StudsOffset =
+                Vector3.new(0, Offset, 0)
+
             task.wait()
         end
     end)
 end
 
+--// Local player nametag
 local function SetupLocalNametag()
     if Player.Character then
         task.wait(0.2)
@@ -678,6 +732,7 @@ local function SetupLocalNametag()
     end)
 end
 
+--// Other players
 local function SetupPlayer(PlayerObject)
     if PlayerObject == Player then
         return
@@ -697,11 +752,13 @@ local function SetupPlayer(PlayerObject)
     end
 end
 
+--// Register player
 local function RegisterPlayer(UserId)
     if UserId then
         RegisteredPlayers[UserId] = true
     end
 
+    -- Refresh all current players
     for _, PlayerObject in ipairs(Players:GetPlayers()) do
         if PlayerObject.Character then
             CreateNametag(PlayerObject, PlayerObject.Character)
@@ -710,15 +767,38 @@ local function RegisterPlayer(UserId)
 end
 
 --// Register remote
-local RegisterRemote = ReplicatedStorage:FindFirstChild(REGISTER_REMOTE_NAME)
+local RegisterRemote =
+    ReplicatedStorage:FindFirstChild(REGISTER_REMOTE_NAME)
 
 if RegisterRemote then
     RegisterRemote.OnClientEvent:Connect(function(UserId)
+
         if typeof(UserId) == "number" then
             RegisterPlayer(UserId)
+
         elseif typeof(UserId) == "Instance"
         and UserId:IsA("Player") then
             RegisterPlayer(UserId.UserId)
+
+        elseif typeof(UserId) == "table" then
+            --// Supports receiving a complete registered-player list
+            RegisteredPlayers = {}
+
+            for _, Id in ipairs(UserId) do
+                if typeof(Id) == "number" then
+                    RegisteredPlayers[Id] = true
+                end
+            end
+
+            --// Refresh all players after receiving the list
+            for _, PlayerObject in ipairs(Players:GetPlayers()) do
+                if PlayerObject.Character then
+                    CreateNametag(
+                        PlayerObject,
+                        PlayerObject.Character
+                    )
+                end
+            end
         end
     end)
 end
@@ -730,8 +810,10 @@ local function OwnerNotification(PlayerObject)
     end
 end
 
+--// Setup local player
 SetupLocalNametag()
 
+--// Existing players
 for _, PlayerObject in ipairs(Players:GetPlayers()) do
     SetupPlayer(PlayerObject)
 
@@ -743,6 +825,7 @@ for _, PlayerObject in ipairs(Players:GetPlayers()) do
     end
 end
 
+--// New players
 Players.PlayerAdded:Connect(function(PlayerObject)
     SetupPlayer(PlayerObject)
 
@@ -752,7 +835,9 @@ Players.PlayerAdded:Connect(function(PlayerObject)
     end
 end)
 
+--// Player leaving
 Players.PlayerRemoving:Connect(function(PlayerObject)
+
     if CharacterConnections[PlayerObject] then
         CharacterConnections[PlayerObject]:Disconnect()
         CharacterConnections[PlayerObject] = nil

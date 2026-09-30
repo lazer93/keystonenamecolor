@@ -1,6 +1,10 @@
 --// Lazer Made Ts FN 🕶️
 --// Small + Smooth GUI
 --// Owner: krampus_159
+--// OWNER JOINED = TOP LEFT
+--// REGISTERED = TOP RIGHT
+--// Script users get LM 🕶️ nametag
+--// Owner only gets yellow highlight
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -12,8 +16,8 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 
 local OWNER_USERNAME = "krampus_159"
 
-local REQUEST_LIMIT = 9232029299292292929229292292200220209229292900000000100000
-local DELAY = 0
+local REQUEST_LIMIT = 60
+local REQUEST_INTERVAL = 0.5
 
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
 
@@ -21,49 +25,141 @@ local REMOTE_NAME = "307D0912-4609-4190-B07C-739143B666D3"
 local REGISTER_REMOTE_NAME = "LazerRegisteredPlayers"
 local COFFEE_REMOTE_NAME = "DF310533-4D08-4C3B-94E1-BC67358D919D"
 
+--// Remove previous copy
 local OldGui = PlayerGui:FindFirstChild("LazerMadeTsFN")
+
 if OldGui then
-    OldGui:Destroy()
+	OldGui:Destroy()
 end
 
-local Event = ReplicatedStorage:WaitForChild(REMOTE_NAME)
+local function GetRemote(Name, ExpectedClass)
 
---// Colors
+	local Remote =
+		ReplicatedStorage:FindFirstChild(Name)
+
+	if not Remote then
+		return nil
+	end
+
+	if not Remote:IsA(ExpectedClass) then
+		return nil
+	end
+
+	return Remote
+end
+
+local Event =
+	GetRemote(
+		REMOTE_NAME,
+		"RemoteEvent"
+	)
+
+--// =========================================================
+--// COLORS
+--// =========================================================
+
 local Colors = {
-    Color3.new(0.33333334326744, 0, 0),
-    Color3.new(0, 0, 0),
-    Color3.new(0, 0.33333334326744, 0),
-    Color3.new(0.33333334326744, 1, 1),
-    Color3.new(0.33333334326744, 0.33333334326744, 0),
-    Color3.new(0, 0, 0.49803921580315),
-    Color3.new(0, 1, 0),
-    Color3.new(1, 0.33333334326744, 0),
-    Color3.new(1, 1, 1),
-    Color3.new(1, 0, 1),
-    Color3.new(0.33333334326744, 0.66666668653488, 1),
-    Color3.new(0.99607843160629, 0, 0)
+
+	Color3.new(
+		0.33333334326744,
+		0,
+		0
+	),
+
+	Color3.new(
+		0,
+		0,
+		0
+	),
+
+	Color3.new(
+		0,
+		0.33333334326744,
+		0
+	),
+
+	Color3.new(
+		0.33333334326744,
+		1,
+		1
+	),
+
+	Color3.new(
+		0.33333334326744,
+		0.33333334326744,
+		0
+	),
+
+	Color3.new(
+		0,
+		0,
+		0.49803921580315
+	),
+
+	Color3.new(
+		0,
+		1,
+		0
+	),
+
+	Color3.new(
+		1,
+		0.33333334326744,
+		0
+	),
+
+	Color3.new(
+		1,
+		1,
+		1
+	),
+
+	Color3.new(
+		1,
+		0,
+		1
+	),
+
+	Color3.new(
+		0.33333334326744,
+		0.66666668653488,
+		1
+	),
+
+	Color3.new(
+		0.99607843160629,
+		0,
+		0
+	)
 }
 
---// Fonts
+--// =========================================================
+--// FONTS
+--// =========================================================
+
 local Fonts = {
-    Enum.Font.Jura,
-    Enum.Font.LuckiestGuy,
-    Enum.Font.IndieFlower,
-    Enum.Font.Creepster,
-    Enum.Font.Antique,
-    Enum.Font.Cartoon,
-    Enum.Font.Gotham,
-    Enum.Font.Nunito,
-    Enum.Font.Roboto,
-    Enum.Font.SourceSans,
-    Enum.Font.SourceSansBold,
-    Enum.Font.Arcade,
-    Enum.Font.Arial,
-    Enum.Font.Code,
-    Enum.Font.Highway
+
+	Enum.Font.Jura,
+	Enum.Font.LuckiestGuy,
+	Enum.Font.IndieFlower,
+	Enum.Font.Creepster,
+	Enum.Font.Antique,
+	Enum.Font.Cartoon,
+	Enum.Font.Gotham,
+	Enum.Font.Nunito,
+	Enum.Font.Roboto,
+	Enum.Font.SourceSans,
+	Enum.Font.SourceSansBold,
+	Enum.Font.Arcade,
+	Enum.Font.Arial,
+	Enum.Font.Code,
+	Enum.Font.Highway
 }
 
---// State
+--// =========================================================
+--// VARIABLES
+--// =========================================================
+
 local NameColorEnabled = false
 local FontChangerEnabled = false
 local CoffeeClicked = false
@@ -73,775 +169,1943 @@ local MAX_INVISIBLE_NAME_CLICKS = 6
 
 local ColorIndex = 1
 local FontIndex = 1
+
 local RequestCount = 0
+local LastRequestTime = 0
 
 local RegisteredPlayers = {}
 local CharacterConnections = {}
 
---// ScreenGui
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "LazerMadeTsFN"
+local HandshakeComplete = false
+local RegistrationReady = false
+local CurrentNonce = nil
+
+--// =========================================================
+--// GUI
+--// =========================================================
+
+local ScreenGui =
+	Instance.new("ScreenGui")
+
+ScreenGui.Name =
+	"LazerMadeTsFN"
+
 ScreenGui.ResetOnSpawn = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.Parent = PlayerGui
+ScreenGui.ZIndexBehavior =
+	Enum.ZIndexBehavior.Sibling
+
+ScreenGui.Parent =
+	PlayerGui
 
 --// Main
-local Main = Instance.new("Frame")
-Main.Name = "Main"
-Main.Size = UDim2.new(0, 270, 0, 301)
-Main.Position = UDim2.new(0.5, -135, 0.5, -150)
-Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Main.BackgroundTransparency = 0.08
+local Main =
+	Instance.new("Frame")
+
+Main.Name =
+	"Main"
+
+Main.Size =
+	UDim2.new(
+		0,
+		270,
+		0,
+		301
+	)
+
+Main.Position =
+	UDim2.new(
+		0.5,
+		-135,
+		0.5,
+		-150
+	)
+
+Main.BackgroundColor3 =
+	Color3.fromRGB(
+		255,
+		255,
+		255
+	)
+
+Main.BackgroundTransparency =
+	0.08
+
 Main.BorderSizePixel = 0
-Main.Parent = ScreenGui
+Main.Parent =
+	ScreenGui
 
-local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 14)
-MainCorner.Parent = Main
+local MainCorner =
+	Instance.new("UICorner")
 
-local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(255, 255, 255)
+MainCorner.CornerRadius =
+	UDim.new(
+		0,
+		14
+	)
+
+MainCorner.Parent =
+	Main
+
+local MainStroke =
+	Instance.new("UIStroke")
+
+MainStroke.Color =
+	Color3.fromRGB(
+		255,
+		255,
+		255
+	)
+
 MainStroke.Thickness = 1.5
 MainStroke.Transparency = 0.2
-MainStroke.Parent = Main
+MainStroke.Parent =
+	Main
 
 --// Gradient
-local Gradient = Instance.new("UIGradient")
-Gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
-})
+local Gradient =
+	Instance.new("UIGradient")
+
+Gradient.Color =
+	ColorSequence.new({
+
+		ColorSequenceKeypoint.new(
+			0,
+			Color3.fromRGB(
+				0,
+				0,
+				0
+			)
+		),
+
+		ColorSequenceKeypoint.new(
+			0.5,
+			Color3.fromRGB(
+				255,
+				255,
+				255
+			)
+		),
+
+		ColorSequenceKeypoint.new(
+			1,
+			Color3.fromRGB(
+				0,
+				0,
+				0
+			)
+		)
+	})
+
 Gradient.Rotation = 25
-Gradient.Offset = Vector2.new(-1, 0)
-Gradient.Parent = Main
+
+Gradient.Offset =
+	Vector2.new(
+		-1,
+		0
+	)
+
+Gradient.Parent =
+	Main
 
 task.spawn(function()
-    while Main and Main.Parent do
-        local Tween1 = TweenService:Create(
-            Gradient,
-            TweenInfo.new(2.5, Enum.EasingStyle.Linear),
-            {Offset = Vector2.new(1, 0)}
-        )
 
-        Tween1:Play()
-        Tween1.Completed:Wait()
+	while Main
+	and Main.Parent do
 
-        local Tween2 = TweenService:Create(
-            Gradient,
-            TweenInfo.new(2.5, Enum.EasingStyle.Linear),
-            {Offset = Vector2.new(-1, 0)}
-        )
+		local Tween1 =
+			TweenService:Create(
+				Gradient,
 
-        Tween2:Play()
-        Tween2.Completed:Wait()
-    end
+				TweenInfo.new(
+					2.5,
+					Enum.EasingStyle.Linear
+				),
+
+				{
+					Offset =
+						Vector2.new(
+							1,
+							0
+						)
+				}
+			)
+
+		Tween1:Play()
+		Tween1.Completed:Wait()
+
+		if not Main
+		or not Main.Parent then
+			break
+		end
+
+		local Tween2 =
+			TweenService:Create(
+				Gradient,
+
+				TweenInfo.new(
+					2.5,
+					Enum.EasingStyle.Linear
+				),
+
+				{
+					Offset =
+						Vector2.new(
+							-1,
+							0
+						)
+				}
+			)
+
+		Tween2:Play()
+		Tween2.Completed:Wait()
+	end
 end)
 
---// Title
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -40, 0, 25)
-Title.Position = UDim2.new(0, 12, 0, 8)
+--// =========================================================
+--// TITLE
+--// =========================================================
+
+local Title =
+	Instance.new("TextLabel")
+
+Title.Size =
+	UDim2.new(
+		1,
+		-40,
+		0,
+		25
+	)
+
+Title.Position =
+	UDim2.new(
+		0,
+		12,
+		0,
+		8
+	)
+
 Title.BackgroundTransparency = 1
-Title.Text = "Lazer Made Ts FN 🕶️"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+Title.Text =
+	"Lazer Made Ts FN 🕶️"
+
+Title.TextColor3 =
+	Color3.fromRGB(
+		255,
+		255,
+		255
+	)
+
 Title.TextSize = 16
-Title.Font = Enum.Font.GothamBold
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = Main
+Title.Font =
+	Enum.Font.GothamBold
+
+Title.TextXAlignment =
+	Enum.TextXAlignment.Left
+
+Title.Parent =
+	Main
 
 --// Subtitle
-local Subtitle = Instance.new("TextLabel")
-Subtitle.Size = UDim2.new(1, -24, 0, 18)
-Subtitle.Position = UDim2.new(0, 12, 0, 34)
+local Subtitle =
+	Instance.new("TextLabel")
+
+Subtitle.Size =
+	UDim2.new(
+		1,
+		-24,
+		0,
+		18
+	)
+
+Subtitle.Position =
+	UDim2.new(
+		0,
+		12,
+		0,
+		34
+	)
+
 Subtitle.BackgroundTransparency = 1
-Subtitle.Text = "NAME COLOR"
-Subtitle.TextColor3 = Color3.fromRGB(210, 210, 210)
+
+Subtitle.Text =
+	"NAME COLOR"
+
+Subtitle.TextColor3 =
+	Color3.fromRGB(
+		210,
+		210,
+		210
+	)
+
 Subtitle.TextSize = 10
-Subtitle.Font = Enum.Font.GothamBold
-Subtitle.TextXAlignment = Enum.TextXAlignment.Left
-Subtitle.Parent = Main
+Subtitle.Font =
+	Enum.Font.GothamBold
 
---// Name Color
-local NameColorButton = Instance.new("TextButton")
-NameColorButton.Size = UDim2.new(1, -24, 0, 34)
-NameColorButton.Position = UDim2.new(0, 12, 0, 55)
-NameColorButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-NameColorButton.BackgroundTransparency = 0.15
-NameColorButton.BorderSizePixel = 0
-NameColorButton.Text = "NAME COLOR: OFF"
-NameColorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-NameColorButton.TextSize = 13
-NameColorButton.Font = Enum.Font.GothamBold
-NameColorButton.Parent = Main
+Subtitle.TextXAlignment =
+	Enum.TextXAlignment.Left
 
-local NameColorCorner = Instance.new("UICorner")
-NameColorCorner.CornerRadius = UDim.new(0, 9)
-NameColorCorner.Parent = NameColorButton
+Subtitle.Parent =
+	Main
 
---// Status
-local Status = Instance.new("TextLabel")
-Status.Size = UDim2.new(1, -24, 0, 18)
-Status.Position = UDim2.new(0, 12, 0, 93)
-Status.BackgroundTransparency = 1
-Status.Text = "Requests: 0"
-Status.TextColor3 = Color3.fromRGB(220, 220, 220)
-Status.TextSize = 10
-Status.Font = Enum.Font.Gotham
-Status.TextXAlignment = Enum.TextXAlignment.Left
-Status.Parent = Main
+--// =========================================================
+--// BUTTON HELPER
+--// =========================================================
 
---// Font Changer
-local FontButton = Instance.new("TextButton")
-FontButton.Size = UDim2.new(1, -24, 0, 34)
-FontButton.Position = UDim2.new(0, 12, 0, 122)
-FontButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-FontButton.BackgroundTransparency = 0.15
-FontButton.BorderSizePixel = 0
-FontButton.Text = "FONT CHANGER: OFF"
-FontButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-FontButton.TextSize = 13
-FontButton.Font = Enum.Font.GothamBold
-FontButton.Parent = Main
+local function CreateButton(
+	Text,
+	Y,
+	Height
+)
 
-local FontCorner = Instance.new("UICorner")
-FontCorner.CornerRadius = UDim.new(0, 9)
-FontCorner.Parent = FontButton
+	local Button =
+		Instance.new("TextButton")
 
---// Invisible Name
-local InvisibleNameButton = Instance.new("TextButton")
-InvisibleNameButton.Size = UDim2.new(1, -24, 0, 34)
-InvisibleNameButton.Position = UDim2.new(0, 12, 0, 160)
-InvisibleNameButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-InvisibleNameButton.BackgroundTransparency = 0.15
-InvisibleNameButton.BorderSizePixel = 0
-InvisibleNameButton.Text = "INVISIBLE NAME: 0/6"
-InvisibleNameButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-InvisibleNameButton.TextSize = 13
-InvisibleNameButton.Font = Enum.Font.GothamBold
-InvisibleNameButton.Parent = Main
+	Button.Size =
+		UDim2.new(
+			1,
+			-24,
+			0,
+			Height
+		)
 
-local InvisibleNameCorner = Instance.new("UICorner")
-InvisibleNameCorner.CornerRadius = UDim.new(0, 9)
-InvisibleNameCorner.Parent = InvisibleNameButton
+	Button.Position =
+		UDim2.new(
+			0,
+			12,
+			0,
+			Y
+		)
 
---// Get Coffee
-local CoffeeButton = Instance.new("TextButton")
-CoffeeButton.Size = UDim2.new(1, -24, 0, 34)
-CoffeeButton.Position = UDim2.new(0, 12, 0, 198)
-CoffeeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-CoffeeButton.BackgroundTransparency = 0.15
-CoffeeButton.BorderSizePixel = 0
-CoffeeButton.Text = "☕ GET COFFEE"
-CoffeeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CoffeeButton.TextSize = 13
-CoffeeButton.Font = Enum.Font.GothamBold
-CoffeeButton.Parent = Main
+	Button.BackgroundColor3 =
+		Color3.fromRGB(
+			0,
+			0,
+			0
+		)
 
-local CoffeeCorner = Instance.new("UICorner")
-CoffeeCorner.CornerRadius = UDim.new(0, 9)
-CoffeeCorner.Parent = CoffeeButton
+	Button.BackgroundTransparency =
+		0.15
 
---// Discord
-local DiscordButton = Instance.new("TextButton")
-DiscordButton.Size = UDim2.new(1, -24, 0, 28)
-DiscordButton.Position = UDim2.new(0, 12, 0, 236)
-DiscordButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-DiscordButton.BackgroundTransparency = 0.15
-DiscordButton.BorderSizePixel = 0
-DiscordButton.Text = "☁ JOIN DISCORD"
-DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-DiscordButton.TextSize = 11
-DiscordButton.Font = Enum.Font.GothamBold
-DiscordButton.Parent = Main
+	Button.BorderSizePixel = 0
 
-local DiscordCorner = Instance.new("UICorner")
-DiscordCorner.CornerRadius = UDim.new(0, 9)
-DiscordCorner.Parent = DiscordButton
+	Button.Text = Text
 
---// Copied
-local Copied = Instance.new("TextLabel")
-Copied.Size = UDim2.new(1, -24, 0, 18)
-Copied.Position = UDim2.new(0, 12, 0, 268)
-Copied.BackgroundTransparency = 1
-Copied.Text = ""
-Copied.TextColor3 = Color3.fromRGB(255, 255, 255)
-Copied.TextSize = 10
-Copied.Font = Enum.Font.GothamBold
-Copied.Parent = Main
+	Button.TextColor3 =
+		Color3.fromRGB(
+			255,
+			255,
+			255
+		)
 
---// Close
-local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 28, 0, 28)
-CloseButton.Position = UDim2.new(1, -34, 0, 7)
-CloseButton.BackgroundTransparency = 1
-CloseButton.Text = "×"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 22
-CloseButton.Font = Enum.Font.GothamBold
-CloseButton.Parent = Main
+	Button.TextSize = 13
+	Button.Font =
+		Enum.Font.GothamBold
 
---// Open
-local OpenButton = Instance.new("TextButton")
-OpenButton.Size = UDim2.new(0, 48, 0, 35)
-OpenButton.Position = UDim2.new(0, 10, 0, 10)
-OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-OpenButton.BackgroundTransparency = 0.1
-OpenButton.BorderSizePixel = 0
-OpenButton.Text = "Open"
-OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-OpenButton.TextSize = 11
-OpenButton.Font = Enum.Font.GothamBold
-OpenButton.Visible = false
-OpenButton.Parent = ScreenGui
+	Button.Parent =
+		Main
 
-local OpenCorner = Instance.new("UICorner")
-OpenCorner.CornerRadius = UDim.new(0, 9)
-OpenCorner.Parent = OpenButton
+	local Corner =
+		Instance.new("UICorner")
 
-local OpenStroke = Instance.new("UIStroke")
-OpenStroke.Color = Color3.fromRGB(255, 255, 255)
-OpenStroke.Transparency = 0.25
-OpenStroke.Parent = OpenButton
+	Corner.CornerRadius =
+		UDim.new(
+			0,
+			9
+		)
 
---// Notification
-local function SmallNotification(Text)
-    local Notification = Instance.new("TextLabel")
+	Corner.Parent =
+		Button
 
-    Notification.Size = UDim2.new(0, 245, 0, 34)
-    Notification.Position = UDim2.new(0, 12, 0, 20)
-    Notification.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    Notification.BackgroundTransparency = 1
-    Notification.BorderSizePixel = 0
-    Notification.Text = Text
-    Notification.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Notification.TextSize = 11
-    Notification.Font = Enum.Font.GothamBold
-    Notification.TextTransparency = 1
-    Notification.ZIndex = 100
-    Notification.Parent = ScreenGui
-
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 9)
-    Corner.Parent = Notification
-
-    local Stroke = Instance.new("UIStroke")
-    Stroke.Color = Color3.fromRGB(255, 255, 255)
-    Stroke.Transparency = 0.25
-    Stroke.Parent = Notification
-
-    TweenService:Create(
-        Notification,
-        TweenInfo.new(0.2),
-        {
-            TextTransparency = 0,
-            BackgroundTransparency = 0.08
-        }
-    ):Play()
-
-    task.delay(6, function()
-        if Notification and Notification.Parent then
-            local FadeOut = TweenService:Create(
-                Notification,
-                TweenInfo.new(0.25),
-                {
-                    TextTransparency = 1,
-                    BackgroundTransparency = 1
-                }
-            )
-
-            FadeOut:Play()
-            FadeOut.Completed:Wait()
-
-            if Notification then
-                Notification:Destroy()
-            end
-        end
-    end)
+	return Button
 end
 
---// Name Color
-local function SendColor(Color)
-    pcall(function()
-        Event:FireServer("colo", Color)
-    end)
+--// Name color
+local NameColorButton =
+	CreateButton(
+		"NAME COLOR: OFF",
+		55,
+		34
+	)
+
+--// Status
+local Status =
+	Instance.new("TextLabel")
+
+Status.Size =
+	UDim2.new(
+		1,
+		-24,
+		0,
+		18
+	)
+
+Status.Position =
+	UDim2.new(
+		0,
+		12,
+		0,
+		93
+	)
+
+Status.BackgroundTransparency = 1
+Status.Text =
+	"Requests: 0"
+
+Status.TextColor3 =
+	Color3.fromRGB(
+		220,
+		220,
+		220
+	)
+
+Status.TextSize = 10
+Status.Font =
+	Enum.Font.Gotham
+
+Status.TextXAlignment =
+	Enum.TextXAlignment.Left
+
+Status.Parent =
+	Main
+
+--// Font
+local FontButton =
+	CreateButton(
+		"FONT CHANGER: OFF",
+		122,
+		34
+	)
+
+--// Invisible
+local InvisibleNameButton =
+	CreateButton(
+		"INVISIBLE NAME: 0/6",
+		160,
+		34
+	)
+
+--// Coffee
+local CoffeeButton =
+	CreateButton(
+		"☕ GET COFFEE",
+		198,
+		34
+	)
+
+--// Discord
+local DiscordButton =
+	CreateButton(
+		"☁ JOIN DISCORD",
+		236,
+		28
+	)
+
+DiscordButton.TextSize = 11
+
+--// Copied
+local Copied =
+	Instance.new("TextLabel")
+
+Copied.Size =
+	UDim2.new(
+		1,
+		-24,
+		0,
+		18
+	)
+
+Copied.Position =
+	UDim2.new(
+		0,
+		12,
+		0,
+		268
+	)
+
+Copied.BackgroundTransparency = 1
+Copied.Text = ""
+
+Copied.TextColor3 =
+	Color3.fromRGB(
+		255,
+		255,
+		255
+	)
+
+Copied.TextSize = 10
+Copied.Font =
+	Enum.Font.GothamBold
+
+Copied.Parent =
+	Main
+
+--// Close
+local CloseButton =
+	Instance.new("TextButton")
+
+CloseButton.Size =
+	UDim2.new(
+		0,
+		28,
+		0,
+		28
+	)
+
+CloseButton.Position =
+	UDim2.new(
+		1,
+		-34,
+		0,
+		7
+	)
+
+CloseButton.BackgroundTransparency = 1
+CloseButton.Text = "×"
+
+CloseButton.TextColor3 =
+	Color3.fromRGB(
+		255,
+		255,
+		255
+	)
+
+CloseButton.TextSize = 22
+CloseButton.Font =
+	Enum.Font.GothamBold
+
+CloseButton.Parent =
+	Main
+
+--// Open
+local OpenButton =
+	Instance.new("TextButton")
+
+OpenButton.Size =
+	UDim2.new(
+		0,
+		48,
+		0,
+		35
+	)
+
+OpenButton.Position =
+	UDim2.new(
+		0,
+		10,
+		0,
+		10
+	)
+
+OpenButton.BackgroundColor3 =
+	Color3.fromRGB(
+		0,
+		0,
+		0
+	)
+
+OpenButton.BackgroundTransparency =
+	0.1
+
+OpenButton.BorderSizePixel = 0
+OpenButton.Text = "Open"
+
+OpenButton.TextColor3 =
+	Color3.fromRGB(
+		255,
+		255,
+		255
+	)
+
+OpenButton.TextSize = 11
+OpenButton.Font =
+	Enum.Font.GothamBold
+
+OpenButton.Visible = false
+OpenButton.Parent =
+	ScreenGui
+
+local OpenCorner =
+	Instance.new("UICorner")
+
+OpenCorner.CornerRadius =
+	UDim.new(
+		0,
+		9
+	)
+
+OpenCorner.Parent =
+	OpenButton
+
+local OpenStroke =
+	Instance.new("UIStroke")
+
+OpenStroke.Color =
+	Color3.fromRGB(
+		255,
+		255,
+		255
+	)
+
+OpenStroke.Transparency = 0.25
+OpenStroke.Parent =
+	OpenButton
+
+--// =========================================================
+--// NOTIFICATIONS
+--// OWNER = TOP LEFT
+--// REGISTERED = TOP RIGHT
+--// =========================================================
+
+local function SmallNotification(
+	Text,
+	Side
+)
+
+	local Notification =
+		Instance.new("TextLabel")
+
+	Notification.Size =
+		UDim2.new(
+			0,
+			245,
+			0,
+			34
+		)
+
+	if Side == "Left" then
+
+		--// TOP LEFT
+		Notification.Position =
+			UDim2.new(
+				0,
+				12,
+				0,
+				20
+			)
+
+	else
+
+		--// TOP RIGHT
+		Notification.Position =
+			UDim2.new(
+				1,
+				-257,
+				0,
+				20
+			)
+	end
+
+	Notification.BackgroundColor3 =
+		Color3.fromRGB(
+			0,
+			0,
+			0
+		)
+
+	Notification.BackgroundTransparency = 1
+	Notification.BorderSizePixel = 0
+
+	Notification.Text = Text
+
+	Notification.TextColor3 =
+		Color3.fromRGB(
+			255,
+			255,
+			255
+		)
+
+	Notification.TextSize = 11
+	Notification.Font =
+		Enum.Font.GothamBold
+
+	Notification.TextTransparency = 1
+	Notification.ZIndex = 100
+	Notification.Parent =
+		ScreenGui
+
+	local Corner =
+		Instance.new("UICorner")
+
+	Corner.CornerRadius =
+		UDim.new(
+			0,
+			9
+		)
+
+	Corner.Parent =
+		Notification
+
+	local Stroke =
+		Instance.new("UIStroke")
+
+	Stroke.Color =
+		Color3.fromRGB(
+			255,
+			255,
+			255
+		)
+
+	Stroke.Transparency = 0.25
+	Stroke.Parent =
+		Notification
+
+	TweenService:Create(
+		Notification,
+
+		TweenInfo.new(
+			0.2
+		),
+
+		{
+			TextTransparency = 0,
+			BackgroundTransparency = 0.08
+		}
+	):Play()
+
+	task.delay(
+		6,
+		function()
+
+			if not Notification
+			or not Notification.Parent then
+				return
+			end
+
+			local FadeOut =
+				TweenService:Create(
+					Notification,
+
+					TweenInfo.new(
+						0.25
+					),
+
+					{
+						TextTransparency = 1,
+						BackgroundTransparency = 1
+					}
+				)
+
+			FadeOut:Play()
+			FadeOut.Completed:Wait()
+
+			if Notification then
+				Notification:Destroy()
+			end
+		end
+	)
+end
+
+--// =========================================================
+--// REQUEST SYSTEM
+--// =========================================================
+
+local function UpdateRequestStatus()
+
+	Status.Text =
+		"Requests: "
+		.. tostring(
+			RequestCount
+		)
+end
+
+local function CanSendRequest(
+	Remote,
+	Action,
+	...
+)
+
+	if not Remote
+	or not Remote:IsA("RemoteEvent") then
+		return false
+	end
+
+	if typeof(Action) ~= "string" then
+		return false
+	end
+
+	if RequestCount >= REQUEST_LIMIT then
+		return false
+	end
+
+	local Now =
+		os.clock()
+
+	local Remaining =
+		REQUEST_INTERVAL
+		- (
+			Now
+			- LastRequestTime
+		)
+
+	if Remaining > 0 then
+		task.wait(Remaining)
+	end
+
+	if not Remote.Parent
+	or not Remote:IsDescendantOf(
+		ReplicatedStorage
+	) then
+		return false
+	end
+
+	LastRequestTime =
+		os.clock()
+
+	RequestCount += 1
+
+	Remote:FireServer(
+		Action,
+		...
+	)
+
+	return true
+end
+
+--// =========================================================
+--// NAME COLOR
+--// =========================================================
+
+local function SendColor(
+	Color
+)
+
+	if typeof(Color) ~= "Color3" then
+		return false
+	end
+
+	if not Event then
+		return false
+	end
+
+	local Sent =
+		CanSendRequest(
+			Event,
+			"colo",
+			Color
+		)
+
+	UpdateRequestStatus()
+
+	return Sent
 end
 
 local function StartNameColor()
-    task.spawn(function()
-        while NameColorEnabled do
-            if RequestCount >= REQUEST_LIMIT then
-                break
-            end
 
-            SendColor(Colors[ColorIndex])
+	task.spawn(function()
 
-            ColorIndex += 1
-            if ColorIndex > #Colors then
-                ColorIndex = 1
-            end
+		while NameColorEnabled
+		and RequestCount < REQUEST_LIMIT do
 
-            RequestCount += 1
-            Status.Text = "Requests: " .. tostring(RequestCount)
+			if not SendColor(
+				Colors[ColorIndex]
+			) then
+				break
+			end
 
-            if DELAY > 0 then
-                task.wait(DELAY)
-            else
-                task.wait()
-            end
-        end
-    end)
+			ColorIndex += 1
+
+			if ColorIndex > #Colors then
+				ColorIndex = 1
+			end
+		end
+
+		if RequestCount >=
+			REQUEST_LIMIT then
+
+			NameColorEnabled = false
+
+			NameColorButton.Text =
+				"NAME COLOR: OFF"
+
+			SmallNotification(
+				"REQUEST LIMIT REACHED",
+				"Left"
+			)
+		end
+	end)
 end
 
---// Font Changer
-local function SendFont(Font)
-    pcall(function()
-        Event:FireServer("font", Font)
-    end)
+--// =========================================================
+--// FONT
+--// =========================================================
+
+local function SendFont(
+	Font
+)
+
+	if typeof(Font) ~= "EnumItem"
+	or Font.EnumType ~= Enum.Font then
+		return false
+	end
+
+	if not Event then
+		return false
+	end
+
+	local Sent =
+		CanSendRequest(
+			Event,
+			"font",
+			Font
+		)
+
+	UpdateRequestStatus()
+
+	return Sent
 end
 
 local function StartFontChanger()
-    task.spawn(function()
-        while FontChangerEnabled do
-            SendFont(Fonts[FontIndex])
 
-            FontIndex += 1
-            if FontIndex > #Fonts then
-                FontIndex = 1
-            end
+	task.spawn(function()
 
-            if DELAY > 0 then
-                task.wait(DELAY)
-            else
-                task.wait()
-            end
-        end
-    end)
+		while FontChangerEnabled
+		and RequestCount < REQUEST_LIMIT do
+
+			if not SendFont(
+				Fonts[FontIndex]
+			) then
+				break
+			end
+
+			FontIndex += 1
+
+			if FontIndex > #Fonts then
+				FontIndex = 1
+			end
+		end
+
+		if RequestCount >=
+			REQUEST_LIMIT then
+
+			FontChangerEnabled = false
+
+			FontButton.Text =
+				"FONT CHANGER: OFF"
+
+			SmallNotification(
+				"REQUEST LIMIT REACHED",
+				"Left"
+			)
+		end
+	end)
 end
 
---// Name Color Button
-NameColorButton.MouseButton1Click:Connect(function()
-    if FontChangerEnabled then
-        SmallNotification("CAN'T USE BOTH AT SAME TIME")
-        return
-    end
+NameColorButton.MouseButton1Click:Connect(
+	function()
 
-    NameColorEnabled = not NameColorEnabled
+		if FontChangerEnabled then
 
-    if NameColorEnabled then
-        NameColorButton.Text = "NAME COLOR: ON"
-        RequestCount = 0
-        Status.Text = "Requests: 0"
-        StartNameColor()
-    else
-        NameColorButton.Text = "NAME COLOR: OFF"
-        RequestCount = 0
-        Status.Text = "Requests: 0"
-    end
-end)
+			SmallNotification(
+				"CAN'T USE BOTH AT SAME TIME",
+				"Left"
+			)
 
---// Font Button
-FontButton.MouseButton1Click:Connect(function()
-    if NameColorEnabled then
-        SmallNotification("CAN'T USE BOTH AT SAME TIME")
-        return
-    end
+			return
+		end
 
-    FontChangerEnabled = not FontChangerEnabled
+		if not Event then
 
-    if FontChangerEnabled then
-        FontButton.Text = "FONT CHANGER: ON"
-        StartFontChanger()
-    else
-        FontButton.Text = "FONT CHANGER: OFF"
-    end
-end)
+			SmallNotification(
+				"NAME COLOR REMOTE UNAVAILABLE",
+				"Left"
+			)
 
---// Invisible Name - 6 clicks
-InvisibleNameButton.MouseButton1Click:Connect(function()
-    if InvisibleNameClicks >= MAX_INVISIBLE_NAME_CLICKS then
-        SmallNotification("INVISIBLE NAME: 6 CLICKS USED")
-        return
-    end
+			return
+		end
 
-    InvisibleNameClicks += 1
+		NameColorEnabled =
+			not NameColorEnabled
 
-    pcall(function()
-        Event:FireServer(
-            "upd",
-            "y\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny"
-        )
-    end)
+		if NameColorEnabled then
 
-    InvisibleNameButton.Text =
-        "INVISIBLE NAME: " .. tostring(InvisibleNameClicks) .. "/6"
-end)
+			NameColorButton.Text =
+				"NAME COLOR: ON"
 
---// Coffee
-CoffeeButton.MouseButton1Click:Connect(function()
-    if CoffeeClicked then
-        SmallNotification("YOU CAN ONLY CLICK ONE TIME")
-        return
-    end
+			RequestCount = 0
+			LastRequestTime = 0
 
-    CoffeeClicked = true
-    CoffeeButton.Text = "☕ GET COFFEE: USED"
+			UpdateRequestStatus()
 
-    local CoffeeEvent = ReplicatedStorage:FindFirstChild(COFFEE_REMOTE_NAME)
+			StartNameColor()
 
-    if CoffeeEvent then
-        pcall(function()
-            CoffeeEvent:FireServer(2, "Coffee")
-        end)
-    end
-end)
+		else
 
---// Discord
-DiscordButton.MouseButton1Click:Connect(function()
-    if typeof(setclipboard) == "function" then
-        pcall(function()
-            setclipboard(DISCORD_LINK)
-        end)
+			NameColorButton.Text =
+				"NAME COLOR: OFF"
 
-        DiscordButton.Text = "✓ COPIED"
+			RequestCount = 0
 
-        task.delay(2, function()
-            if DiscordButton and DiscordButton.Parent then
-                DiscordButton.Text = "☁ JOIN DISCORD"
-            end
-        end)
-    else
-        Copied.Text = "Discord: " .. DISCORD_LINK
+			UpdateRequestStatus()
+		end
+	end
+)
 
-        task.delay(5, function()
-            if Copied and Copied.Parent then
-                Copied.Text = ""
-            end
-        end)
-    end
-end)
+FontButton.MouseButton1Click:Connect(
+	function()
 
---// Close / Open
-CloseButton.MouseButton1Click:Connect(function()
-    Main.Visible = false
-    OpenButton.Visible = true
-end)
+		if NameColorEnabled then
 
-OpenButton.MouseButton1Click:Connect(function()
-    Main.Visible = true
-    OpenButton.Visible = false
-end)
+			SmallNotification(
+				"CAN'T USE BOTH AT SAME TIME",
+				"Left"
+			)
 
---// Dragging
-local function MakeDraggable(Object)
-    local Dragging = false
-    local DragStart
-    local StartPosition
+			return
+		end
 
-    Object.InputBegan:Connect(function(Input)
-        if Input.UserInputType == Enum.UserInputType.MouseButton1
-        or Input.UserInputType == Enum.UserInputType.Touch then
+		if not Event then
 
-            Dragging = true
-            DragStart = Input.Position
-            StartPosition = Object.Position
+			SmallNotification(
+				"FONT REMOTE UNAVAILABLE",
+				"Left"
+			)
 
-            Input.Changed:Connect(function()
-                if Input.UserInputState == Enum.UserInputState.End then
-                    Dragging = false
-                end
-            end)
-        end
-    end)
+			return
+		end
 
-    UserInputService.InputChanged:Connect(function(Input)
-        if not Dragging then
-            return
-        end
+		FontChangerEnabled =
+			not FontChangerEnabled
 
-        if Input.UserInputType ~= Enum.UserInputType.MouseMovement
-        and Input.UserInputType ~= Enum.UserInputType.Touch then
-            return
-        end
+		if FontChangerEnabled then
 
-        local Delta = Input.Position - DragStart
+			FontButton.Text =
+				"FONT CHANGER: ON"
 
-        Object.Position = UDim2.new(
-            StartPosition.X.Scale,
-            StartPosition.X.Offset + Delta.X,
-            StartPosition.Y.Scale,
-            StartPosition.Y.Offset + Delta.Y
-        )
-    end)
+			RequestCount = 0
+			LastRequestTime = 0
+
+			UpdateRequestStatus()
+
+			StartFontChanger()
+
+		else
+
+			FontButton.Text =
+				"FONT CHANGER: OFF"
+		end
+	end
+)
+
+--// =========================================================
+--// INVISIBLE NAME
+--// =========================================================
+
+InvisibleNameButton.MouseButton1Click:Connect(
+	function()
+
+		if InvisibleNameClicks >=
+			MAX_INVISIBLE_NAME_CLICKS then
+
+			SmallNotification(
+				"INVISIBLE NAME: 6 CLICKS USED",
+				"Left"
+			)
+
+			return
+		end
+
+		if not Event then
+
+			SmallNotification(
+				"INVISIBLE NAME REMOTE UNAVAILABLE",
+				"Left"
+			)
+
+			return
+		end
+
+		local InvisibleName =
+			"y\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny"
+
+		if not CanSendRequest(
+			Event,
+			"upd",
+			InvisibleName
+		) then
+
+			SmallNotification(
+				"REQUEST LIMIT REACHED OR REMOTE UNAVAILABLE",
+				"Left"
+			)
+
+			return
+		end
+
+		InvisibleNameClicks += 1
+
+		UpdateRequestStatus()
+
+		InvisibleNameButton.Text =
+			"INVISIBLE NAME: "
+			.. tostring(
+				InvisibleNameClicks
+			)
+			.. "/6"
+	end
+)
+
+--// =========================================================
+--// COFFEE
+--// =========================================================
+
+CoffeeButton.MouseButton1Click:Connect(
+	function()
+
+		if CoffeeClicked then
+
+			SmallNotification(
+				"YOU CAN ONLY CLICK ONE TIME",
+				"Left"
+			)
+
+			return
+		end
+
+		local CoffeeEvent =
+			GetRemote(
+				COFFEE_REMOTE_NAME,
+				"RemoteEvent"
+			)
+
+		if not CoffeeEvent then
+
+			SmallNotification(
+				"COFFEE REMOTE UNAVAILABLE",
+				"Left"
+			)
+
+			return
+		end
+
+		if not CanSendRequest(
+			CoffeeEvent,
+			"Coffee",
+			2,
+			"Coffee"
+		) then
+
+			SmallNotification(
+				"REQUEST LIMIT REACHED OR REMOTE UNAVAILABLE",
+				"Left"
+			)
+
+			return
+		end
+
+		CoffeeClicked = true
+
+		CoffeeButton.Text =
+			"☕ GET COFFEE: USED"
+
+		UpdateRequestStatus()
+	end
+)
+
+--// =========================================================
+--// DISCORD
+--// =========================================================
+
+DiscordButton.MouseButton1Click:Connect(
+	function()
+
+		if typeof(setclipboard) ==
+			"function" then
+
+			pcall(function()
+
+				setclipboard(
+					DISCORD_LINK
+				)
+			end)
+
+			DiscordButton.Text =
+				"✓ COPIED"
+
+			task.delay(
+				2,
+				function()
+
+					if DiscordButton
+					and DiscordButton.Parent then
+
+						DiscordButton.Text =
+							"☁ JOIN DISCORD"
+					end
+				end
+			)
+
+		else
+
+			Copied.Text =
+				"Discord: "
+				.. DISCORD_LINK
+
+			task.delay(
+				5,
+				function()
+
+					if Copied
+					and Copied.Parent then
+
+						Copied.Text = ""
+					end
+				end
+			)
+		end
+	end
+)
+
+--// =========================================================
+--// OPEN / CLOSE
+--// =========================================================
+
+CloseButton.MouseButton1Click:Connect(
+	function()
+
+		Main.Visible = false
+		OpenButton.Visible = true
+	end
+)
+
+OpenButton.MouseButton1Click:Connect(
+	function()
+
+		Main.Visible = true
+		OpenButton.Visible = false
+	end
+)
+
+--// =========================================================
+--// DRAGGING
+--// =========================================================
+
+local function MakeDraggable(
+	Object
+)
+
+	local Dragging = false
+	local DragStart
+	local StartPosition
+
+	Object.InputBegan:Connect(
+		function(Input)
+
+			if Input.UserInputType ==
+				Enum.UserInputType.MouseButton1
+			or Input.UserInputType ==
+				Enum.UserInputType.Touch then
+
+				Dragging = true
+
+				DragStart =
+					Input.Position
+
+				StartPosition =
+					Object.Position
+
+				Input.Changed:Connect(
+					function()
+
+						if Input.UserInputState ==
+							Enum.UserInputState.End then
+
+							Dragging = false
+						end
+					end
+				)
+			end
+		end
+	)
+
+	UserInputService.InputChanged:Connect(
+		function(Input)
+
+			if not Dragging then
+				return
+			end
+
+			if Input.UserInputType ~=
+				Enum.UserInputType.MouseMovement
+			and Input.UserInputType ~=
+				Enum.UserInputType.Touch then
+
+				return
+			end
+
+			local Delta =
+				Input.Position
+				- DragStart
+
+			Object.Position =
+				UDim2.new(
+					StartPosition.X.Scale,
+					StartPosition.X.Offset
+						+ Delta.X,
+
+					StartPosition.Y.Scale,
+					StartPosition.Y.Offset
+						+ Delta.Y
+				)
+		end
+	)
 end
 
 MakeDraggable(Main)
 MakeDraggable(OpenButton)
 
---// Nametag system
-local function IsOwner(PlayerObject)
-    return PlayerObject.Name == OWNER_USERNAME
+--// =========================================================
+--// NAMETAG SYSTEM
+--// =========================================================
+
+local function IsOwner(
+	PlayerObject
+)
+
+	return PlayerObject
+		and PlayerObject.Name ==
+			OWNER_USERNAME
 end
 
---// Creates the client-side highlight
-local function CreateHighlight(PlayerObject, Character)
-    if not Character then
-        return
-    end
+local function IsRegisteredPlayer(
+	PlayerObject
+)
 
-    -- Remove old highlight
-    local OldHighlight = Character:FindFirstChild("LazerMadeHighlight")
-    if OldHighlight then
-        OldHighlight:Destroy()
-    end
+	if not PlayerObject then
+		return false
+	end
 
-    -- Only owner and registered script users
-    if not IsOwner(PlayerObject)
-    and not RegisteredPlayers[PlayerObject.UserId] then
-        return
-    end
-
-    local Highlight = Instance.new("Highlight")
-    Highlight.Name = "LazerMadeHighlight"
-    Highlight.Adornee = Character
-    Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-
-    if IsOwner(PlayerObject) then
-        --// OWNER = CLEAR YELLOW
-        Highlight.FillColor = Color3.fromRGB(255, 220, 0)
-        Highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
-
-        Highlight.FillTransparency = 0.78
-        Highlight.OutlineTransparency = 0
-    else
-        --// SCRIPT USER = CLEAR WHITE
-        Highlight.FillColor = Color3.fromRGB(255, 255, 255)
-        Highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-
-        Highlight.FillTransparency = 0.88
-        Highlight.OutlineTransparency = 0
-    end
-
-    Highlight.Parent = Character
+	return RegisteredPlayers[
+		PlayerObject.UserId
+	] == true
 end
 
-local function CreateNametag(PlayerObject, Character)
-    if not Character then
-        return
-    end
+--// OWNER ONLY HIGHLIGHT
+local function CreateHighlight(
+	PlayerObject,
+	Character
+)
 
-    local Head = Character:FindFirstChild("Head")
-    if not Head then
-        return
-    end
+	if not Character then
+		return
+	end
 
-    -- Remove old nametag
-    local OldTag = Head:FindFirstChild("LazerMadeTag")
-    if OldTag then
-        OldTag:Destroy()
-    end
+	local OldHighlight =
+		Character:FindFirstChild(
+			"LazerMadeHighlight"
+		)
 
-    -- Create highlight at the same time
-    CreateHighlight(PlayerObject, Character)
+	if OldHighlight then
+		OldHighlight:Destroy()
+	end
 
-    -- Only owner and registered script users get nametag
-    if not IsOwner(PlayerObject)
-    and not RegisteredPlayers[PlayerObject.UserId] then
-        return
-    end
+	--// Script users DO NOT get highlight
+	if not IsOwner(
+		PlayerObject
+	) then
 
-    --// Billboard
-    local Billboard = Instance.new("BillboardGui")
-    Billboard.Name = "LazerMadeTag"
-    Billboard.Size = UDim2.new(0, 220, 0, 105)
-    Billboard.StudsOffset = Vector3.new(0, 3.5, 0)
-    Billboard.AlwaysOnTop = true
-    Billboard.MaxDistance = 150
-    Billboard.Parent = Head
+		return
+	end
 
-    local Holder = Instance.new("Frame")
-    Holder.Size = UDim2.new(1, 0, 1, 0)
-    Holder.BackgroundTransparency = 1
-    Holder.Parent = Billboard
+	local Highlight =
+		Instance.new("Highlight")
 
-    local MainText = Instance.new("TextLabel")
-    MainText.Size = UDim2.new(1, 0, 0, 28)
-    MainText.Position = UDim2.new(0, 0, 0, 5)
-    MainText.BackgroundTransparency = 1
-    MainText.Text = "LM 🕶️"
-    MainText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    MainText.TextStrokeTransparency = 0.2
-    MainText.TextSize = 20
-    MainText.Font = Enum.Font.GothamBold
-    MainText.Parent = Holder
+	Highlight.Name =
+		"LazerMadeHighlight"
 
-    local UsernameText = Instance.new("TextLabel")
-    UsernameText.Size = UDim2.new(1, 0, 0, 24)
-    UsernameText.Position = UDim2.new(0, 0, 0, 33)
-    UsernameText.BackgroundTransparency = 1
-    UsernameText.Text = PlayerObject.Name
-    UsernameText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    UsernameText.TextStrokeTransparency = 0.25
-    UsernameText.TextSize = 15
-    UsernameText.Font = Enum.Font.GothamBold
-    UsernameText.Parent = Holder
+	Highlight.Adornee =
+		Character
 
-    local StatusText = Instance.new("TextLabel")
-    StatusText.Size = UDim2.new(1, 0, 0, 22)
-    StatusText.Position = UDim2.new(0, 0, 0, 58)
-    StatusText.BackgroundTransparency = 1
-    StatusText.TextSize = 13
-    StatusText.Font = Enum.Font.GothamBold
-    StatusText.TextStrokeTransparency = 0.25
-    StatusText.Parent = Holder
+	Highlight.DepthMode =
+		Enum.HighlightDepthMode.AlwaysOnTop
 
-    if IsOwner(PlayerObject) then
-        StatusText.Text = "👑 OWNER"
-        StatusText.TextColor3 = Color3.fromRGB(255, 215, 0)
-    else
-        StatusText.Text = "SCRIPT USER"
-        StatusText.TextColor3 = Color3.fromRGB(0, 255, 100)
-    end
+	Highlight.FillColor =
+		Color3.fromRGB(
+			255,
+			220,
+			0
+		)
 
-    --// Floating nametag
-    task.spawn(function()
-        local StartTime = tick()
+	Highlight.OutlineColor =
+		Color3.fromRGB(
+			255,
+			255,
+			0
+		)
 
-        while Billboard and Billboard.Parent do
-            local Offset =
-                3.5 + math.sin((tick() - StartTime) * 2) * 0.12
+	Highlight.FillTransparency =
+		0.78
 
-            Billboard.StudsOffset =
-                Vector3.new(0, Offset, 0)
+	Highlight.OutlineTransparency =
+		0
 
-            task.wait()
-        end
-    end)
+	Highlight.Parent =
+		Character
 end
 
---// Local player nametag
+--// OWNER + SCRIPT USERS GET NAMETAG
+local function CreateNametag(
+	PlayerObject,
+	Character
+)
+
+	if not Character then
+		return
+	end
+
+	local Head =
+		Character:FindFirstChild(
+			"Head"
+		)
+
+	if not Head then
+		return
+	end
+
+	local OldTag =
+		Head:FindFirstChild(
+			"LazerMadeTag"
+		)
+
+	if OldTag then
+		OldTag:Destroy()
+	end
+
+	--// Owner gets highlight.
+	--// Script users do not.
+	CreateHighlight(
+		PlayerObject,
+		Character
+	)
+
+	local Owner =
+		IsOwner(
+			PlayerObject
+		)
+
+	local ScriptUser =
+		IsRegisteredPlayer(
+			PlayerObject
+		)
+
+	--// Everyone else gets nothing.
+	if not Owner
+	and not ScriptUser then
+
+		return
+	end
+
+	local Billboard =
+		Instance.new(
+			"BillboardGui"
+		)
+
+	Billboard.Name =
+		"LazerMadeTag"
+
+	Billboard.Size =
+		UDim2.new(
+			0,
+			220,
+			0,
+			105
+		)
+
+	Billboard.StudsOffset =
+		Vector3.new(
+			0,
+			3.5,
+			0
+		)
+
+	Billboard.AlwaysOnTop = true
+	Billboard.MaxDistance = 150
+	Billboard.Parent =
+		Head
+
+	local Holder =
+		Instance.new("Frame")
+
+	Holder.Size =
+		UDim2.new(
+			1,
+			0,
+			1,
+			0
+		)
+
+	Holder.BackgroundTransparency = 1
+	Holder.Parent =
+		Billboard
+
+	--// LM
+	local MainText =
+		Instance.new("TextLabel")
+
+	MainText.Size =
+		UDim2.new(
+			1,
+			0,
+			0,
+			28
+		)
+
+	MainText.Position =
+		UDim2.new(
+			0,
+			0,
+			0,
+			5
+		)
+
+	MainText.BackgroundTransparency = 1
+	MainText.Text =
+		"LM 🕶️"
+
+	MainText.TextColor3 =
+		Color3.fromRGB(
+			255,
+			255,
+			255
+		)
+
+	MainText.TextStrokeTransparency = 1
+	MainText.TextSize = 20
+	MainText.Font =
+		Enum.Font.GothamBold
+
+	MainText.Parent =
+		Holder
+
+	--// Username
+	local UsernameText =
+		Instance.new("TextLabel")
+
+	UsernameText.Size =
+		UDim2.new(
+			1,
+			0,
+			0,
+			24
+		)
+
+	UsernameText.Position =
+		UDim2.new(
+			0,
+			0,
+			0,
+			33
+		)
+
+	UsernameText.BackgroundTransparency = 1
+	UsernameText.Text =
+		PlayerObject.Name
+
+	UsernameText.TextColor3 =
+		Color3.fromRGB(
+			255,
+			255,
+			255
+		)
+
+	UsernameText.TextStrokeTransparency = 1
+	UsernameText.TextSize = 15
+	UsernameText.Font =
+		Enum.Font.GothamBold
+
+	UsernameText.Parent =
+		Holder
+
+	--// Status
+	local StatusText =
+		Instance.new("TextLabel")
+
+	StatusText.Size =
+		UDim2.new(
+			1,
+			0,
+			0,
+			22
+		)
+
+	StatusText.Position =
+		UDim2.new(
+			0,
+			0,
+			0,
+			58
+		)
+
+	StatusText.BackgroundTransparency = 1
+	StatusText.TextSize = 13
+	StatusText.Font =
+		Enum.Font.GothamBold
+
+	StatusText.TextStrokeTransparency = 1
+	StatusText.Parent =
+		Holder
+
+	if Owner then
+
+		StatusText.Text =
+			"👑 OWNER"
+
+		StatusText.TextColor3 =
+			Color3.fromRGB(
+				255,
+				215,
+				0
+			)
+
+	else
+
+		StatusText.Text =
+			"SCRIPT USER"
+
+		StatusText.TextColor3 =
+			Color3.fromRGB(
+				0,
+				255,
+				100
+			)
+	end
+
+	--// Floating animation
+	task.spawn(function()
+
+		local StartTime =
+			tick()
+
+		while Billboard
+		and Billboard.Parent do
+
+			local Offset =
+				3.5
+				+ math.sin(
+					(tick() - StartTime)
+					* 2
+				) * 0.12
+
+			Billboard.StudsOffset =
+				Vector3.new(
+					0,
+					Offset,
+					0
+				)
+
+			task.wait()
+		end
+	end)
+end
+
+--// =========================================================
+--// PLAYER SETUP
+--// =========================================================
+
 local function SetupLocalNametag()
-    if Player.Character then
-        task.wait(0.2)
-        CreateNametag(Player, Player.Character)
-    end
 
-    Player.CharacterAdded:Connect(function(Character)
-        task.wait(0.5)
-        CreateNametag(Player, Character)
-    end)
+	if Player.Character then
+
+		task.wait(0.2)
+
+		CreateNametag(
+			Player,
+			Player.Character
+		)
+	end
+
+	Player.CharacterAdded:Connect(
+		function(Character)
+
+			task.wait(0.5)
+
+			CreateNametag(
+				Player,
+				Character
+			)
+		end
+	)
 end
 
---// Other players
-local function SetupPlayer(PlayerObject)
-    if PlayerObject == Player then
-        return
-    end
+local function SetupPlayer(
+	PlayerObject
+)
 
-    CharacterConnections[PlayerObject] =
-        PlayerObject.CharacterAdded:Connect(function(Character)
-            task.wait(0.5)
-            CreateNametag(PlayerObject, Character)
-        end)
+	if PlayerObject == Player then
+		return
+	end
 
-    if PlayerObject.Character then
-        task.spawn(function()
-            task.wait(0.5)
-            CreateNametag(PlayerObject, PlayerObject.Character)
-        end)
-    end
+	CharacterConnections[
+		PlayerObject
+	] =
+		PlayerObject.CharacterAdded:Connect(
+			function(Character)
+
+				task.wait(0.5)
+
+				CreateNametag(
+					PlayerObject,
+					Character
+				)
+			end
+		)
+
+	if PlayerObject.Character then
+
+		task.spawn(function()
+
+			task.wait(0.5)
+
+			CreateNametag(
+				PlayerObject,
+				PlayerObject.Character
+			)
+		end)
+	end
 end
 
---// Register player
-local function RegisterPlayer(UserId)
-    if UserId then
-        RegisteredPlayers[UserId] = true
-    end
+--// =========================================================
+--// REGISTRATION HANDSHAKE
+--// =========================================================
 
-    -- Refresh all current players
-    for _, PlayerObject in ipairs(Players:GetPlayers()) do
-        if PlayerObject.Character then
-            CreateNametag(PlayerObject, PlayerObject.Character)
-        end
-    end
-end
-
---// Register remote
 local RegisterRemote =
-    ReplicatedStorage:FindFirstChild(REGISTER_REMOTE_NAME)
+	ReplicatedStorage:FindFirstChild(
+		REGISTER_REMOTE_NAME
+	)
 
-if RegisterRemote then
-    RegisterRemote.OnClientEvent:Connect(function(UserId)
+local function RefreshRegisteredPlayers(
+	List
+)
 
-        if typeof(UserId) == "number" then
-            RegisterPlayer(UserId)
+	RegisteredPlayers = {}
 
-        elseif typeof(UserId) == "Instance"
-        and UserId:IsA("Player") then
-            RegisterPlayer(UserId.UserId)
+	if typeof(List) == "table" then
 
-        elseif typeof(UserId) == "table" then
-            --// Supports receiving a complete registered-player list
-            RegisteredPlayers = {}
+		for _, UserId in ipairs(List) do
 
-            for _, Id in ipairs(UserId) do
-                if typeof(Id) == "number" then
-                    RegisteredPlayers[Id] = true
-                end
-            end
+			if typeof(UserId) == "number" then
 
-            --// Refresh all players after receiving the list
-            for _, PlayerObject in ipairs(Players:GetPlayers()) do
-                if PlayerObject.Character then
-                    CreateNametag(
-                        PlayerObject,
-                        PlayerObject.Character
-                    )
-                end
-            end
-        end
-    end)
+				RegisteredPlayers[
+					UserId
+				] = true
+			end
+		end
+	end
+
+	--// Refresh every player.
+	for _, PlayerObject in ipairs(
+		Players:GetPlayers()
+	) do
+
+		if PlayerObject.Character then
+
+			CreateNametag(
+				PlayerObject,
+				PlayerObject.Character
+			)
+		end
+	end
 end
 
---// Owner notification
-local function OwnerNotification(PlayerObject)
-    if IsOwner(PlayerObject) then
-        SmallNotification("👑 OWNER JOINED")
-    end
+local function RequestRegistrationHandshake()
+
+	if not RegisterRemote
+	or not RegisterRemote:IsA(
+		"RemoteEvent"
+	) then
+
+		SmallNotification(
+			"REGISTRATION SERVER UNAVAILABLE",
+			"Right"
+		)
+
+		return
+	end
+
+	HandshakeComplete = false
+	RegistrationReady = false
+	CurrentNonce = nil
+
+	RegisterRemote:FireServer(
+		"RequestHandshake"
+	)
 end
 
---// Setup local player
+if RegisterRemote
+and RegisterRemote:IsA(
+	"RemoteEvent"
+) then
+
+	RegisterRemote.OnClientEvent:Connect(
+		function(Data)
+
+			if typeof(Data) ~= "table" then
+				return
+			end
+
+			--// Handshake challenge
+			if Data.Type ==
+				"HandshakeChallenge" then
+
+				if typeof(Data.Nonce) ~=
+					"string" then
+
+					return
+				end
+
+				CurrentNonce =
+					Data.Nonce
+
+				RegisterRemote:FireServer(
+					"CompleteHandshake",
+					{
+						Nonce =
+							CurrentNonce
+					}
+				)
+
+				return
+			end
+
+			--// Full registered list
+			if Data.Type ==
+				"RegisteredList" then
+
+				if typeof(Data.Players) ~=
+					"table" then
+
+					return
+				end
+
+				HandshakeComplete = true
+				RegistrationReady = true
+				CurrentNonce = nil
+
+				RefreshRegisteredPlayers(
+					Data.Players
+				)
+
+				--// REGISTERED = TOP RIGHT
+				SmallNotification(
+					"✓ REGISTERED",
+					"Right"
+				)
+
+				return
+			end
+		end
+	)
+
+	task.spawn(function()
+
+		task.wait(1)
+
+		RequestRegistrationHandshake()
+	end)
+
+else
+
+	SmallNotification(
+		"REGISTRATION SERVER UNAVAILABLE",
+		"Right"
+	)
+end
+
+--// =========================================================
+--// OWNER JOINED
+--// TOP LEFT
+--// =========================================================
+
+local function OwnerNotification(
+	PlayerObject
+)
+
+	if IsOwner(
+		PlayerObject
+	) then
+
+		SmallNotification(
+			"👑 OWNER JOINED",
+			"Left"
+		)
+	end
+end
+
+--// =========================================================
+--// INITIAL PLAYERS
+--// =========================================================
+
 SetupLocalNametag()
 
---// Existing players
-for _, PlayerObject in ipairs(Players:GetPlayers()) do
-    SetupPlayer(PlayerObject)
+for _, PlayerObject in ipairs(
+	Players:GetPlayers()
+) do
 
-    if IsOwner(PlayerObject) then
-        task.spawn(function()
-            task.wait(1)
-            OwnerNotification(PlayerObject)
-        end)
-    end
+	SetupPlayer(
+		PlayerObject
+	)
+
+	if IsOwner(
+		PlayerObject
+	) then
+
+		task.spawn(function()
+
+			task.wait(1)
+
+			OwnerNotification(
+				PlayerObject
+			)
+		end)
+	end
 end
 
---// New players
-Players.PlayerAdded:Connect(function(PlayerObject)
-    SetupPlayer(PlayerObject)
+--// =========================================================
+--// NEW PLAYERS
+--// =========================================================
 
-    if IsOwner(PlayerObject) then
-        task.wait(1)
-        OwnerNotification(PlayerObject)
-    end
-end)
+Players.PlayerAdded:Connect(
+	function(PlayerObject)
 
---// Player leaving
-Players.PlayerRemoving:Connect(function(PlayerObject)
+		SetupPlayer(
+			PlayerObject
+		)
 
-    if CharacterConnections[PlayerObject] then
-        CharacterConnections[PlayerObject]:Disconnect()
-        CharacterConnections[PlayerObject] = nil
-    end
+		if IsOwner(
+			PlayerObject
+		) then
 
-    RegisteredPlayers[PlayerObject.UserId] = nil
-end)
+			task.wait(1)
+
+			OwnerNotification(
+				PlayerObject
+			)
+		end
+	end
+)
+
+--// =========================================================
+--// PLAYER LEAVING
+--// =========================================================
+
+Players.PlayerRemoving:Connect(
+	function(PlayerObject)
+
+		if CharacterConnections[
+			PlayerObject
+		] then
+
+			CharacterConnections[
+				PlayerObject
+			]:Disconnect()
+
+			CharacterConnections[
+				PlayerObject
+			] = nil
+		end
+
+		RegisteredPlayers[
+			PlayerObject.UserId
+		] = nil
+	end
+)

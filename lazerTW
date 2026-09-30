@@ -21,7 +21,6 @@ local REMOTE_NAME = "307D0912-4609-4190-B07C-739143B666D3"
 local REGISTER_REMOTE_NAME = "LazerRegisteredPlayers"
 local COFFEE_REMOTE_NAME = "DF310533-4D08-4C3B-94E1-BC67358D919D"
 
---// Remove old GUI
 local OldGui = PlayerGui:FindFirstChild("LazerMadeTsFN")
 if OldGui then
     OldGui:Destroy()
@@ -69,6 +68,9 @@ local NameColorEnabled = false
 local FontChangerEnabled = false
 local CoffeeClicked = false
 
+local InvisibleNameClicks = 0
+local MAX_INVISIBLE_NAME_CLICKS = 6
+
 local ColorIndex = 1
 local FontIndex = 1
 local RequestCount = 0
@@ -86,8 +88,8 @@ ScreenGui.Parent = PlayerGui
 --// Main
 local Main = Instance.new("Frame")
 Main.Name = "Main"
-Main.Size = UDim2.new(0, 270, 0, 263)
-Main.Position = UDim2.new(0.5, -135, 0.5, -131)
+Main.Size = UDim2.new(0, 270, 0, 301)
+Main.Position = UDim2.new(0.5, -135, 0.5, -150)
 Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Main.BackgroundTransparency = 0.08
 Main.BorderSizePixel = 0
@@ -103,7 +105,7 @@ MainStroke.Thickness = 1.5
 MainStroke.Transparency = 0.2
 MainStroke.Parent = Main
 
---// Animated gradient
+--// Gradient
 local Gradient = Instance.new("UIGradient")
 Gradient.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
@@ -206,10 +208,27 @@ local FontCorner = Instance.new("UICorner")
 FontCorner.CornerRadius = UDim.new(0, 9)
 FontCorner.Parent = FontButton
 
+--// Invisible Name
+local InvisibleNameButton = Instance.new("TextButton")
+InvisibleNameButton.Size = UDim2.new(1, -24, 0, 34)
+InvisibleNameButton.Position = UDim2.new(0, 12, 0, 160)
+InvisibleNameButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+InvisibleNameButton.BackgroundTransparency = 0.15
+InvisibleNameButton.BorderSizePixel = 0
+InvisibleNameButton.Text = "INVISIBLE NAME: 0/6"
+InvisibleNameButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+InvisibleNameButton.TextSize = 13
+InvisibleNameButton.Font = Enum.Font.GothamBold
+InvisibleNameButton.Parent = Main
+
+local InvisibleNameCorner = Instance.new("UICorner")
+InvisibleNameCorner.CornerRadius = UDim.new(0, 9)
+InvisibleNameCorner.Parent = InvisibleNameButton
+
 --// Get Coffee
 local CoffeeButton = Instance.new("TextButton")
 CoffeeButton.Size = UDim2.new(1, -24, 0, 34)
-CoffeeButton.Position = UDim2.new(0, 12, 0, 160)
+CoffeeButton.Position = UDim2.new(0, 12, 0, 198)
 CoffeeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 CoffeeButton.BackgroundTransparency = 0.15
 CoffeeButton.BorderSizePixel = 0
@@ -226,7 +245,7 @@ CoffeeCorner.Parent = CoffeeButton
 --// Discord
 local DiscordButton = Instance.new("TextButton")
 DiscordButton.Size = UDim2.new(1, -24, 0, 28)
-DiscordButton.Position = UDim2.new(0, 12, 0, 198)
+DiscordButton.Position = UDim2.new(0, 12, 0, 236)
 DiscordButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 DiscordButton.BackgroundTransparency = 0.15
 DiscordButton.BorderSizePixel = 0
@@ -243,7 +262,7 @@ DiscordCorner.Parent = DiscordButton
 --// Copied
 local Copied = Instance.new("TextLabel")
 Copied.Size = UDim2.new(1, -24, 0, 18)
-Copied.Position = UDim2.new(0, 12, 0, 230)
+Copied.Position = UDim2.new(0, 12, 0, 268)
 Copied.BackgroundTransparency = 1
 Copied.Text = ""
 Copied.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -262,7 +281,7 @@ CloseButton.TextSize = 22
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Parent = Main
 
---// Open toggle
+--// Open
 local OpenButton = Instance.new("TextButton")
 OpenButton.Size = UDim2.new(0, 48, 0, 35)
 OpenButton.Position = UDim2.new(0, 10, 0, 10)
@@ -341,63 +360,7 @@ local function SmallNotification(Text)
     end)
 end
 
---// Coffee notification
-local function CoffeeNotification()
-    local Notification = Instance.new("TextLabel")
-
-    Notification.Size = UDim2.new(0, 245, 0, 34)
-    Notification.Position = UDim2.new(0, 12, 1, -46)
-    Notification.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    Notification.BackgroundTransparency = 1
-    Notification.BorderSizePixel = 0
-    Notification.Text = "YOU CAN ONLY CLICK ONE TIME"
-    Notification.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Notification.TextSize = 11
-    Notification.Font = Enum.Font.GothamBold
-    Notification.TextTransparency = 1
-    Notification.ZIndex = 100
-    Notification.Parent = ScreenGui
-
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 9)
-    Corner.Parent = Notification
-
-    local Stroke = Instance.new("UIStroke")
-    Stroke.Color = Color3.fromRGB(255, 255, 255)
-    Stroke.Transparency = 0.25
-    Stroke.Parent = Notification
-
-    TweenService:Create(
-        Notification,
-        TweenInfo.new(0.2),
-        {
-            TextTransparency = 0,
-            BackgroundTransparency = 0.08
-        }
-    ):Play()
-
-    task.delay(3, function()
-        if Notification and Notification.Parent then
-            local FadeOut = TweenService:Create(
-                Notification,
-                TweenInfo.new(0.25),
-                {
-                    TextTransparency = 1,
-                    BackgroundTransparency = 1
-                }
-            )
-
-            FadeOut:Play()
-            FadeOut.Completed:Wait()
-
-            if Notification then
-                Notification:Destroy()
-            end
-        end
-    end)
-end
-
---// Name color
+--// Name Color
 local function SendColor(Color)
     pcall(function()
         Event:FireServer("colo", Color)
@@ -430,7 +393,7 @@ local function StartNameColor()
     end)
 end
 
---// Font changer
+--// Font Changer
 local function SendFont(Font)
     pcall(function()
         Event:FireServer("font", Font)
@@ -456,6 +419,7 @@ local function StartFontChanger()
     end)
 end
 
+--// Name Color Button
 NameColorButton.MouseButton1Click:Connect(function()
     if FontChangerEnabled then
         SmallNotification("CAN'T USE BOTH AT SAME TIME")
@@ -476,6 +440,7 @@ NameColorButton.MouseButton1Click:Connect(function()
     end
 end)
 
+--// Font Button
 FontButton.MouseButton1Click:Connect(function()
     if NameColorEnabled then
         SmallNotification("CAN'T USE BOTH AT SAME TIME")
@@ -492,10 +457,30 @@ FontButton.MouseButton1Click:Connect(function()
     end
 end)
 
---// Get Coffee
+--// Invisible Name - 6 clicks
+InvisibleNameButton.MouseButton1Click:Connect(function()
+    if InvisibleNameClicks >= MAX_INVISIBLE_NAME_CLICKS then
+        SmallNotification("INVISIBLE NAME: 6 CLICKS USED")
+        return
+    end
+
+    InvisibleNameClicks += 1
+
+    pcall(function()
+        Event:FireServer(
+            "upd",
+            "y\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny"
+        )
+    end)
+
+    InvisibleNameButton.Text =
+        "INVISIBLE NAME: " .. tostring(InvisibleNameClicks) .. "/6"
+end)
+
+--// Coffee
 CoffeeButton.MouseButton1Click:Connect(function()
     if CoffeeClicked then
-        CoffeeNotification()
+        SmallNotification("YOU CAN ONLY CLICK ONE TIME")
         return
     end
 

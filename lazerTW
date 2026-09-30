@@ -72,6 +72,24 @@ local Colors = {
 	Color3.new(0.99607843160629, 0, 0)
 }
 
+local Fonts = {
+	Enum.Font.Jura,
+	Enum.Font.LuckiestGuy,
+	Enum.Font.IndieFlower,
+	Enum.Font.Creepster,
+	Enum.Font.Antique,
+	Enum.Font.Cartoon,
+	Enum.Font.Gotham,
+	Enum.Font.Nunito,
+	Enum.Font.Roboto,
+	Enum.Font.SourceSans,
+	Enum.Font.SourceSansBold,
+	Enum.Font.Arcade,
+	Enum.Font.Arial,
+	Enum.Font.Code,
+	Enum.Font.Highway
+}
+
 local OldGui = PlayerGui:FindFirstChild("LazerMadeTsFN")
 
 if OldGui then
@@ -86,8 +104,8 @@ ScreenGui.Parent = PlayerGui
 
 local Main = Instance.new("Frame")
 Main.Name = "Main"
-Main.Size = UDim2.new(0, 290, 0, 215)
-Main.Position = UDim2.new(0.5, -145, 0.5, -107)
+Main.Size = UDim2.new(0, 270, 0, 225)
+Main.Position = UDim2.new(0.5, -135, 0.5, -112)
 Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Main.BackgroundTransparency = 0.08
 Main.BorderSizePixel = 0
@@ -140,12 +158,12 @@ end)
 
 local Title = Instance.new("TextLabel")
 Title.Name = "Title"
-Title.Size = UDim2.new(1, -45, 0, 30)
-Title.Position = UDim2.new(0, 15, 0, 10)
+Title.Size = UDim2.new(1, -45, 0, 28)
+Title.Position = UDim2.new(0, 12, 0, 7)
 Title.BackgroundTransparency = 1
 Title.Text = "Lazer Made Ts FN 🕶️"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 16
+Title.TextSize = 15
 Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.TextStrokeTransparency = 0.4
@@ -153,32 +171,32 @@ Title.Parent = Main
 
 local Subtitle = Instance.new("TextLabel")
 Subtitle.Name = "Subtitle"
-Subtitle.Size = UDim2.new(1, -30, 0, 20)
-Subtitle.Position = UDim2.new(0, 15, 0, 38)
+Subtitle.Size = UDim2.new(1, -24, 0, 17)
+Subtitle.Position = UDim2.new(0, 12, 0, 34)
 Subtitle.BackgroundTransparency = 1
 Subtitle.Text = "NAME COLOR"
 Subtitle.TextColor3 = Color3.fromRGB(205, 205, 205)
-Subtitle.TextSize = 11
+Subtitle.TextSize = 10
 Subtitle.Font = Enum.Font.GothamMedium
 Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 Subtitle.Parent = Main
 
 local ToggleScript = Instance.new("TextButton")
 ToggleScript.Name = "ToggleScript"
-ToggleScript.Size = UDim2.new(1, -30, 0, 40)
-ToggleScript.Position = UDim2.new(0, 15, 0, 65)
+ToggleScript.Size = UDim2.new(1, -24, 0, 34)
+ToggleScript.Position = UDim2.new(0, 12, 0, 58)
 ToggleScript.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 ToggleScript.BackgroundTransparency = 0.2
 ToggleScript.BorderSizePixel = 0
 ToggleScript.AutoButtonColor = false
 ToggleScript.Text = "NAME COLOR: OFF"
 ToggleScript.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleScript.TextSize = 13
+ToggleScript.TextSize = 12
 ToggleScript.Font = Enum.Font.GothamBold
 ToggleScript.Parent = Main
 
 local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 9)
+ToggleCorner.CornerRadius = UDim.new(0, 8)
 ToggleCorner.Parent = ToggleScript
 
 local ToggleStroke = Instance.new("UIStroke")
@@ -189,27 +207,51 @@ ToggleStroke.Parent = ToggleScript
 
 local Status = Instance.new("TextLabel")
 Status.Name = "Status"
-Status.Size = UDim2.new(1, -30, 0, 18)
-Status.Position = UDim2.new(0, 15, 0, 109)
+Status.Size = UDim2.new(1, -24, 0, 16)
+Status.Position = UDim2.new(0, 12, 0, 96)
 Status.BackgroundTransparency = 1
 Status.Text = "Requests: 0"
 Status.TextColor3 = Color3.fromRGB(220, 220, 220)
-Status.TextSize = 10
+Status.TextSize = 9
 Status.Font = Enum.Font.GothamMedium
 Status.TextXAlignment = Enum.TextXAlignment.Left
 Status.Parent = Main
 
+local FontToggle = Instance.new("TextButton")
+FontToggle.Name = "FontToggle"
+FontToggle.Size = UDim2.new(1, -24, 0, 32)
+FontToggle.Position = UDim2.new(0, 12, 0, 116)
+FontToggle.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+FontToggle.BackgroundTransparency = 0.2
+FontToggle.BorderSizePixel = 0
+FontToggle.AutoButtonColor = false
+FontToggle.Text = "FONT CHANGER: OFF"
+FontToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+FontToggle.TextSize = 11
+FontToggle.Font = Enum.Font.GothamBold
+FontToggle.Parent = Main
+
+local FontCorner = Instance.new("UICorner")
+FontCorner.CornerRadius = UDim.new(0, 8)
+FontCorner.Parent = FontToggle
+
+local FontStroke = Instance.new("UIStroke")
+FontStroke.Color = Color3.fromRGB(255, 255, 255)
+FontStroke.Thickness = 1
+FontStroke.Transparency = 0.5
+FontStroke.Parent = FontToggle
+
 local DiscordButton = Instance.new("TextButton")
 DiscordButton.Name = "DiscordButton"
-DiscordButton.Size = UDim2.new(1, -30, 0, 34)
-DiscordButton.Position = UDim2.new(0, 15, 0, 130)
+DiscordButton.Size = UDim2.new(1, -24, 0, 32)
+DiscordButton.Position = UDim2.new(0, 12, 0, 156)
 DiscordButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 DiscordButton.BackgroundTransparency = 0.2
 DiscordButton.BorderSizePixel = 0
 DiscordButton.AutoButtonColor = false
 DiscordButton.Text = "☁  JOIN DISCORD"
 DiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-DiscordButton.TextSize = 11
+DiscordButton.TextSize = 10
 DiscordButton.Font = Enum.Font.GothamBold
 DiscordButton.Parent = Main
 
@@ -226,11 +268,11 @@ DiscordStroke.Parent = DiscordButton
 local CopiedText = Instance.new("TextLabel")
 CopiedText.Name = "CopiedText"
 CopiedText.Size = UDim2.new(1, -24, 0, 18)
-CopiedText.Position = UDim2.new(0, 12, 0, 165)
+CopiedText.Position = UDim2.new(0, 12, 0, 194)
 CopiedText.BackgroundTransparency = 1
 CopiedText.Text = "✓ COPIED"
 CopiedText.TextColor3 = Color3.fromRGB(0, 255, 80)
-CopiedText.TextSize = 11
+CopiedText.TextSize = 10
 CopiedText.Font = Enum.Font.GothamBold
 CopiedText.TextTransparency = 1
 CopiedText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
@@ -269,12 +311,12 @@ end
 
 local CloseButton = Instance.new("TextButton")
 CloseButton.Name = "CloseButton"
-CloseButton.Size = UDim2.new(0, 28, 0, 28)
-CloseButton.Position = UDim2.new(1, -34, 0, 8)
+CloseButton.Size = UDim2.new(0, 26, 0, 26)
+CloseButton.Position = UDim2.new(1, -32, 0, 6)
 CloseButton.BackgroundTransparency = 1
 CloseButton.Text = "×"
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 22
+CloseButton.TextSize = 21
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Parent = Main
 
@@ -306,17 +348,17 @@ OpenStroke.Parent = OpenButton
 local function SmallNotification(Message)
 	local Notification = Instance.new("TextLabel")
 
-	Notification.Size = UDim2.new(0, 250, 0, 34)
-	Notification.Position = UDim2.new(0.5, -125, 0, 20)
+	Notification.Size = UDim2.new(0, 245, 0, 34)
+	Notification.Position = UDim2.new(0, 12, 0, 12)
 	Notification.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-	Notification.BackgroundTransparency = 0.15
+	Notification.BackgroundTransparency = 0.12
 	Notification.Text = Message
 	Notification.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Notification.TextSize = 11
 	Notification.Font = Enum.Font.GothamBold
 	Notification.TextTransparency = 1
 	Notification.BorderSizePixel = 0
-	Notification.ZIndex = 20
+	Notification.ZIndex = 50
 	Notification.Parent = ScreenGui
 
 	local Corner = Instance.new("UICorner")
@@ -325,7 +367,7 @@ local function SmallNotification(Message)
 
 	local Stroke = Instance.new("UIStroke")
 	Stroke.Color = Color3.fromRGB(255, 255, 255)
-	Stroke.Transparency = 0.5
+	Stroke.Transparency = 0.45
 	Stroke.Parent = Notification
 
 	TweenService:Create(
@@ -333,11 +375,11 @@ local function SmallNotification(Message)
 		TweenInfo.new(0.25, Enum.EasingStyle.Quad),
 		{
 			TextTransparency = 0,
-			BackgroundTransparency = 0.15
+			BackgroundTransparency = 0.12
 		}
 	):Play()
 
-	task.delay(6, function()
+	task.delay(3, function()
 		if not Notification.Parent then
 			return
 		end
@@ -407,6 +449,7 @@ local function SmoothButton(Button)
 end
 
 SmoothButton(ToggleScript)
+SmoothButton(FontToggle)
 SmoothButton(DiscordButton)
 SmoothButton(OpenButton)
 
@@ -459,6 +502,11 @@ local NameColorEnabled = false
 local CurrentColorIndex = 1
 local RequestCount = 0
 
+local FontChangerEnabled = false
+local CurrentFontIndex = 1
+local FontDirection = 1
+local FontRequestCount = 0
+
 local function UpdateToggle()
 	if NameColorEnabled then
 		ToggleScript.Text = "NAME COLOR: ON"
@@ -468,6 +516,18 @@ local function UpdateToggle()
 		ToggleScript.Text = "NAME COLOR: OFF"
 		ToggleScript.TextColor3 = Color3.fromRGB(255, 255, 255)
 		ToggleStroke.Color = Color3.fromRGB(255, 255, 255)
+	end
+end
+
+local function UpdateFontToggle()
+	if FontChangerEnabled then
+		FontToggle.Text = "FONT CHANGER: ON"
+		FontToggle.TextColor3 = Color3.fromRGB(0, 255, 80)
+		FontStroke.Color = Color3.fromRGB(0, 255, 80)
+	else
+		FontToggle.Text = "FONT CHANGER: OFF"
+		FontToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+		FontStroke.Color = Color3.fromRGB(255, 255, 255)
 	end
 end
 
@@ -501,6 +561,35 @@ local function SendColor(Color)
 	end
 end
 
+local function SendFont(Font)
+	local Remote = Event
+
+	if not Remote then
+		Remote = FindRemote(COLOR_EVENT_NAME)
+		Event = Remote
+	end
+
+	if not Remote then
+		SmallNotification("Font remote not found")
+		return
+	end
+
+	if FontRequestCount >= REQUEST_LIMIT then
+		FontChangerEnabled = false
+		UpdateFontToggle()
+		SmallNotification("Font request limit reached")
+		return
+	end
+
+	local Success = pcall(function()
+		Remote:FireServer("font", Font)
+	end)
+
+	if Success then
+		FontRequestCount += 1
+	end
+end
+
 local function StartNameColor()
 	task.spawn(function()
 		while NameColorEnabled do
@@ -530,7 +619,49 @@ local function StartNameColor()
 	end)
 end
 
+local function StartFontChanger()
+	task.spawn(function()
+		while FontChangerEnabled do
+			if FontRequestCount >= REQUEST_LIMIT then
+				FontChangerEnabled = false
+				UpdateFontToggle()
+				SmallNotification("Font request limit reached")
+				break
+			end
+
+			local Font = Fonts[CurrentFontIndex]
+
+			SendFont(Font)
+
+			if not FontChangerEnabled then
+				break
+			end
+
+			CurrentFontIndex += FontDirection
+
+			if CurrentFontIndex >= #Fonts then
+				CurrentFontIndex = #Fonts
+				FontDirection = -1
+			elseif CurrentFontIndex <= 1 then
+				CurrentFontIndex = 1
+				FontDirection = 1
+			end
+
+			if DELAY > 0 then
+				task.wait(DELAY)
+			else
+				task.wait()
+			end
+		end
+	end)
+end
+
 ToggleScript.MouseButton1Click:Connect(function()
+	if not NameColorEnabled and FontChangerEnabled then
+		SmallNotification("CAN'T USE BOTH AT SAME TIME")
+		return
+	end
+
 	NameColorEnabled = not NameColorEnabled
 
 	UpdateToggle()
@@ -543,7 +674,26 @@ ToggleScript.MouseButton1Click:Connect(function()
 	end
 end)
 
+FontToggle.MouseButton1Click:Connect(function()
+	if not FontChangerEnabled and NameColorEnabled then
+		SmallNotification("CAN'T USE BOTH AT SAME TIME")
+		return
+	end
+
+	FontChangerEnabled = not FontChangerEnabled
+
+	UpdateFontToggle()
+
+	if FontChangerEnabled then
+		StartFontChanger()
+		SmallNotification("✓ Font changer enabled")
+	else
+		SmallNotification("Font changer disabled")
+	end
+end)
+
 UpdateToggle()
+UpdateFontToggle()
 
 DiscordButton.MouseButton1Click:Connect(function()
 	local Copied = false
@@ -667,118 +817,4 @@ end
 
 local function RegisterPlayer(TargetPlayer)
 	if not TargetPlayer then
-		return
-	end
-
-	RegisteredPlayers[TargetPlayer.UserId] = TargetPlayer
-
-	if CharacterConnections[TargetPlayer.UserId] then
-		CharacterConnections[TargetPlayer.UserId]:Disconnect()
-	end
-
-	CharacterConnections[TargetPlayer.UserId] =
-		TargetPlayer.CharacterAdded:Connect(function(Character)
-			Character:WaitForChild("Head", 10)
-			task.wait(0.2)
-
-			if RegisteredPlayers[TargetPlayer.UserId] then
-				CreateNametag(TargetPlayer, Character)
-			end
-		end)
-
-	if TargetPlayer.Character then
-		CreateNametag(TargetPlayer, TargetPlayer.Character)
-	end
-end
-
-local function SetupRegistration()
-	local Remote = RegisteredEvent or FindRemote(REGISTER_EVENT_NAME)
-
-	if not Remote then
-		return
-	end
-
-	RegisteredEvent = Remote
-
-	Remote.OnClientEvent:Connect(function(Action, UserId)
-		local TargetPlayer = Players:GetPlayerByUserId(UserId)
-
-		if not TargetPlayer then
-			return
-		end
-
-		if Action == "Registered"
-			or Action == "NewRegisteredPlayer" then
-
-			RegisterPlayer(TargetPlayer)
-		end
-	end)
-
-	RegisterPlayer(Player)
-
-	Remote:FireServer()
-end
-
-task.spawn(function()
-	while not RegisteredEvent do
-		RegisteredEvent = FindRemote(REGISTER_EVENT_NAME)
-
-		if RegisteredEvent then
-			break
-		end
-
-		task.wait(0.1)
-	end
-
-	SetupRegistration()
-end)
-
-Player.CharacterAdded:Connect(function(Character)
-	Character:WaitForChild("Head", 10)
-	task.wait(0.2)
-
-	if RegisteredPlayers[Player.UserId] then
-		CreateNametag(Player, Character)
-	end
-end)
-
-SetupLocalNametag = function()
-	RegisterPlayer(Player)
-end
-
-SetupLocalNametag()
-
-Players.PlayerAdded:Connect(function(PlayerWhoJoined)
-	if PlayerWhoJoined.Name == OWNER_USERNAME then
-		SmallNotification(
-			"👑 OWNER " .. OWNER_USERNAME .. " JOINED THE SERVER"
-		)
-	end
-end)
-
-for _, ExistingPlayer in ipairs(Players:GetPlayers()) do
-	if ExistingPlayer ~= Player
-		and ExistingPlayer.Name == OWNER_USERNAME then
-
-		task.delay(1, function()
-			if ExistingPlayer.Parent then
-				SmallNotification(
-					"👑 OWNER " .. OWNER_USERNAME .. " IS IN THE SERVER"
-				)
-			end
-		end)
-
-		break
-	end
-end
-
-Players.PlayerRemoving:Connect(function(PlayerWhoLeft)
-	RegisteredPlayers[PlayerWhoLeft.UserId] = nil
-
-	if CharacterConnections[PlayerWhoLeft.UserId] then
-		CharacterConnections[PlayerWhoLeft.UserId]:Disconnect()
-		CharacterConnections[PlayerWhoLeft.UserId] = nil
-	end
-end)
-
-print("Lazer Made Ts FN loaded successfully.")
+		retu

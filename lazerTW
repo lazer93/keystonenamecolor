@@ -17,7 +17,7 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 local OWNER_USERNAME = "krampus_159"
 
 local REQUEST_LIMIT = 9999999999999990099999999999938838399999383888388383899
-local REQUEST_INTERVAL = 0.5
+local REQUEST_INTERVAL = 0.1
 
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
 

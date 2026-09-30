@@ -1,4 +1,3 @@
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -74,6 +73,8 @@ local FontRequestCount = 0
 
 local RegisteredPlayers = {}
 local CharacterConnections = {}
+
+RegisteredPlayers[Player.UserId] = true
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "LazerMadeTsFN"
@@ -239,7 +240,7 @@ Open.Position = UDim2.new(0, 12, 0, 12)
 Open.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 Open.BackgroundTransparency = 0.1
 Open.BorderSizePixel = 0
-Open.Text = "LM"
+Open.Text = "Open"
 Open.TextColor3 = Color3.fromRGB(255, 255, 255)
 Open.TextSize = 12
 Open.Font = Enum.Font.GothamBold
@@ -509,7 +510,7 @@ local function IsOwner(PlayerObject)
 end
 
 local function CreateNametag(PlayerObject, Character)
-    if not Character then
+    if not PlayerObject or not Character then
         return
     end
 
@@ -518,6 +519,11 @@ local function CreateNametag(PlayerObject, Character)
     end
 
     local Head = Character:FindFirstChild("Head")
+
+    if not Head then
+        Head = Character:WaitForChild("Head", 5)
+    end
+
     if not Head then
         return
     end
@@ -535,6 +541,7 @@ local function CreateNametag(PlayerObject, Character)
     Billboard.AlwaysOnTop = true
     Billboard.MaxDistance = 150
     Billboard.ResetOnSpawn = false
+    Billboard.Adornee = Head
     Billboard.Parent = Head
 
     local Holder = Instance.new("Frame")
@@ -604,38 +611,63 @@ local function SetupLocalNametag()
         CharacterConnections[Player] = nil
     end
 
+    RegisteredPlayers[Player.UserId] = true
+
     CharacterConnections[Player] = Player.CharacterAdded:Connect(function(Character)
         task.wait(0.5)
-
         RegisteredPlayers[Player.UserId] = true
-
         CreateNametag(Player, Character)
     end)
 
     if Player.Character then
-        task.wait(0.5)
-
-        RegisteredPlayers[Player.UserId] = true
-
-        CreateNametag(Player, Player.Character)
+        task.spawn(function()
+            task.wait(0.5)
+            RegisteredPlayers[Player.UserId] = true
+            CreateNametag(Player, Player.Character)
+        end)
     end
 end
 
 local function SetupPlayer(PlayerObject)
     if CharacterConnections[PlayerObject] then
         CharacterConnections[PlayerObject]:Disconnect()
+        CharacterConnections[PlayerObject] = nil
     end
 
     CharacterConnections[PlayerObject] = PlayerObject.CharacterAdded:Connect(function(Character)
         task.wait(0.5)
-        CreateNametag(PlayerObject, Character)
+
+        if RegisteredPlayers[PlayerObject.UserId] or IsOwner(PlayerObject) then
+            CreateNametag(PlayerObject, Character)
+        end
     end)
 
     if PlayerObject.Character then
         task.spawn(function()
             task.wait(0.5)
-            CreateNametag(PlayerObject, PlayerObject.Character)
+
+            if RegisteredPlayers[PlayerObject.UserId] or IsOwner(PlayerObject) then
+                CreateNametag(PlayerObject, PlayerObject.Character)
+            end
         end)
+    end
+end
+
+local function RegisterPlayer(UserId)
+    if typeof(UserId) ~= "number" then
+        return
+    end
+
+    RegisteredPlayers[UserId] = true
+
+    local TargetPlayer = Players:GetPlayerByUserId(UserId)
+
+    if TargetPlayer then
+        SetupPlayer(TargetPlayer)
+
+        if TargetPlayer.Character then
+            CreateNametag(TargetPlayer, TargetPlayer.Character)
+        end
     end
 end
 
@@ -644,3 +676,66 @@ local function OwnerNotification(PlayerObject)
         SmallNotification("👑 OWNER JOINED")
     end
 end
+
+if RegisterRemote then
+    RegisterRemote.OnClientEvent:Connect(function(Action, Data)
+        if Action == "Registered" then
+            if typeof(Data) == "number" then
+                RegisterPlayer(Data)
+
+            elseif typeof(Data) == "table" then
+                for _, UserId in ipairs(Data) do
+                    RegisterPlayer(UserId)
+                end
+            end
+
+        elseif Action == "NewRegisteredPlayer" then
+            if typeof(Data) == "number" then
+                RegisterPlayer(Data)
+            end
+        end
+    end)
+end
+
+SetupLocalNametag()
+
+for _, PlayerObject in ipairs(Players:GetPlayers()) do
+    if PlayerObject ~= Player then
+        SetupPlayer(PlayerObject)
+
+        if IsOwner(PlayerObject) then
+            RegisteredPlayers[PlayerObject.UserId] = true
+            OwnerNotification(PlayerObject)
+
+            if PlayerObject.Character then
+                CreateNametag(PlayerObject, PlayerObject.Character)
+            end
+        elseif RegisteredPlayers[PlayerObject.UserId] then
+            if PlayerObject.Character then
+                CreateNametag(PlayerObject, PlayerObject.Character)
+            end
+        end
+    end
+end
+
+Players.PlayerAdded:Connect(function(PlayerObject)
+    SetupPlayer(PlayerObject)
+    OwnerNotification(PlayerObject)
+
+    if IsOwner(PlayerObject) then
+        RegisteredPlayers[PlayerObject.UserId] = true
+
+        if PlayerObject.Character then
+            CreateNametag(PlayerObject, PlayerObject.Character)
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(PlayerObject)
+    RegisteredPlayers[PlayerObject.UserId] = nil
+
+    if CharacterConnections[PlayerObject] then
+        CharacterConnections[PlayerObject]:Disconnect()
+        CharacterConnections[PlayerObject] = nil
+    end
+end)

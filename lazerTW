@@ -27,7 +27,6 @@ if OldGui then
     OldGui:Destroy()
 end
 
---// Main remote
 local Event = ReplicatedStorage:WaitForChild(REMOTE_NAME)
 
 --// Colors
@@ -120,9 +119,7 @@ task.spawn(function()
         local Tween1 = TweenService:Create(
             Gradient,
             TweenInfo.new(2.5, Enum.EasingStyle.Linear),
-            {
-                Offset = Vector2.new(1, 0)
-            }
+            {Offset = Vector2.new(1, 0)}
         )
 
         Tween1:Play()
@@ -131,9 +128,7 @@ task.spawn(function()
         local Tween2 = TweenService:Create(
             Gradient,
             TweenInfo.new(2.5, Enum.EasingStyle.Linear),
-            {
-                Offset = Vector2.new(-1, 0)
-            }
+            {Offset = Vector2.new(-1, 0)}
         )
 
         Tween2:Play()
@@ -165,7 +160,7 @@ Subtitle.Font = Enum.Font.GothamBold
 Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 Subtitle.Parent = Main
 
---// Name Color button
+--// Name Color
 local NameColorButton = Instance.new("TextButton")
 NameColorButton.Size = UDim2.new(1, -24, 0, 34)
 NameColorButton.Position = UDim2.new(0, 12, 0, 55)
@@ -182,7 +177,7 @@ local NameColorCorner = Instance.new("UICorner")
 NameColorCorner.CornerRadius = UDim.new(0, 9)
 NameColorCorner.Parent = NameColorButton
 
---// Request status
+--// Status
 local Status = Instance.new("TextLabel")
 Status.Size = UDim2.new(1, -24, 0, 18)
 Status.Position = UDim2.new(0, 12, 0, 93)
@@ -194,7 +189,7 @@ Status.Font = Enum.Font.Gotham
 Status.TextXAlignment = Enum.TextXAlignment.Left
 Status.Parent = Main
 
---// Font button
+--// Font Changer
 local FontButton = Instance.new("TextButton")
 FontButton.Size = UDim2.new(1, -24, 0, 34)
 FontButton.Position = UDim2.new(0, 12, 0, 122)
@@ -211,7 +206,7 @@ local FontCorner = Instance.new("UICorner")
 FontCorner.CornerRadius = UDim.new(0, 9)
 FontCorner.Parent = FontButton
 
---// Coffee button
+--// Get Coffee
 local CoffeeButton = Instance.new("TextButton")
 CoffeeButton.Size = UDim2.new(1, -24, 0, 34)
 CoffeeButton.Position = UDim2.new(0, 12, 0, 160)
@@ -228,7 +223,7 @@ local CoffeeCorner = Instance.new("UICorner")
 CoffeeCorner.CornerRadius = UDim.new(0, 9)
 CoffeeCorner.Parent = CoffeeButton
 
---// Discord button
+--// Discord
 local DiscordButton = Instance.new("TextButton")
 DiscordButton.Size = UDim2.new(1, -24, 0, 28)
 DiscordButton.Position = UDim2.new(0, 12, 0, 198)
@@ -245,7 +240,7 @@ local DiscordCorner = Instance.new("UICorner")
 DiscordCorner.CornerRadius = UDim.new(0, 9)
 DiscordCorner.Parent = DiscordButton
 
---// Copied text
+--// Copied
 local Copied = Instance.new("TextLabel")
 Copied.Size = UDim2.new(1, -24, 0, 18)
 Copied.Position = UDim2.new(0, 12, 0, 230)
@@ -256,7 +251,7 @@ Copied.TextSize = 10
 Copied.Font = Enum.Font.GothamBold
 Copied.Parent = Main
 
---// Close button
+--// Close
 local CloseButton = Instance.new("TextButton")
 CloseButton.Size = UDim2.new(0, 28, 0, 28)
 CloseButton.Position = UDim2.new(1, -34, 0, 7)
@@ -267,14 +262,14 @@ CloseButton.TextSize = 22
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Parent = Main
 
---// Open button
+--// Open toggle
 local OpenButton = Instance.new("TextButton")
 OpenButton.Size = UDim2.new(0, 48, 0, 35)
 OpenButton.Position = UDim2.new(0, 10, 0, 10)
 OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 OpenButton.BackgroundTransparency = 0.1
 OpenButton.BorderSizePixel = 0
-OpenButton.Text = "LM 🕶️"
+OpenButton.Text = "Open"
 OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 OpenButton.TextSize = 11
 OpenButton.Font = Enum.Font.GothamBold
@@ -290,7 +285,7 @@ OpenStroke.Color = Color3.fromRGB(255, 255, 255)
 OpenStroke.Transparency = 0.25
 OpenStroke.Parent = OpenButton
 
---// Top-left notification
+--// Notification
 local function SmallNotification(Text)
     local Notification = Instance.new("TextLabel")
 
@@ -316,16 +311,14 @@ local function SmallNotification(Text)
     Stroke.Transparency = 0.25
     Stroke.Parent = Notification
 
-    local FadeIn = TweenService:Create(
+    TweenService:Create(
         Notification,
         TweenInfo.new(0.2),
         {
             TextTransparency = 0,
             BackgroundTransparency = 0.08
         }
-    )
-
-    FadeIn:Play()
+    ):Play()
 
     task.delay(6, function()
         if Notification and Notification.Parent then
@@ -369,21 +362,19 @@ local function CoffeeNotification()
     Corner.CornerRadius = UDim.new(0, 9)
     Corner.Parent = Notification
 
-    local NotificationStroke = Instance.new("UIStroke")
-    NotificationStroke.Color = Color3.fromRGB(255, 255, 255)
-    NotificationStroke.Transparency = 0.25
-    NotificationStroke.Parent = Notification
+    local Stroke = Instance.new("UIStroke")
+    Stroke.Color = Color3.fromRGB(255, 255, 255)
+    Stroke.Transparency = 0.25
+    Stroke.Parent = Notification
 
-    local FadeIn = TweenService:Create(
+    TweenService:Create(
         Notification,
         TweenInfo.new(0.2),
         {
             TextTransparency = 0,
             BackgroundTransparency = 0.08
         }
-    )
-
-    FadeIn:Play()
+    ):Play()
 
     task.delay(3, function()
         if Notification and Notification.Parent then
@@ -406,29 +397,13 @@ local function CoffeeNotification()
     end)
 end
 
---// Send color
+--// Name color
 local function SendColor(Color)
-    if not Event then
-        return
-    end
-
     pcall(function()
         Event:FireServer("colo", Color)
     end)
 end
 
---// Send font
-local function SendFont(Font)
-    if not Event then
-        return
-    end
-
-    pcall(function()
-        Event:FireServer("font", Font)
-    end)
-end
-
---// Name Color loop
 local function StartNameColor()
     task.spawn(function()
         while NameColorEnabled do
@@ -436,14 +411,12 @@ local function StartNameColor()
                 break
             end
 
-            local Color = Colors[ColorIndex]
-            ColorIndex += 1
+            SendColor(Colors[ColorIndex])
 
+            ColorIndex += 1
             if ColorIndex > #Colors then
                 ColorIndex = 1
             end
-
-            SendColor(Color)
 
             RequestCount += 1
             Status.Text = "Requests: " .. tostring(RequestCount)
@@ -457,18 +430,22 @@ local function StartNameColor()
     end)
 end
 
---// Font changer loop
+--// Font changer
+local function SendFont(Font)
+    pcall(function()
+        Event:FireServer("font", Font)
+    end)
+end
+
 local function StartFontChanger()
     task.spawn(function()
         while FontChangerEnabled do
-            local Font = Fonts[FontIndex]
-            FontIndex += 1
+            SendFont(Fonts[FontIndex])
 
+            FontIndex += 1
             if FontIndex > #Fonts then
                 FontIndex = 1
             end
-
-            SendFont(Font)
 
             if DELAY > 0 then
                 task.wait(DELAY)
@@ -479,7 +456,6 @@ local function StartFontChanger()
     end)
 end
 
---// Name Color button
 NameColorButton.MouseButton1Click:Connect(function()
     if FontChangerEnabled then
         SmallNotification("CAN'T USE BOTH AT SAME TIME")
@@ -500,7 +476,6 @@ NameColorButton.MouseButton1Click:Connect(function()
     end
 end)
 
---// Font button
 FontButton.MouseButton1Click:Connect(function()
     if NameColorEnabled then
         SmallNotification("CAN'T USE BOTH AT SAME TIME")
@@ -517,7 +492,7 @@ FontButton.MouseButton1Click:Connect(function()
     end
 end)
 
---// Coffee button
+--// Get Coffee
 CoffeeButton.MouseButton1Click:Connect(function()
     if CoffeeClicked then
         CoffeeNotification()
@@ -525,7 +500,7 @@ CoffeeButton.MouseButton1Click:Connect(function()
     end
 
     CoffeeClicked = true
-    CoffeeButton.Text = "☕ COFFEE: USED"
+    CoffeeButton.Text = "☕ GET COFFEE: USED"
 
     local CoffeeEvent = ReplicatedStorage:FindFirstChild(COFFEE_REMOTE_NAME)
 
@@ -572,7 +547,7 @@ OpenButton.MouseButton1Click:Connect(function()
     OpenButton.Visible = false
 end)
 
---// Draggable
+--// Dragging
 local function MakeDraggable(Object)
     local Dragging = false
     local DragStart
@@ -618,12 +593,11 @@ end
 MakeDraggable(Main)
 MakeDraggable(OpenButton)
 
---// Owner check
+--// Nametag system
 local function IsOwner(PlayerObject)
     return PlayerObject.Name == OWNER_USERNAME
 end
 
---// Create nametag
 local function CreateNametag(PlayerObject, Character)
     if not Character then
         return
@@ -639,9 +613,8 @@ local function CreateNametag(PlayerObject, Character)
         OldTag:Destroy()
     end
 
-    local IsOwnerPlayer = IsOwner(PlayerObject)
-
-    if not IsOwnerPlayer and not RegisteredPlayers[PlayerObject.UserId] then
+    if not IsOwner(PlayerObject)
+    and not RegisteredPlayers[PlayerObject.UserId] then
         return
     end
 
@@ -689,7 +662,7 @@ local function CreateNametag(PlayerObject, Character)
     StatusText.TextStrokeTransparency = 0.25
     StatusText.Parent = Holder
 
-    if IsOwnerPlayer then
+    if IsOwner(PlayerObject) then
         StatusText.Text = "👑 OWNER"
         StatusText.TextColor3 = Color3.fromRGB(255, 215, 0)
     else
@@ -708,7 +681,6 @@ local function CreateNametag(PlayerObject, Character)
     end)
 end
 
---// Local nametag
 local function SetupLocalNametag()
     if Player.Character then
         task.wait(0.2)
@@ -721,7 +693,6 @@ local function SetupLocalNametag()
     end)
 end
 
---// Setup player
 local function SetupPlayer(PlayerObject)
     if PlayerObject == Player then
         return
@@ -741,7 +712,6 @@ local function SetupPlayer(PlayerObject)
     end
 end
 
---// Register player
 local function RegisterPlayer(UserId)
     if UserId then
         RegisteredPlayers[UserId] = true
@@ -754,14 +724,7 @@ local function RegisterPlayer(UserId)
     end
 end
 
---// Owner notification
-local function OwnerNotification(PlayerObject)
-    if IsOwner(PlayerObject) then
-        SmallNotification("👑 OWNER JOINED")
-    end
-end
-
---// Registration remote
+--// Register remote
 local RegisterRemote = ReplicatedStorage:FindFirstChild(REGISTER_REMOTE_NAME)
 
 if RegisterRemote then
@@ -775,10 +738,15 @@ if RegisterRemote then
     end)
 end
 
---// Local setup
+--// Owner notification
+local function OwnerNotification(PlayerObject)
+    if IsOwner(PlayerObject) then
+        SmallNotification("👑 OWNER JOINED")
+    end
+end
+
 SetupLocalNametag()
 
---// Existing players
 for _, PlayerObject in ipairs(Players:GetPlayers()) do
     SetupPlayer(PlayerObject)
 
@@ -790,7 +758,6 @@ for _, PlayerObject in ipairs(Players:GetPlayers()) do
     end
 end
 
---// New players
 Players.PlayerAdded:Connect(function(PlayerObject)
     SetupPlayer(PlayerObject)
 
@@ -800,7 +767,6 @@ Players.PlayerAdded:Connect(function(PlayerObject)
     end
 end)
 
---// Player cleanup
 Players.PlayerRemoving:Connect(function(PlayerObject)
     if CharacterConnections[PlayerObject] then
         CharacterConnections[PlayerObject]:Disconnect()

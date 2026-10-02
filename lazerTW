@@ -2,7 +2,7 @@
 --// Small + Smooth GUI
 --// Owner: krampus_159
 --// FAST LOAD + SMOOTH NOTIFICATIONS
---// CLIENT-SIDED OWNER TAG ONLY
+--// CLIENT-SIDED OWNER TAG + NOTIFICATION
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -24,9 +24,7 @@ local REMOTE_NAME = "307D0912-4609-4190-B07C-739143B666D3"
 local REGISTER_REMOTE_NAME = "LazerRegisteredPlayers"
 local COFFEE_REMOTE_NAME = "DF310533-4D08-4C3B-94E1-BC67358D919D"
 
---// =========================================================
 --// REMOVE OLD GUI
---// =========================================================
 
 local OldGui = PlayerGui:FindFirstChild("LazerMadeTsFN")
 
@@ -34,9 +32,7 @@ if OldGui then
 	OldGui:Destroy()
 end
 
---// =========================================================
 --// STATE
---// =========================================================
 
 local NameColorEnabled = false
 local FontChangerEnabled = false
@@ -54,9 +50,7 @@ local RegisteredPlayers = {}
 local Event = nil
 local RegisterRemote = nil
 
---// =========================================================
 --// COLORS
---// =========================================================
 
 local Colors = {
 	Color3.new(0.33333334326744, 0, 0),
@@ -73,9 +67,7 @@ local Colors = {
 	Color3.new(0.99607843160629, 0, 0)
 }
 
---// =========================================================
 --// FONTS
---// =========================================================
 
 local Fonts = {
 	Enum.Font.Jura,
@@ -95,9 +87,7 @@ local Fonts = {
 	Enum.Font.Highway
 }
 
---// =========================================================
 --// SCREEN GUI
---// =========================================================
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "LazerMadeTsFN"
@@ -106,9 +96,7 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.DisplayOrder = 999
 ScreenGui.Parent = PlayerGui
 
---// =========================================================
 --// MAIN GUI
---// =========================================================
 
 local Main = Instance.new("Frame")
 Main.Name = "Main"
@@ -129,9 +117,7 @@ MainStroke.Thickness = 1.5
 MainStroke.Transparency = 0.2
 MainStroke.Parent = Main
 
---// =========================================================
 --// ANIMATED GRADIENT
---// =========================================================
 
 local Gradient = Instance.new("UIGradient")
 
@@ -176,9 +162,7 @@ task.spawn(function()
 	end
 end)
 
---// =========================================================
 --// TITLE
---// =========================================================
 
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -40, 0, 25)
@@ -202,9 +186,7 @@ Subtitle.Font = Enum.Font.GothamBold
 Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 Subtitle.Parent = Main
 
---// =========================================================
 --// NAME COLOR
---// =========================================================
 
 local NameColorButton = Instance.new("TextButton")
 NameColorButton.Size = UDim2.new(1, -24, 0, 34)
@@ -222,9 +204,7 @@ local NameColorCorner = Instance.new("UICorner")
 NameColorCorner.CornerRadius = UDim.new(0, 9)
 NameColorCorner.Parent = NameColorButton
 
---// =========================================================
 --// STATUS
---// =========================================================
 
 local Status = Instance.new("TextLabel")
 Status.Size = UDim2.new(1, -24, 0, 18)
@@ -237,9 +217,7 @@ Status.Font = Enum.Font.Gotham
 Status.TextXAlignment = Enum.TextXAlignment.Left
 Status.Parent = Main
 
---// =========================================================
 --// FONT CHANGER
---// =========================================================
 
 local FontButton = Instance.new("TextButton")
 FontButton.Size = UDim2.new(1, -24, 0, 34)
@@ -257,9 +235,7 @@ local FontCorner = Instance.new("UICorner")
 FontCorner.CornerRadius = UDim.new(0, 9)
 FontCorner.Parent = FontButton
 
---// =========================================================
 --// INVISIBLE NAME
---// =========================================================
 
 local InvisibleNameButton = Instance.new("TextButton")
 InvisibleNameButton.Size = UDim2.new(1, -24, 0, 34)
@@ -277,9 +253,7 @@ local InvisibleNameCorner = Instance.new("UICorner")
 InvisibleNameCorner.CornerRadius = UDim.new(0, 9)
 InvisibleNameCorner.Parent = InvisibleNameButton
 
---// =========================================================
 --// COFFEE
---// =========================================================
 
 local CoffeeButton = Instance.new("TextButton")
 CoffeeButton.Size = UDim2.new(1, -24, 0, 34)
@@ -297,9 +271,7 @@ local CoffeeCorner = Instance.new("UICorner")
 CoffeeCorner.CornerRadius = UDim.new(0, 9)
 CoffeeCorner.Parent = CoffeeButton
 
---// =========================================================
 --// DISCORD
---// =========================================================
 
 local DiscordButton = Instance.new("TextButton")
 DiscordButton.Size = UDim2.new(1, -24, 0, 28)
@@ -317,9 +289,7 @@ local DiscordCorner = Instance.new("UICorner")
 DiscordCorner.CornerRadius = UDim.new(0, 9)
 DiscordCorner.Parent = DiscordButton
 
---// =========================================================
 --// COPIED
---// =========================================================
 
 local Copied = Instance.new("TextLabel")
 Copied.Size = UDim2.new(1, -24, 0, 18)
@@ -331,9 +301,7 @@ Copied.TextSize = 10
 Copied.Font = Enum.Font.GothamBold
 Copied.Parent = Main
 
---// =========================================================
 --// CLOSE
---// =========================================================
 
 local CloseButton = Instance.new("TextButton")
 CloseButton.Size = UDim2.new(0, 28, 0, 28)
@@ -345,9 +313,7 @@ CloseButton.TextSize = 22
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Parent = Main
 
---// =========================================================
 --// OPEN
---// =========================================================
 
 local OpenButton = Instance.new("TextButton")
 OpenButton.Size = UDim2.new(0, 48, 0, 35)
@@ -371,9 +337,8 @@ OpenStroke.Color = Color3.fromRGB(255, 255, 255)
 OpenStroke.Transparency = 0.25
 OpenStroke.Parent = OpenButton
 
---// =========================================================
 --// NOTIFICATIONS
---// =========================================================
+--// TOP LEFT + CLIENT SIDED
 
 local ActiveNotifications = {}
 
@@ -392,12 +357,12 @@ local function SmallNotification(Text)
 	local Notification = Instance.new("TextLabel")
 
 	Notification.Name = "LazerNotification"
+
 	Notification.Size = UDim2.new(0, 245, 0, 34)
 	Notification.Position = UDim2.new(0, 12, 0, 20)
 
 	Notification.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 	Notification.BackgroundTransparency = 1
-
 	Notification.BorderSizePixel = 0
 
 	Notification.Text = Text
@@ -492,10 +457,8 @@ local function SmallNotification(Text)
 	end)
 end
 
---// =========================================================
 --// OWNER TAG
 --// CLIENT-SIDED ONLY
---// =========================================================
 
 local function RemoveOwnerTag(TargetPlayer)
 
@@ -515,9 +478,7 @@ local function RemoveOwnerTag(TargetPlayer)
 		return
 	end
 
-	local OldTag = Head:FindFirstChild(
-		OWNER_TAG_NAME
-	)
+	local OldTag = Head:FindFirstChild(OWNER_TAG_NAME)
 
 	if OldTag then
 		OldTag:Destroy()
@@ -546,64 +507,31 @@ local function CreateOwnerTag(TargetPlayer)
 		return
 	end
 
-	--// Remove duplicate before creating.
 	RemoveOwnerTag(TargetPlayer)
 
 	local Billboard = Instance.new("BillboardGui")
 
 	Billboard.Name = OWNER_TAG_NAME
 	Billboard.Adornee = Head
-
-	Billboard.Size = UDim2.new(
-		0,
-		220,
-		0,
-		45
-	)
-
-	Billboard.StudsOffset = Vector3.new(
-		0,
-		3.8,
-		0
-	)
-
+	Billboard.Size = UDim2.new(0, 220, 0, 45)
+	Billboard.StudsOffset = Vector3.new(0, 3.8, 0)
 	Billboard.AlwaysOnTop = true
 	Billboard.MaxDistance = 250
 	Billboard.LightInfluence = 0
-
 	Billboard.Parent = Head
 
 	local Label = Instance.new("TextLabel")
 
-	Label.Size = UDim2.new(
-		1,
-		0,
-		1,
-		0
-	)
-
+	Label.Size = UDim2.new(1, 0, 1, 0)
 	Label.BackgroundTransparency = 1
-
 	Label.Text = "👑 OWNER"
 
-	--// NEON YELLOW
-	Label.TextColor3 = Color3.fromRGB(
-		255,
-		255,
-		0
-	)
-
-	Label.TextStrokeColor3 = Color3.fromRGB(
-		255,
-		255,
-		0
-	)
-
+	Label.TextColor3 = Color3.fromRGB(255, 255, 0)
+	Label.TextStrokeColor3 = Color3.fromRGB(255, 255, 0)
 	Label.TextStrokeTransparency = 0
 
 	Label.TextSize = 23
 	Label.Font = Enum.Font.GothamBold
-
 	Label.Parent = Billboard
 end
 
@@ -639,21 +567,31 @@ local function SetupOwner(TargetPlayer)
 	end)
 end
 
---// =========================================================
 --// OWNER ALREADY IN SERVER
---// =========================================================
+--// EACH CLIENT GETS ITS OWN LOCAL NOTIFICATION
 
-local ExistingOwner = Players:FindFirstChild(
-	OWNER_USERNAME
-)
+local ExistingOwner = Players:FindFirstChild(OWNER_USERNAME)
 
 if ExistingOwner then
+
 	SetupOwner(ExistingOwner)
+
+	task.defer(function()
+
+		task.wait(0.35)
+
+		if ScreenGui
+			and ScreenGui.Parent then
+
+			SmallNotification(
+				"👑 Owner of script joined the server"
+			)
+
+		end
+	end)
 end
 
---// =========================================================
 --// REMOTES
---// =========================================================
 
 task.spawn(function()
 
@@ -684,9 +622,6 @@ task.spawn(function()
 		RegisterRemote.OnClientEvent:Connect(
 			function(Action, Data)
 
-				--// Registration system can still work.
-				--// No "server unavailable" notification.
-
 				if Action == "RegisteredList"
 					and typeof(Data) == "table" then
 
@@ -708,9 +643,7 @@ task.spawn(function()
 	end
 end)
 
---// =========================================================
 --// REGISTER SCRIPT USER
---// =========================================================
 
 task.defer(function()
 
@@ -734,26 +667,22 @@ task.defer(function()
 	end
 end)
 
---// =========================================================
 --// PLAYER ADDED
---// =========================================================
+--// CLIENT-SIDED OWNER NOTIFICATION
 
 Players.PlayerAdded:Connect(function(TargetPlayer)
 
-	--// OWNER
 	if TargetPlayer.Name == OWNER_USERNAME then
 
 		SetupOwner(TargetPlayer)
 
-		task.spawn(function()
-
-			task.wait(0.35)
+		task.delay(0.35, function()
 
 			if ScreenGui
 				and ScreenGui.Parent then
 
 				SmallNotification(
-					"👑 OWNER OF THIS SCRIPT HAS JOINED"
+					"👑 Owner of script joined the server"
 				)
 
 			end
@@ -761,9 +690,7 @@ Players.PlayerAdded:Connect(function(TargetPlayer)
 	end
 end)
 
---// =========================================================
 --// PLAYER REMOVING
---// =========================================================
 
 Players.PlayerRemoving:Connect(function(TargetPlayer)
 
@@ -773,9 +700,7 @@ Players.PlayerRemoving:Connect(function(TargetPlayer)
 
 end)
 
---// =========================================================
 --// NAME COLOR
---// =========================================================
 
 local function SendColor(Color)
 
@@ -828,9 +753,7 @@ local function StartNameColor()
 	end)
 end
 
---// =========================================================
 --// FONT CHANGER
---// =========================================================
 
 local function SendFont(Font)
 
@@ -873,9 +796,7 @@ local function StartFontChanger()
 	end)
 end
 
---// =========================================================
 --// NAME COLOR BUTTON
---// =========================================================
 
 NameColorButton.MouseButton1Click:Connect(function()
 
@@ -911,9 +832,7 @@ NameColorButton.MouseButton1Click:Connect(function()
 	end
 end)
 
---// =========================================================
 --// FONT BUTTON
---// =========================================================
 
 FontButton.MouseButton1Click:Connect(function()
 
@@ -944,9 +863,7 @@ FontButton.MouseButton1Click:Connect(function()
 	end
 end)
 
---// =========================================================
 --// INVISIBLE NAME
---// =========================================================
 
 InvisibleNameButton.MouseButton1Click:Connect(function()
 
@@ -979,9 +896,7 @@ InvisibleNameButton.MouseButton1Click:Connect(function()
 		.. "/6"
 end)
 
---// =========================================================
 --// COFFEE
---// =========================================================
 
 CoffeeButton.MouseButton1Click:Connect(function()
 
@@ -1024,9 +939,7 @@ CoffeeButton.MouseButton1Click:Connect(function()
 	end
 end)
 
---// =========================================================
 --// DISCORD
---// =========================================================
 
 DiscordButton.MouseButton1Click:Connect(function()
 
@@ -1068,9 +981,7 @@ DiscordButton.MouseButton1Click:Connect(function()
 	end
 end)
 
---// =========================================================
 --// CLOSE / OPEN
---// =========================================================
 
 CloseButton.MouseButton1Click:Connect(function()
 
@@ -1086,9 +997,7 @@ OpenButton.MouseButton1Click:Connect(function()
 
 end)
 
---// =========================================================
 --// DRAGGING
---// =========================================================
 
 local function MakeDraggable(Object)
 
@@ -1161,9 +1070,7 @@ end
 MakeDraggable(Main)
 MakeDraggable(OpenButton)
 
---// =========================================================
 --// READY
---// =========================================================
 
 Main.Visible = true
 OpenButton.Visible = false

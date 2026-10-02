@@ -2,7 +2,7 @@
 --// Small + Smooth GUI
 --// Owner: krampus_159
 --// FAST LOAD + SMOOTH NOTIFICATIONS
---// CLIENT-SIDED OWNER NAMETAG
+--// CLIENT-SIDED OWNER TAG ONLY
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -13,6 +13,7 @@ local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
 local OWNER_USERNAME = "krampus_159"
+local OWNER_TAG_NAME = "LazerOwnerTag"
 
 local REQUEST_LIMIT = 9232029299292292929229292292200220209229292900000000100000
 local DELAY = 0
@@ -22,9 +23,6 @@ local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
 local REMOTE_NAME = "307D0912-4609-4190-B07C-739143B666D3"
 local REGISTER_REMOTE_NAME = "LazerRegisteredPlayers"
 local COFFEE_REMOTE_NAME = "DF310533-4D08-4C3B-94E1-BC67358D919D"
-
-local OWNER_TAG_NAME = "LazerOwnerTag"
-local OWNER_HIGHLIGHT_NAME = "LazerOwnerHighlight"
 
 --// =========================================================
 --// REMOVE OLD GUI
@@ -109,7 +107,7 @@ ScreenGui.DisplayOrder = 999
 ScreenGui.Parent = PlayerGui
 
 --// =========================================================
---// MAIN
+--// MAIN GUI
 --// =========================================================
 
 local Main = Instance.new("Frame")
@@ -132,7 +130,7 @@ MainStroke.Transparency = 0.2
 MainStroke.Parent = Main
 
 --// =========================================================
---// GRADIENT
+--// ANIMATED GRADIENT
 --// =========================================================
 
 local Gradient = Instance.new("UIGradient")
@@ -205,7 +203,7 @@ Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 Subtitle.Parent = Main
 
 --// =========================================================
---// NAME COLOR BUTTON
+--// NAME COLOR
 --// =========================================================
 
 local NameColorButton = Instance.new("TextButton")
@@ -240,7 +238,7 @@ Status.TextXAlignment = Enum.TextXAlignment.Left
 Status.Parent = Main
 
 --// =========================================================
---// FONT BUTTON
+--// FONT CHANGER
 --// =========================================================
 
 local FontButton = Instance.new("TextButton")
@@ -260,7 +258,7 @@ FontCorner.CornerRadius = UDim.new(0, 9)
 FontCorner.Parent = FontButton
 
 --// =========================================================
---// INVISIBLE NAME BUTTON
+--// INVISIBLE NAME
 --// =========================================================
 
 local InvisibleNameButton = Instance.new("TextButton")
@@ -280,7 +278,7 @@ InvisibleNameCorner.CornerRadius = UDim.new(0, 9)
 InvisibleNameCorner.Parent = InvisibleNameButton
 
 --// =========================================================
---// COFFEE BUTTON
+--// COFFEE
 --// =========================================================
 
 local CoffeeButton = Instance.new("TextButton")
@@ -300,7 +298,7 @@ CoffeeCorner.CornerRadius = UDim.new(0, 9)
 CoffeeCorner.Parent = CoffeeButton
 
 --// =========================================================
---// DISCORD BUTTON
+--// DISCORD
 --// =========================================================
 
 local DiscordButton = Instance.new("TextButton")
@@ -334,7 +332,7 @@ Copied.Font = Enum.Font.GothamBold
 Copied.Parent = Main
 
 --// =========================================================
---// CLOSE BUTTON
+--// CLOSE
 --// =========================================================
 
 local CloseButton = Instance.new("TextButton")
@@ -348,7 +346,7 @@ CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Parent = Main
 
 --// =========================================================
---// OPEN BUTTON
+--// OPEN
 --// =========================================================
 
 local OpenButton = Instance.new("TextButton")
@@ -382,6 +380,7 @@ local ActiveNotifications = {}
 local function SmallNotification(Text)
 
 	for _, Notification in ipairs(ActiveNotifications) do
+
 		if Notification
 			and Notification.Parent
 			and Notification.Text == Text then
@@ -395,15 +394,19 @@ local function SmallNotification(Text)
 	Notification.Name = "LazerNotification"
 	Notification.Size = UDim2.new(0, 245, 0, 34)
 	Notification.Position = UDim2.new(0, 12, 0, 20)
+
 	Notification.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 	Notification.BackgroundTransparency = 1
+
 	Notification.BorderSizePixel = 0
+
 	Notification.Text = Text
 	Notification.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Notification.TextSize = 11
 	Notification.Font = Enum.Font.GothamBold
 	Notification.TextTransparency = 1
 	Notification.ZIndex = 100
+
 	Notification.Parent = ScreenGui
 
 	local Corner = Instance.new("UICorner")
@@ -419,7 +422,11 @@ local function SmallNotification(Text)
 
 	local FadeIn = TweenService:Create(
 		Notification,
-		TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+		TweenInfo.new(
+			0.35,
+			Enum.EasingStyle.Quint,
+			Enum.EasingDirection.Out
+		),
 		{
 			TextTransparency = 0,
 			BackgroundTransparency = 0.08
@@ -428,7 +435,11 @@ local function SmallNotification(Text)
 
 	local StrokeIn = TweenService:Create(
 		Stroke,
-		TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+		TweenInfo.new(
+			0.35,
+			Enum.EasingStyle.Quint,
+			Enum.EasingDirection.Out
+		),
 		{
 			Transparency = 0.25
 		}
@@ -439,13 +450,19 @@ local function SmallNotification(Text)
 
 	task.delay(6, function()
 
-		if not Notification or not Notification.Parent then
+		if not Notification
+			or not Notification.Parent then
+
 			return
 		end
 
 		local FadeOut = TweenService:Create(
 			Notification,
-			TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+			TweenInfo.new(
+				0.4,
+				Enum.EasingStyle.Quint,
+				Enum.EasingDirection.In
+			),
 			{
 				TextTransparency = 1,
 				BackgroundTransparency = 1
@@ -454,7 +471,11 @@ local function SmallNotification(Text)
 
 		local StrokeOut = TweenService:Create(
 			Stroke,
-			TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
+			TweenInfo.new(
+				0.4,
+				Enum.EasingStyle.Quint,
+				Enum.EasingDirection.In
+			),
 			{
 				Transparency = 1
 			}
@@ -472,73 +493,8 @@ local function SmallNotification(Text)
 end
 
 --// =========================================================
---// OWNER HIGHLIGHT
---// =========================================================
-
-local function RemoveOwnerHighlight(TargetPlayer)
-
-	if not TargetPlayer then
-		return
-	end
-
-	local Character = TargetPlayer.Character
-
-	if not Character then
-		return
-	end
-
-	local Highlight = Character:FindFirstChild(
-		OWNER_HIGHLIGHT_NAME
-	)
-
-	if Highlight then
-		Highlight:Destroy()
-	end
-end
-
-local function ApplyOwnerHighlight(TargetPlayer)
-
-	if not TargetPlayer then
-		return
-	end
-
-	if TargetPlayer.Name ~= OWNER_USERNAME then
-		return
-	end
-
-	local Character = TargetPlayer.Character
-
-	if not Character then
-		return
-	end
-
-	local Existing = Character:FindFirstChild(
-		OWNER_HIGHLIGHT_NAME
-	)
-
-	if Existing then
-		Existing:Destroy()
-	end
-
-	local Highlight = Instance.new("Highlight")
-
-	Highlight.Name = OWNER_HIGHLIGHT_NAME
-	Highlight.Adornee = Character
-
-	Highlight.FillColor = Color3.fromRGB(255, 215, 0)
-	Highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
-
-	Highlight.FillTransparency = 0.65
-	Highlight.OutlineTransparency = 0
-
-	Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-
-	Highlight.Parent = Character
-end
-
---// =========================================================
---// OWNER 👑 NAMETAG
---// CLIENT SIDED
+--// OWNER TAG
+--// CLIENT-SIDED ONLY
 --// =========================================================
 
 local function RemoveOwnerTag(TargetPlayer)
@@ -590,13 +546,8 @@ local function CreateOwnerTag(TargetPlayer)
 		return
 	end
 
-	local OldTag = Head:FindFirstChild(
-		OWNER_TAG_NAME
-	)
-
-	if OldTag then
-		OldTag:Destroy()
-	end
+	--// Remove duplicate before creating.
+	RemoveOwnerTag(TargetPlayer)
 
 	local Billboard = Instance.new("BillboardGui")
 
@@ -607,18 +558,19 @@ local function CreateOwnerTag(TargetPlayer)
 		0,
 		220,
 		0,
-		50
+		45
 	)
 
 	Billboard.StudsOffset = Vector3.new(
 		0,
-		4.15,
+		3.8,
 		0
 	)
 
 	Billboard.AlwaysOnTop = true
 	Billboard.MaxDistance = 250
 	Billboard.LightInfluence = 0
+
 	Billboard.Parent = Head
 
 	local Label = Instance.new("TextLabel")
@@ -652,8 +604,6 @@ local function CreateOwnerTag(TargetPlayer)
 	Label.TextSize = 23
 	Label.Font = Enum.Font.GothamBold
 
-	Label.TextScaled = false
-
 	Label.Parent = Billboard
 end
 
@@ -673,7 +623,6 @@ local function SetupOwner(TargetPlayer)
 
 			if TargetPlayer.Parent then
 				CreateOwnerTag(TargetPlayer)
-				ApplyOwnerHighlight(TargetPlayer)
 			end
 
 		end)
@@ -685,219 +634,25 @@ local function SetupOwner(TargetPlayer)
 
 		if TargetPlayer.Parent then
 			CreateOwnerTag(TargetPlayer)
-			ApplyOwnerHighlight(TargetPlayer)
 		end
 
 	end)
 end
 
 --// =========================================================
---// LAZER SCRIPT-USER NAMETAGS
+--// OWNER ALREADY IN SERVER
 --// =========================================================
 
-local function RemoveLazerTag(TargetPlayer)
+local ExistingOwner = Players:FindFirstChild(
+	OWNER_USERNAME
+)
 
-	if not TargetPlayer then
-		return
-	end
-
-	local Character = TargetPlayer.Character
-
-	if not Character then
-		return
-	end
-
-	local Head = Character:FindFirstChild("Head")
-
-	if not Head then
-		return
-	end
-
-	local OldTag = Head:FindFirstChild(
-		"LazerMadeTag"
-	)
-
-	if OldTag then
-		OldTag:Destroy()
-	end
-end
-
-local function CreateLazerNametag(TargetPlayer)
-
-	if not TargetPlayer then
-		return
-	end
-
-	local IsOwner =
-		TargetPlayer.Name == OWNER_USERNAME
-
-	local IsScriptUser =
-		RegisteredPlayers[TargetPlayer.UserId] == true
-
-	if not IsOwner and not IsScriptUser then
-		RemoveLazerTag(TargetPlayer)
-		return
-	end
-
-	local Character = TargetPlayer.Character
-
-	if not Character then
-		return
-	end
-
-	local Head = Character:FindFirstChild("Head")
-
-	if not Head then
-		return
-	end
-
-	local OldTag = Head:FindFirstChild(
-		"LazerMadeTag"
-	)
-
-	if OldTag then
-		OldTag:Destroy()
-	end
-
-	local Billboard = Instance.new("BillboardGui")
-
-	Billboard.Name = "LazerMadeTag"
-	Billboard.Adornee = Head
-	Billboard.Size = UDim2.new(0, 220, 0, 105)
-	Billboard.StudsOffset = Vector3.new(0, 3.5, 0)
-	Billboard.AlwaysOnTop = true
-	Billboard.MaxDistance = 150
-	Billboard.Parent = Head
-
-	local Holder = Instance.new("Frame")
-
-	Holder.Size = UDim2.new(1, 0, 1, 0)
-	Holder.BackgroundTransparency = 1
-	Holder.Parent = Billboard
-
-	local LM = Instance.new("TextLabel")
-
-	LM.Size = UDim2.new(1, 0, 0, 30)
-	LM.BackgroundTransparency = 1
-	LM.Text = "LM 🕶️"
-	LM.TextColor3 = Color3.fromRGB(255, 255, 255)
-	LM.TextStrokeTransparency = 0.15
-	LM.TextSize = 22
-	LM.Font = Enum.Font.GothamBold
-	LM.Parent = Holder
-
-	local Username = Instance.new("TextLabel")
-
-	Username.Size = UDim2.new(1, 0, 0, 25)
-	Username.Position = UDim2.new(0, 0, 0, 30)
-	Username.BackgroundTransparency = 1
-	Username.Text = TargetPlayer.Name
-	Username.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Username.TextStrokeTransparency = 0.2
-	Username.TextSize = 14
-	Username.Font = Enum.Font.GothamBold
-	Username.Parent = Holder
-
-	local StatusText = Instance.new("TextLabel")
-
-	StatusText.Size = UDim2.new(1, 0, 0, 22)
-	StatusText.Position = UDim2.new(0, 0, 0, 57)
-	StatusText.BackgroundTransparency = 1
-	StatusText.TextSize = 12
-	StatusText.Font = Enum.Font.GothamBold
-	StatusText.TextStrokeTransparency = 0.2
-	StatusText.Parent = Holder
-
-	if IsOwner then
-
-		StatusText.Text = "👑 OWNER"
-		StatusText.TextColor3 = Color3.fromRGB(
-			255,
-			255,
-			0
-		)
-
-	else
-
-		StatusText.Text = "SCRIPT USER"
-		StatusText.TextColor3 = Color3.fromRGB(
-			0,
-			255,
-			100
-		)
-
-	end
-
-	task.spawn(function()
-
-		local StartTime = os.clock()
-
-		while Billboard.Parent do
-
-			local Offset =
-				3.5
-				+ math.sin(
-					(os.clock() - StartTime) * 2
-				) * 0.12
-
-			Billboard.StudsOffset =
-				Vector3.new(
-					0,
-					Offset,
-					0
-				)
-
-			task.wait(0.05)
-		end
-	end)
+if ExistingOwner then
+	SetupOwner(ExistingOwner)
 end
 
 --// =========================================================
---// REGISTERED LIST
---// =========================================================
-
-local function ApplyRegisteredList(Data)
-
-	if typeof(Data) ~= "table" then
-		return
-	end
-
-	table.clear(RegisteredPlayers)
-
-	for _, UserData in ipairs(Data) do
-
-		if typeof(UserData) == "table"
-			and typeof(UserData.UserId) == "number" then
-
-			RegisteredPlayers[
-				UserData.UserId
-			] = true
-		end
-	end
-
-	for _, TargetPlayer in ipairs(
-		Players:GetPlayers()
-	) do
-
-		if TargetPlayer.Name == OWNER_USERNAME
-			or RegisteredPlayers[
-				TargetPlayer.UserId
-			] then
-
-			if TargetPlayer.Character then
-				CreateLazerNametag(TargetPlayer)
-			end
-
-		else
-
-			RemoveLazerTag(TargetPlayer)
-
-		end
-	end
-end
-
---// =========================================================
---// REMOTE LOADING
+--// REMOTES
 --// =========================================================
 
 task.spawn(function()
@@ -929,17 +684,27 @@ task.spawn(function()
 		RegisterRemote.OnClientEvent:Connect(
 			function(Action, Data)
 
-				if Action == "RegisteredList" then
-					ApplyRegisteredList(Data)
-				end
+				--// Registration system can still work.
+				--// No "server unavailable" notification.
 
+				if Action == "RegisteredList"
+					and typeof(Data) == "table" then
+
+					table.clear(RegisteredPlayers)
+
+					for _, UserData in ipairs(Data) do
+
+						if typeof(UserData) == "table"
+							and typeof(UserData.UserId) == "number" then
+
+							RegisteredPlayers[
+								UserData.UserId
+							] = true
+						end
+					end
+				end
 			end
 		)
-
-	else
-
-		--// No registration-server notification.
-
 	end
 end)
 
@@ -970,51 +735,12 @@ task.defer(function()
 end)
 
 --// =========================================================
---// WATCH PLAYERS
---// =========================================================
-
-local function WatchPlayer(TargetPlayer)
-
-	TargetPlayer.CharacterAdded:Connect(function()
-
-		task.wait(0.35)
-
-		if TargetPlayer.Name == OWNER_USERNAME
-			or RegisteredPlayers[
-				TargetPlayer.UserId
-			] then
-
-			CreateLazerNametag(TargetPlayer)
-
-		else
-
-			RemoveLazerTag(TargetPlayer)
-
-		end
-
-		if TargetPlayer.Name == OWNER_USERNAME then
-			CreateOwnerTag(TargetPlayer)
-			ApplyOwnerHighlight(TargetPlayer)
-		end
-
-	end)
-end
-
-for _, TargetPlayer in ipairs(
-	Players:GetPlayers()
-) do
-
-	WatchPlayer(TargetPlayer)
-end
-
---// =========================================================
 --// PLAYER ADDED
 --// =========================================================
 
 Players.PlayerAdded:Connect(function(TargetPlayer)
 
-	WatchPlayer(TargetPlayer)
-
+	--// OWNER
 	if TargetPlayer.Name == OWNER_USERNAME then
 
 		SetupOwner(TargetPlayer)
@@ -1033,22 +759,6 @@ Players.PlayerAdded:Connect(function(TargetPlayer)
 			end
 		end)
 	end
-
-	task.defer(function()
-
-		task.wait(0.1)
-
-		if TargetPlayer.Name == OWNER_USERNAME
-			or RegisteredPlayers[
-				TargetPlayer.UserId
-			] then
-
-			if TargetPlayer.Character then
-				CreateLazerNametag(TargetPlayer)
-			end
-		end
-
-	end)
 end)
 
 --// =========================================================
@@ -1058,25 +768,10 @@ end)
 Players.PlayerRemoving:Connect(function(TargetPlayer)
 
 	if TargetPlayer.Name == OWNER_USERNAME then
-
 		RemoveOwnerTag(TargetPlayer)
-		RemoveOwnerHighlight(TargetPlayer)
-
 	end
+
 end)
-
---// =========================================================
---// OWNER ALREADY IN SERVER
---// =========================================================
-
-local ExistingOwner =
-	Players:FindFirstChild(
-		OWNER_USERNAME
-	)
-
-if ExistingOwner then
-	SetupOwner(ExistingOwner)
-end
 
 --// =========================================================
 --// NAME COLOR
@@ -1129,7 +824,6 @@ local function StartNameColor()
 			else
 				task.wait()
 			end
-
 		end
 	end)
 end
@@ -1175,7 +869,6 @@ local function StartFontChanger()
 			else
 				task.wait()
 			end
-
 		end
 	end)
 end

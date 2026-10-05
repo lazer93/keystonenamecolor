@@ -29,7 +29,7 @@ local CO_OWNER_TAG = "LazerCoOwnerTag"
 local USER_TAG = "LazerScriptUserTag"
 local CUSTOM_TAG = "LazerPermanentCustomTag"
 
-local REQUEST_LIMIT = 92
+local REQUEST_LIMIT = 9210000000000030030300003030303030309999900000303030
 local DELAY = 0
 
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"

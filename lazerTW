@@ -27,8 +27,9 @@ local COFFEE_REMOTE_NAME = "DF310533-4D08-4C3B-94E1-BC67358D919D"
 local OWNER_TAG = "LazerOwnerTag"
 local CO_OWNER_TAG = "LazerCoOwnerTag"
 local USER_TAG = "LazerScriptUserTag"
+local CUSTOM_TAG = "LazerPermanentCustomTag"
 
-local REQUEST_LIMIT = 9230999902920999999999999999912223334439999999999999999
+local REQUEST_LIMIT = 92
 local DELAY = 0
 
 local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
@@ -38,6 +39,7 @@ local IsCoOwner = Player.Name == CO_OWNER_USERNAME
 local CanUseSecret = IsOwner or IsCoOwner
 
 local RegisteredPlayers = {}
+local CustomTags = {}
 
 local NameColorEnabled = false
 local FontChangerEnabled = false
@@ -66,22 +68,26 @@ end
 --//======================================================
 
 local Colors = {
-	Color3.new(0.33333334326744, 0, 0),
-	Color3.new(0, 0, 0),
-	Color3.new(0, 0.33333334326744, 0),
-	Color3.new(0.33333334326744, 1, 1),
-	Color3.new(0.33333334326744, 0.33333334326744, 0),
-	Color3.new(0, 0, 0.49803921580315),
-	Color3.new(0, 1, 0),
-	Color3.new(1, 0.33333334326744, 0),
-	Color3.new(1, 1, 1),
-	Color3.new(1, 0, 1),
-	Color3.new(0.33333334326744, 0.66666668653488, 1),
-	Color3.new(0.99607843160629, 0, 0)
+	[1] = Color3.new(0.3333333432674408, 0, 0),
+	[2] = Color3.new(0, 0, 0),
+	[3] = Color3.new(0, 0.3333333432674408, 0),
+	[4] = Color3.new(0.3333333432674408, 1, 1),
+	[5] = Color3.new(0.6627451181411743, 0.6666666865348816, 0.501960813999176),
+	[6] = Color3.new(0, 0, 0.49803921580314636),
+	[7] = Color3.new(0, 1, 0.003921568859368563),
+	[8] = Color3.new(1, 0.3333333432674408, 0),
+	[9] = Color3.new(0, 0, 0.49803921580314636),
+	[10] = Color3.new(0, 1, 0.003921568859368563),
+	[11] = Color3.new(1, 0.3333333432674408, 0),
+	[12] = Color3.new(1, 1, 1),
+	[13] = Color3.new(1, 0, 0.9960784316062927),
+	[14] = Color3.new(0, 0.3333333432674408, 0.9960784316062927),
+	[15] = Color3.new(0.9960784316062927, 0, 0)
 }
 
 --//======================================================
 --// FONTS
+--// GUI ITSELF STILL USES GOTHAM
 --//======================================================
 
 local Fonts = {
@@ -324,6 +330,10 @@ local DiscordButton =
 
 --//======================================================
 --// SECRET COMMANDS
+--// ONLY:
+--// :alert Message
+--// :tag PlayerName Custom Tag
+--// :untag PlayerName
 --//======================================================
 
 local SecretButton
@@ -394,7 +404,7 @@ if CanUseSecret then
 	CommandBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 	CommandBox.BackgroundTransparency = 0.1
 	CommandBox.BorderSizePixel = 0
-	CommandBox.PlaceholderText = ":spin PlayerName"
+	CommandBox.PlaceholderText = ":alert Message"
 	CommandBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
 	CommandBox.Text = ""
 	CommandBox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -430,20 +440,12 @@ if CanUseSecret then
 	Help.BackgroundTransparency = 1
 
 	Help.Text =
-		":alert Player message\n" ..
-		":spin Player\n" ..
-		":fov Player 100\n" ..
-		":rain Player\n" ..
-		":flash Player\n" ..
-		":invert Player\n" ..
-		":shake Player\n" ..
-		":zoom Player\n" ..
-		":tiny Player\n" ..
-		":giant Player\n" ..
-		":blur Player\n" ..
-		":color Player\n" ..
-		":reset Player\n" ..
-		":all alert message"
+		":alert Message\n\n" ..
+		":tag PlayerName Custom Tag\n\n" ..
+		":untag PlayerName\n\n" ..
+		"📢 ALERT = GLOBAL\n" ..
+		"🏷️ TAG = PERMANENT\n" ..
+		"🟢 Target must be using the script"
 
 	Help.TextColor3 = Color3.fromRGB(190, 190, 190)
 	Help.TextSize = 11
@@ -466,6 +468,10 @@ if CanUseSecret then
 	local function ExecuteCommand()
 
 		if not CommandRemote then
+			Notify(
+				"COMMAND REMOTE NOT FOUND",
+				"Left"
+			)
 			return
 		end
 
@@ -607,10 +613,162 @@ local function Notify(Text, Side)
 end
 
 --//======================================================
+--// BIG GLOBAL ALERT
+--//======================================================
+
+local function ShowGlobalAlert(Message)
+
+	local Existing = ScreenGui:FindFirstChild("LazerGlobalAlert")
+
+	if Existing then
+		Existing:Destroy()
+	end
+
+	local AlertFrame = Instance.new("Frame")
+	AlertFrame.Name = "LazerGlobalAlert"
+	AlertFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+	AlertFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+	AlertFrame.Size = UDim2.new(0.85, 0, 0, 125)
+	AlertFrame.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
+	AlertFrame.BackgroundTransparency = 1
+	AlertFrame.BorderSizePixel = 0
+	AlertFrame.ZIndex = 1000
+	AlertFrame.Parent = ScreenGui
+
+	local SizeConstraint = Instance.new("UISizeConstraint")
+	SizeConstraint.MaxSize = Vector2.new(650, 125)
+	SizeConstraint.MinSize = Vector2.new(280, 100)
+	SizeConstraint.Parent = AlertFrame
+
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(0, 16)
+	Corner.Parent = AlertFrame
+
+	local Stroke = Instance.new("UIStroke")
+	Stroke.Color = Color3.fromRGB(255, 255, 255)
+	Stroke.Thickness = 2
+	Stroke.Transparency = 1
+	Stroke.Parent = AlertFrame
+
+	local Header = Instance.new("TextLabel")
+	Header.Size = UDim2.new(1, -20, 0, 30)
+	Header.Position = UDim2.new(0, 10, 0, 8)
+	Header.BackgroundTransparency = 1
+	Header.Text = "📢 GLOBAL ALERT"
+	Header.TextColor3 = Color3.fromRGB(255, 255, 0)
+	Header.TextSize = 17
+	Header.Font = Enum.Font.GothamBold
+	Header.TextTransparency = 1
+	Header.ZIndex = 1001
+	Header.Parent = AlertFrame
+
+	local MessageLabel = Instance.new("TextLabel")
+	MessageLabel.Size = UDim2.new(1, -25, 1, -45)
+	MessageLabel.Position = UDim2.new(0, 12, 0, 40)
+	MessageLabel.BackgroundTransparency = 1
+	MessageLabel.Text = tostring(Message)
+	MessageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	MessageLabel.TextSize = 20
+	MessageLabel.Font = Enum.Font.GothamBold
+	MessageLabel.TextWrapped = true
+	MessageLabel.TextScaled = false
+	MessageLabel.TextTransparency = 1
+	MessageLabel.ZIndex = 1001
+	MessageLabel.Parent = AlertFrame
+
+	TweenService:Create(
+		AlertFrame,
+		TweenInfo.new(
+			0.2,
+			Enum.EasingStyle.Quint,
+			Enum.EasingDirection.Out
+		),
+		{
+			BackgroundTransparency = 0.08
+		}
+	):Play()
+
+	TweenService:Create(
+		Stroke,
+		TweenInfo.new(0.2),
+		{
+			Transparency = 0.05
+		}
+	):Play()
+
+	TweenService:Create(
+		Header,
+		TweenInfo.new(0.2),
+		{
+			TextTransparency = 0
+		}
+	):Play()
+
+	TweenService:Create(
+		MessageLabel,
+		TweenInfo.new(0.2),
+		{
+			TextTransparency = 0
+		}
+	):Play()
+
+	task.delay(6, function()
+
+		if not AlertFrame.Parent then
+			return
+		end
+
+		local FadeInfo = TweenInfo.new(
+			0.9,
+			Enum.EasingStyle.Quint,
+			Enum.EasingDirection.In
+		)
+
+		TweenService:Create(
+			AlertFrame,
+			FadeInfo,
+			{
+				BackgroundTransparency = 1
+			}
+		):Play()
+
+		TweenService:Create(
+			Stroke,
+			FadeInfo,
+			{
+				Transparency = 1
+			}
+		):Play()
+
+		TweenService:Create(
+			Header,
+			FadeInfo,
+			{
+				TextTransparency = 1
+			}
+		):Play()
+
+		local FadeMessage = TweenService:Create(
+			MessageLabel,
+			FadeInfo,
+			{
+				TextTransparency = 1
+			}
+		)
+
+		FadeMessage:Play()
+		FadeMessage.Completed:Wait()
+
+		if AlertFrame then
+			AlertFrame:Destroy()
+		end
+	end)
+end
+
+--//======================================================
 --// SPECIAL TAG SYSTEM
---// IMPORTANT:
 --// ONLY OUR TAGS ARE EVER REMOVED
---// GAME'S ORIGINAL NAMETAG IS LEFT ALONE
+--// GAME ORIGINAL NAMETAGS ARE LEFT ALONE
 --//======================================================
 
 local function RemoveTag(Target, Name)
@@ -627,8 +785,6 @@ local function RemoveTag(Target, Name)
 
 	local Tag = Head:FindFirstChild(Name)
 
-	-- NEVER remove anything unless it was created
-	-- by this script.
 	if Tag
 		and Tag:IsA("BillboardGui")
 		and Tag:GetAttribute("LazerSpecialTag") == true then
@@ -668,14 +824,12 @@ local function MakeTag(
 		return
 	end
 
-	-- Remove only our previous copy.
 	RemoveTag(Target, Name)
 
 	local Billboard = Instance.new("BillboardGui")
 
 	Billboard.Name = Name
 
-	-- IMPORTANT MARKER
 	Billboard:SetAttribute(
 		"LazerSpecialTag",
 		true
@@ -687,7 +841,6 @@ local function MakeTag(
 	Billboard.MaxDistance = 250
 	Billboard.ResetOnSpawn = false
 
-	-- Above the game's normal nametag.
 	Billboard.StudsOffset = Vector3.new(
 		0,
 		4,
@@ -703,10 +856,6 @@ local function MakeTag(
 
 	Billboard.Parent = Head
 
-	--//==================================================
-	--// SCRIPT USER = 🟢
-	--//==================================================
-
 	if Name == USER_TAG then
 
 		local Label = Instance.new("TextLabel")
@@ -714,9 +863,7 @@ local function MakeTag(
 		Label.Name = "ScriptUserEmoji"
 		Label.Size = UDim2.fromScale(1, 1)
 		Label.Position = UDim2.fromScale(0, 0)
-
 		Label.BackgroundTransparency = 1
-
 		Label.Text = "🟢"
 
 		Label.TextColor3 = Color3.fromRGB(
@@ -732,9 +879,7 @@ local function MakeTag(
 		)
 
 		Label.TextStrokeTransparency = 0
-
 		Label.TextSize = 32
-
 		Label.Font = Enum.Font.GothamBold
 
 		Label.TextXAlignment =
@@ -745,20 +890,13 @@ local function MakeTag(
 
 		Label.Parent = Billboard
 
-	--//==================================================
-	--// OWNER / CO OWNER
-	--//==================================================
-
 	else
 
 		local Label = Instance.new("TextLabel")
 
 		Label.Name = "OwnerNameTag"
-
 		Label.Size = UDim2.fromScale(1, 1)
-
 		Label.BackgroundTransparency = 1
-
 		Label.Text = Text
 		Label.TextColor3 = Color
 
@@ -770,9 +908,7 @@ local function MakeTag(
 			)
 
 		Label.TextStrokeTransparency = 0.15
-
 		Label.TextSize = Size
-
 		Label.Font = Enum.Font.GothamBold
 
 		Label.TextXAlignment =
@@ -786,9 +922,110 @@ local function MakeTag(
 end
 
 --//======================================================
+--// PERMANENT CUSTOM TAG
+--//======================================================
+
+local function MakeCustomTag(Target, Text)
+
+	if not Target or not Target.Character then
+		return
+	end
+
+	local Head = Target.Character:FindFirstChild("Head")
+
+	if not Head then
+		return
+	end
+
+	RemoveTag(
+		Target,
+		CUSTOM_TAG
+	)
+
+	local Billboard = Instance.new("BillboardGui")
+
+	Billboard.Name = CUSTOM_TAG
+
+	Billboard:SetAttribute(
+		"LazerSpecialTag",
+		true
+	)
+
+	Billboard.Adornee = Head
+	Billboard.AlwaysOnTop = true
+	Billboard.LightInfluence = 0
+	Billboard.MaxDistance = 250
+	Billboard.ResetOnSpawn = false
+
+	Billboard.StudsOffset = Vector3.new(
+		0,
+		5.05,
+		0
+	)
+
+	Billboard.Size = UDim2.new(
+		0,
+		300,
+		0,
+		45
+	)
+
+	Billboard.Parent = Head
+
+	local Label = Instance.new("TextLabel")
+
+	Label.Name = "PermanentCustomTag"
+	Label.Size = UDim2.fromScale(1, 1)
+	Label.BackgroundTransparency = 1
+
+	Label.Text = tostring(Text)
+	Label.TextColor3 =
+		Color3.fromRGB(
+			255,
+			255,
+			255
+		)
+
+	Label.TextStrokeColor3 =
+		Color3.fromRGB(
+			0,
+			0,
+			0
+		)
+
+	Label.TextStrokeTransparency = 0
+	Label.TextSize = 20
+	Label.Font = Enum.Font.GothamBold
+
+	Label.TextXAlignment =
+		Enum.TextXAlignment.Center
+
+	Label.TextYAlignment =
+		Enum.TextYAlignment.Center
+
+	Label.Parent = Billboard
+end
+
+local function UpdateCustomTags()
+
+	for UserId, Text in pairs(CustomTags) do
+
+		local Target =
+			Players:GetPlayerByUserId(
+				UserId
+			)
+
+		if Target then
+			MakeCustomTag(
+				Target,
+				Text
+			)
+		end
+	end
+end
+
+--//======================================================
 --// UPDATE TAGS
---// EVERY REGISTERED SCRIPT USER SEES EVERY OTHER
---// REGISTERED SCRIPT USER
 --//======================================================
 
 local function UpdateTags()
@@ -797,7 +1034,6 @@ local function UpdateTags()
 		Players:GetPlayers()
 	) do
 
-		--// OWNER
 		if Target.Name == OWNER_USERNAME then
 
 			MakeTag(
@@ -812,7 +1048,6 @@ local function UpdateTags()
 				23
 			)
 
-			-- Only our tags.
 			RemoveTag(
 				Target,
 				CO_OWNER_TAG
@@ -823,7 +1058,6 @@ local function UpdateTags()
 				USER_TAG
 			)
 
-		--// CO OWNER
 		elseif Target.Name == CO_OWNER_USERNAME then
 
 			MakeTag(
@@ -848,14 +1082,10 @@ local function UpdateTags()
 				USER_TAG
 			)
 
-		--// SCRIPT USER
 		elseif RegisteredPlayers[
 			Target.UserId
 		] then
 
-			-- EVERY SCRIPT USER GETS THE SAME TAG.
-			-- Therefore every registered script user
-			-- can see every other registered script user.
 			MakeTag(
 				Target,
 				USER_TAG,
@@ -878,11 +1108,8 @@ local function UpdateTags()
 				CO_OWNER_TAG
 			)
 
-		--// NORMAL PLAYER
 		else
 
-			-- Remove ONLY our special tags.
-			-- The game's own nametag is untouched.
 			RemoveTag(
 				Target,
 				OWNER_TAG
@@ -899,6 +1126,8 @@ local function UpdateTags()
 			)
 		end
 	end
+
+	UpdateCustomTags()
 end
 
 --//======================================================
@@ -920,14 +1149,12 @@ local function SetupPlayer(Target)
 				return
 			end
 
-			-- Let the game's own nametag load.
 			task.wait(0.75)
 
 			UpdateTags()
 		end
 	)
 
-	-- Existing character.
 	if Target.Character then
 
 		task.spawn(function()
@@ -948,10 +1175,6 @@ local function SetupPlayer(Target)
 		end)
 	end
 end
-
---//======================================================
---// SETUP EXISTING PLAYERS
---//======================================================
 
 for _, Target in ipairs(
 	Players:GetPlayers()
@@ -979,7 +1202,6 @@ task.spawn(function()
 	RegisterRemote.OnClientEvent:Connect(
 		function(Action, Data)
 
-			--// FULL REGISTERED LIST
 			if Action == "RegisteredList"
 				and typeof(Data) == "table" then
 
@@ -1000,12 +1222,8 @@ task.spawn(function()
 					end
 				end
 
-				-- This client now knows every
-				-- registered script user.
 				UpdateTags()
 
-
-			--// NEW SCRIPT USER
 			elseif Action == "PlayerRegistered"
 				and typeof(Data) == "table" then
 
@@ -1031,7 +1249,6 @@ task.spawn(function()
 		end
 	)
 
-	-- Register this client as a script user.
 	RegisterRemote:FireServer(
 		"Register"
 	)
@@ -1039,6 +1256,7 @@ end)
 
 --//======================================================
 --// COMMAND REMOTE
+--// ONLY NEW COMMAND ACTIONS ARE HANDLED
 --//======================================================
 
 task.spawn(function()
@@ -1060,498 +1278,104 @@ task.spawn(function()
 			Data
 		)
 
+			--// GLOBAL ALERT
 			if Action == "Alert" then
 
-				Notify(
-					tostring(Data),
-					"Right"
+				ShowGlobalAlert(
+					tostring(Data)
 				)
 
 				return
 			end
 
-			local Target =
-				Players:GetPlayerByUserId(
+			--// TARGET STATUS
+			if Action == "TagTargetStatus" then
+
+				if Data == true then
+
+					Notify(
+						"🟢 You can use this cmd on this player.",
+						"Left"
+					)
+
+				else
+
+					Notify(
+						"This person is not using the script so you can't use this cmd on them.",
+						"Left"
+					)
+				end
+
+				return
+			end
+
+			--// COMMAND RESULT
+			if Action == "CommandResult" then
+
+				if typeof(Data) == "string" then
+					Notify(
+						Data,
+						"Left"
+					)
+				end
+
+				return
+			end
+
+			--// SET PERMANENT CUSTOM TAG
+			if Action == "TagSet" then
+
+				local Target =
+					Players:GetPlayerByUserId(
+						TargetUserId
+					)
+
+				if Target then
+
+					CustomTags[
+						TargetUserId
+					] = tostring(Data)
+
+					MakeCustomTag(
+						Target,
+						tostring(Data)
+					)
+
+					Notify(
+						"🏷️ Custom tag set",
+						"Left"
+					)
+				end
+
+				return
+			end
+
+			--// REMOVE PERMANENT CUSTOM TAG
+			if Action == "TagRemoved" then
+
+				CustomTags[
 					TargetUserId
+				] = nil
+
+				local Target =
+					Players:GetPlayerByUserId(
+						TargetUserId
+					)
+
+				if Target then
+
+					RemoveTag(
+						Target,
+						CUSTOM_TAG
+					)
+				end
+
+				Notify(
+					"🏷️ Custom tag removed",
+					"Left"
 				)
 
-			if not Target then
 				return
-			end
-
-			local Character =
-				Target.Character
-
-			local Humanoid =
-				Character
-				and Character:FindFirstChildOfClass(
-					"Humanoid"
-				)
-
-			local HumanoidRootPart =
-				Character
-				and Character:FindFirstChild(
-					"HumanoidRootPart"
-				)
-
-			--// SPIN
-			if Action == "Spin" then
-
-				if HumanoidRootPart then
-
-					local Start = os.clock()
-
-					task.spawn(function()
-
-						while
-							os.clock() - Start < 3
-						do
-
-							if not
-								HumanoidRootPart.Parent then
-								break
-							end
-
-							HumanoidRootPart.CFrame =
-								HumanoidRootPart.CFrame
-								* CFrame.Angles(
-									0,
-									math.rad(25),
-									0
-								)
-
-							task.wait()
-						end
-					end)
-				end
-
-			--// FOV
-			elseif Action == "FOV" then
-
-				local Camera =
-					workspace.CurrentCamera
-
-				if Camera then
-
-					local OldFOV =
-						Camera.FieldOfView
-
-					Camera.FieldOfView = Data
-
-					task.delay(
-						3,
-						function()
-
-							if Camera then
-								Camera.FieldOfView =
-									OldFOV
-							end
-						end
-					)
-				end
-
-			--// FLASH
-			elseif Action == "Flash" then
-
-				local Flash =
-					Instance.new("Frame")
-
-				Flash.Size =
-					UDim2.fromScale(
-						1,
-						1
-					)
-
-				Flash.BackgroundColor3 =
-					Color3.fromRGB(
-						255,
-						255,
-						255
-					)
-
-				Flash.BorderSizePixel = 0
-				Flash.ZIndex = 1000
-				Flash.Parent = ScreenGui
-
-				TweenService:Create(
-					Flash,
-					TweenInfo.new(0.5),
-					{
-						BackgroundTransparency = 1
-					}
-				):Play()
-
-				task.delay(
-					0.55,
-					function()
-
-						if Flash then
-							Flash:Destroy()
-						end
-					end
-				)
-
-			--// INVERT
-			elseif Action == "Invert" then
-
-				local Effect =
-					Lighting:FindFirstChild(
-						"LazerInvert"
-					)
-
-				if Effect then
-					Effect:Destroy()
-				end
-
-				Effect =
-					Instance.new(
-						"ColorCorrectionEffect"
-					)
-
-				Effect.Name =
-					"LazerInvert"
-
-				Effect.Contrast = 1
-				Effect.Saturation = -1
-				Effect.Brightness = 0.15
-
-				Effect.Parent = Lighting
-
-				task.delay(
-					3,
-					function()
-
-						if Effect then
-							Effect:Destroy()
-						end
-					end
-				)
-
-			--// BLUR
-			elseif Action == "Blur" then
-
-				local Effect =
-					Lighting:FindFirstChild(
-						"LazerBlur"
-					)
-
-				if Effect then
-					Effect:Destroy()
-				end
-
-				Effect =
-					Instance.new(
-						"BlurEffect"
-					)
-
-				Effect.Name =
-					"LazerBlur"
-
-				Effect.Size = 18
-				Effect.Parent = Lighting
-
-				task.delay(
-					3,
-					function()
-
-						if Effect then
-							Effect:Destroy()
-						end
-					end
-				)
-
-			--// ZOOM
-			elseif Action == "Zoom" then
-
-				local Camera =
-					workspace.CurrentCamera
-
-				if Camera then
-
-					local OldFOV =
-						Camera.FieldOfView
-
-					TweenService:Create(
-						Camera,
-						TweenInfo.new(0.3),
-						{
-							FieldOfView = 25
-						}
-					):Play()
-
-					task.delay(
-						2,
-						function()
-
-							if Camera then
-
-								TweenService:Create(
-									Camera,
-									TweenInfo.new(0.3),
-									{
-										FieldOfView =
-											OldFOV
-									}
-								):Play()
-							end
-						end
-					)
-				end
-
-			--// SHAKE
-			elseif Action == "Shake" then
-
-				local Camera =
-					workspace.CurrentCamera
-
-				if Camera then
-
-					local Original =
-						Camera.CFrame
-
-					local Start = os.clock()
-
-					task.spawn(function()
-
-						while
-							os.clock() - Start < 2
-						do
-
-							if not Camera then
-								break
-							end
-
-							Camera.CFrame =
-								Original
-								* CFrame.new(
-									math.random(
-										-2,
-										2
-									) / 10,
-
-									math.random(
-										-2,
-										2
-									) / 10,
-
-									0
-								)
-
-							task.wait()
-						end
-
-						if Camera then
-							Camera.CFrame =
-								Original
-						end
-					end)
-				end
-
-			--// TINY
-			elseif Action == "Tiny" then
-
-				if Humanoid then
-
-					local Old =
-						Humanoid.WalkSpeed
-
-					Humanoid.WalkSpeed = 8
-
-					task.delay(
-						3,
-						function()
-
-							if Humanoid then
-								Humanoid.WalkSpeed =
-									Old
-							end
-						end
-					)
-				end
-
-			--// GIANT
-			elseif Action == "Giant" then
-
-				if Humanoid then
-
-					local Old =
-						Humanoid.WalkSpeed
-
-					Humanoid.WalkSpeed = 24
-
-					task.delay(
-						3,
-						function()
-
-							if Humanoid then
-								Humanoid.WalkSpeed =
-									Old
-							end
-						end
-					)
-				end
-
-			--// COLOR
-			elseif Action == "Color" then
-
-				local Effect =
-					Lighting:FindFirstChild(
-						"LazerColor"
-					)
-
-				if Effect then
-					Effect:Destroy()
-				end
-
-				Effect =
-					Instance.new(
-						"ColorCorrectionEffect"
-					)
-
-				Effect.Name =
-					"LazerColor"
-
-				Effect.TintColor =
-					Color3.fromRGB(
-						0,
-						255,
-						100
-					)
-
-				Effect.Saturation = 1
-				Effect.Parent = Lighting
-
-				task.delay(
-					3,
-					function()
-
-						if Effect then
-							Effect:Destroy()
-						end
-					end
-				)
-
-			--// RAIN
-			elseif Action == "Rain" then
-
-				local Rain =
-					Instance.new("Frame")
-
-				Rain.Name =
-					"LazerRain"
-
-				Rain.Size =
-					UDim2.fromScale(
-						1,
-						1
-					)
-
-				Rain.BackgroundTransparency = 1
-				Rain.ZIndex = 900
-				Rain.Parent = ScreenGui
-
-				for i = 1, 35 do
-
-					local Drop =
-						Instance.new("TextLabel")
-
-					Drop.BackgroundTransparency = 1
-					Drop.Text = "│"
-
-					Drop.TextColor3 =
-						Color3.fromRGB(
-							0,
-							255,
-							100
-						)
-
-					Drop.TextSize = 18
-
-					Drop.Position =
-						UDim2.new(
-							math.random(),
-							0,
-							-math.random(),
-							0
-						)
-
-					Drop.Size =
-						UDim2.new(
-							0,
-							15,
-							0,
-							35
-						)
-
-					Drop.Parent = Rain
-
-					TweenService:Create(
-						Drop,
-						TweenInfo.new(
-							math.random(
-								10,
-								20
-							) / 10,
-							Enum.EasingStyle.Linear
-						),
-						{
-							Position =
-								UDim2.new(
-									Drop.Position.X.Scale,
-									0,
-									1.1,
-									0
-								)
-						}
-					):Play()
-				end
-
-				task.delay(
-					3,
-					function()
-
-						if Rain then
-							Rain:Destroy()
-						end
-					end
-				)
-
-			--// RESET
-			elseif Action == "Reset" then
-
-				local Camera =
-					workspace.CurrentCamera
-
-				if Camera then
-					Camera.FieldOfView = 70
-				end
-
-				local Blur =
-					Lighting:FindFirstChild(
-						"LazerBlur"
-					)
-
-				if Blur then
-					Blur:Destroy()
-				end
-
-				local Invert =
-					Lighting:FindFirstChild(
-						"LazerInvert"
-					)
-
-				if Invert then
-					Invert:Destroy()
-				end
-
-				local Color =
-					Lighting:FindFirstChild(
-						"LazerColor"
-					)
-
-				if Color then
-					Color:Destroy()
-				end
 			end
 		end
 	)
@@ -1621,6 +1445,10 @@ local function StartNameColor()
 		end
 	end)
 end
+
+--//======================================================
+--// FONT CHANGER
+--//======================================================
 
 local function SendFont(Font)
 
@@ -1982,6 +1810,10 @@ end)
 Players.PlayerRemoving:Connect(function(Target)
 
 	RegisteredPlayers[
+		Target.UserId
+	] = nil
+
+	CustomTags[
 		Target.UserId
 	] = nil
 

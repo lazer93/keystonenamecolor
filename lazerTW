@@ -23,6 +23,7 @@ local REMOTE_NAME = "307D0912-4609-4190-B07C-739143B666D3"
 local REGISTER_REMOTE_NAME = "LazerRegisteredPlayers"
 local COMMAND_REMOTE_NAME = "LazerSecretCommands"
 local COFFEE_REMOTE_NAME = "DF310533-4D08-4C3B-94E1-BC67358D919D"
+local FAST_LVL_HIDER_REMOTE_NAME = "8E966FA0-E6B9-4566-ADBA-DB9BC15D5C49"
 
 local OWNER_TAG = "LazerOwnerTag"
 local CO_OWNER_TAG = "LazerCoOwnerTag"
@@ -125,14 +126,14 @@ Main.Size = UDim2.new(
 	0,
 	280,
 	0,
-	CanUseSecret and 350 or 270
+	CanUseSecret and 388 or 308
 )
 
 Main.Position = UDim2.new(
 	0.5,
 	-140,
 	0.5,
-	CanUseSecret and -175 or -135
+	CanUseSecret and -194 or -154
 )
 
 Main.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
@@ -292,9 +293,15 @@ local NameColorButton =
 		55
 	)
 
+local FastLvlHiderButton =
+	MakeButton(
+		"FAST LVL HIDER: OFF",
+		93
+	)
+
 local Status = Instance.new("TextLabel")
 Status.Size = UDim2.new(1, -24, 0, 18)
-Status.Position = UDim2.new(0, 12, 0, 93)
+Status.Position = UDim2.new(0, 12, 0, 131)
 Status.BackgroundTransparency = 1
 Status.Text = "Requests: 0"
 Status.TextColor3 = Color3.fromRGB(220, 220, 220)
@@ -306,25 +313,25 @@ Status.Parent = Main
 local FontButton =
 	MakeButton(
 		"FONT CHANGER: OFF",
-		120
+		158
 	)
 
 local InvisibleNameButton =
 	MakeButton(
 		"INVISIBLE NAME: 0/6",
-		158
+		196
 	)
 
 local CoffeeButton =
 	MakeButton(
 		"☕ GET COFFEE",
-		196
+		234
 	)
 
 local DiscordButton =
 	MakeButton(
 		"☁ JOIN DISCORD",
-		234,
+		272,
 		28
 	)
 
@@ -344,7 +351,7 @@ if CanUseSecret then
 	SecretButton =
 		MakeButton(
 			"🔒 SECRET COMMANDS",
-			275,
+			313,
 			34
 		)
 
@@ -1489,6 +1496,51 @@ local function StartFontChanger()
 		end
 	end)
 end
+
+--//======================================================
+--// FAST LVL HIDER
+--// FIRES THE HIDER REMOTE WITH 3 AND 4 ALTERNATING
+--//======================================================
+
+local FastLvlHiderEvent
+local FastLvlHiderEnabled = false
+
+task.spawn(function()
+
+	FastLvlHiderEvent =
+		ReplicatedStorage:WaitForChild(
+			FAST_LVL_HIDER_REMOTE_NAME,
+			10
+		)
+end)
+
+FastLvlHiderButton.MouseButton1Click:Connect(function()
+
+	FastLvlHiderEnabled = not FastLvlHiderEnabled
+
+	if FastLvlHiderEnabled then
+
+		FastLvlHiderButton.Text = "FAST LVL HIDER: ON"
+
+		task.spawn(function()
+
+			while FastLvlHiderEnabled do
+
+				if FastLvlHiderEvent then
+
+					FastLvlHiderEvent:FireServer(3)
+					FastLvlHiderEvent:FireServer(4)
+				end
+
+				task.wait()
+			end
+		end)
+
+	else
+
+		FastLvlHiderButton.Text = "FAST LVL HIDER: OFF"
+	end
+end)
 
 --//======================================================
 --// NAME COLOR

@@ -384,7 +384,7 @@ local NameColorButton   = MakeButton("NAME COLOR: OFF", 55)
 local FastLvlHiderButton = MakeButton("FAST LVL HIDER: OFF", 93)
 
 --// rxt button (crash server toggle)
-local RxtButton = MakeButton("rxt: OFF", 131)
+local RxtButton = MakeButton("Crash Server❗: OFF", 131)
 
 local Status = Instance.new("TextLabel")
 Status.Size = UDim2.new(1, -24, 0, 18)

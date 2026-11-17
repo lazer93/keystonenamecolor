@@ -1,7 +1,8 @@
---// Lazer Made Ts FN 🕶️ - Refined Edition (BLUE)
+--// SPYHUB🕸️ - Refined Edition (BLACK)
 --// Owner: krampus_159 | Co Owner: ZvajCPuukT
 --// Name color source: copied VERBATIM from original file
---// /2v6 typewriter caption on owner tags (blue) - lowered offset
+--// Owner tag caption is now a CapCut-style word-pop animation
+--// Script-user indicator changed 🟢 → 🕸️  |  GUI palette is now black
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -42,6 +43,8 @@ local CanUseSecret = IsOwner or IsCoOwner
 local RegisteredPlayers = {}
 local CustomTags = {}
 
+RegisteredPlayers[Player.UserId] = true
+
 local NameColorEnabled    = false
 local FontChangerEnabled  = false
 local CoffeeClicked       = false
@@ -54,9 +57,9 @@ local FontIndex  = 1
 local Event, RegisterRemote, CommandRemote, FastLvlHiderEvent
 
 --//======================================================
---// CLEANUP
+--// CLEANUP (kills previous SPYHUB + old LazerMadeTsFN + CrashServerUI)
 --//======================================================
-for _, name in ipairs({"LazerMadeTsFN", "CrashServerUI"}) do
+for _, name in ipairs({"SPYHUB", "LazerMadeTsFN", "CrashServerUI"}) do
     local old = PlayerGui:FindFirstChild(name)
     if old then old:Destroy() end
 end
@@ -94,19 +97,19 @@ local Fonts = {
 }
 
 --//======================================================
---// PALETTE (BLUE THEME)
+--// PALETTE (BLACK THEME)
 --//======================================================
 local Colors = {
-    Bg        = Color3.fromRGB(10, 14, 26),
-    Surface   = Color3.fromRGB(20, 28, 46),
-    SurfaceHi = Color3.fromRGB(30, 40, 64),
-    SurfaceOn = Color3.fromRGB(30, 60, 120),
-    Border    = Color3.fromRGB(45, 65, 100),
-    Text      = Color3.fromRGB(230, 240, 255),
-    TextDim   = Color3.fromRGB(130, 150, 185),
-    Accent    = Color3.fromRGB(70, 150, 255),
-    Gold      = Color3.fromRGB(100, 200, 255),
-    Success   = Color3.fromRGB(80, 220, 220),
+    Bg        = Color3.fromRGB(4, 4, 6),
+    Surface   = Color3.fromRGB(14, 14, 18),
+    SurfaceHi = Color3.fromRGB(26, 26, 32),
+    SurfaceOn = Color3.fromRGB(60, 60, 70),
+    Border    = Color3.fromRGB(40, 40, 48),
+    Text      = Color3.fromRGB(245, 245, 248),
+    TextDim   = Color3.fromRGB(120, 120, 135),
+    Accent    = Color3.fromRGB(255, 255, 255),
+    Gold      = Color3.fromRGB(220, 220, 228),
+    Success   = Color3.fromRGB(200, 200, 210),
 }
 
 --//======================================================
@@ -115,6 +118,7 @@ local Colors = {
 local EaseOut     = TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 local EaseOutFast = TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 local EaseInOut   = TweenInfo.new(0.30, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+local CapCutPop   = TweenInfo.new(0.18, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
 local function Tween(obj, props, info)
     TweenService:Create(obj, info or EaseOut, props):Play()
@@ -124,7 +128,7 @@ end
 --// SCREEN GUI
 --//======================================================
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "LazerMadeTsFN"
+ScreenGui.Name = "SPYHUB"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 999
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -225,7 +229,7 @@ local function Notify(text, side)
 end
 
 --//======================================================
---// GLOBAL ALERT
+--// TOP-CENTER ANNOUNCEMENT BANNER (slides in from top)
 --//======================================================
 local function ShowGlobalAlert(message)
     local existing = ScreenGui:FindFirstChild("LazerGlobalAlert")
@@ -233,22 +237,22 @@ local function ShowGlobalAlert(message)
 
     local frame = Instance.new("Frame")
     frame.Name = "LazerGlobalAlert"
-    frame.AnchorPoint = Vector2.new(0.5, 0.5)
-    frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    frame.Size = UDim2.new(0, 560, 0, 120)
-    frame.BackgroundColor3 = Color3.fromRGB(12, 18, 34)
+    frame.AnchorPoint = Vector2.new(0.5, 0)
+    frame.Position    = UDim2.new(0.5, 0, 0, -120)
+    frame.Size        = UDim2.new(0, 640, 0, 72)
+    frame.BackgroundColor3 = Color3.fromRGB(8, 8, 10)
     frame.BackgroundTransparency = 1
     frame.BorderSizePixel = 0
     frame.ZIndex = 1000
     frame.Parent = ScreenGui
 
     local constraint = Instance.new("UISizeConstraint")
-    constraint.MaxSize = Vector2.new(650, 120)
-    constraint.MinSize = Vector2.new(280, 100)
+    constraint.MaxSize = Vector2.new(720, 72)
+    constraint.MinSize = Vector2.new(320, 64)
     constraint.Parent = frame
 
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 16)
+    corner.CornerRadius = UDim.new(0, 14)
     corner.Parent = frame
 
     local stroke = Instance.new("UIStroke")
@@ -257,45 +261,44 @@ local function ShowGlobalAlert(message)
     stroke.Transparency = 1
     stroke.Parent = frame
 
-    local header = Instance.new("TextLabel")
-    header.Size = UDim2.new(1, -20, 0, 28)
-    header.Position = UDim2.new(0, 14, 0, 10)
-    header.BackgroundTransparency = 1
-    header.Text = "📢 GLOBAL ALERT"
-    header.TextColor3 = Colors.Gold
-    header.TextSize = 16
-    header.Font = Enum.Font.GothamBold
-    header.TextXAlignment = Enum.TextXAlignment.Left
-    header.TextTransparency = 1
-    header.ZIndex = 1001
-    header.Parent = frame
+    local icon = Instance.new("TextLabel")
+    icon.Size = UDim2.new(0, 44, 1, 0)
+    icon.Position = UDim2.new(0, 8, 0, 0)
+    icon.BackgroundTransparency = 1
+    icon.Text = "📢"
+    icon.TextColor3 = Colors.Accent
+    icon.TextSize = 28
+    icon.Font = Enum.Font.GothamBold
+    icon.TextTransparency = 1
+    icon.ZIndex = 1001
+    icon.Parent = frame
 
     local msg = Instance.new("TextLabel")
-    msg.Size = UDim2.new(1, -28, 1, -45)
-    msg.Position = UDim2.new(0, 14, 0, 42)
+    msg.Size = UDim2.new(1, -70, 1, -20)
+    msg.Position = UDim2.new(0, 56, 0, 10)
     msg.BackgroundTransparency = 1
     msg.Text = tostring(message)
     msg.TextColor3 = Colors.Text
-    msg.TextSize = 18
-    msg.Font = Enum.Font.GothamMedium
+    msg.TextSize = 20
+    msg.Font = Enum.Font.GothamBold
     msg.TextWrapped = true
     msg.TextXAlignment = Enum.TextXAlignment.Left
-    msg.TextYAlignment = Enum.TextYAlignment.Top
+    msg.TextYAlignment = Enum.TextYAlignment.Center
     msg.TextTransparency = 1
     msg.ZIndex = 1001
     msg.Parent = frame
 
-    Tween(frame, {BackgroundTransparency = 0.05}, EaseInOut)
+    Tween(frame, {Position = UDim2.new(0.5, 0, 0, 18), BackgroundTransparency = 0.05}, EaseInOut)
     Tween(stroke, {Transparency = 0}, EaseInOut)
-    Tween(header, {TextTransparency = 0}, EaseInOut)
-    Tween(msg, {TextTransparency = 0}, EaseInOut)
+    Tween(icon, {TextTransparency = 0}, EaseInOut)
+    Tween(msg,  {TextTransparency = 0}, EaseInOut)
 
-    task.delay(6, function()
+    task.delay(7, function()
         if not frame.Parent then return end
         local fadeOut = TweenInfo.new(0.7, Enum.EasingStyle.Quint, Enum.EasingDirection.In)
-        Tween(frame, {BackgroundTransparency = 1}, fadeOut)
+        Tween(frame,  {Position = UDim2.new(0.5, 0, 0, -120), BackgroundTransparency = 1}, fadeOut)
         Tween(stroke, {Transparency = 1}, fadeOut)
-        Tween(header, {TextTransparency = 1}, fadeOut)
+        Tween(icon,   {TextTransparency = 1}, fadeOut)
         local fadeMsg = TweenService:Create(msg, fadeOut, {TextTransparency = 1})
         fadeMsg:Play()
         fadeMsg.Completed:Wait()
@@ -343,7 +346,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -90, 0, 24)
 Title.Position = UDim2.new(0, 16, 0, 12)
 Title.BackgroundTransparency = 1
-Title.Text = "Lazer Made Ts FN 🕶️"
+Title.Text = "SPYHUB🕸️"
 Title.TextColor3 = Colors.Text
 Title.TextSize = 15
 Title.Font = Enum.Font.GothamBold
@@ -495,7 +498,7 @@ if CanUseSecret then
     SecretButton = MakeButton("🔒  Secret Commands", y)
     SecretButton.TextColor3 = Colors.Gold
     SecretButton:SetAttribute("On", true)
-    SecretButton.BackgroundColor3 = Color3.fromRGB(20, 30, 55)
+    SecretButton.BackgroundColor3 = Color3.fromRGB(20, 20, 26)
 
     local SS = Instance.new("UIStroke")
     SS.Color = Colors.Gold
@@ -503,10 +506,10 @@ if CanUseSecret then
     SS.Parent = SecretButton
 
     SecretButton.MouseEnter:Connect(function()
-        Tween(SecretButton, {BackgroundColor3 = Color3.fromRGB(30, 45, 80)}, EaseOutFast)
+        Tween(SecretButton, {BackgroundColor3 = Color3.fromRGB(32, 32, 40)}, EaseOutFast)
     end)
     SecretButton.MouseLeave:Connect(function()
-        Tween(SecretButton, {BackgroundColor3 = Color3.fromRGB(20, 30, 55)}, EaseOutFast)
+        Tween(SecretButton, {BackgroundColor3 = Color3.fromRGB(20, 20, 26)}, EaseOutFast)
     end)
 end
 
@@ -623,7 +626,7 @@ if CanUseSecret then
     CommandBox.Position = UDim2.new(0, 16, 0, 52)
     CommandBox.BackgroundColor3 = Colors.Surface
     CommandBox.BorderSizePixel = 0
-    CommandBox.PlaceholderText = ":alert Message"
+    CommandBox.PlaceholderText = ":annc Message"
     CommandBox.PlaceholderColor3 = Colors.TextDim
     CommandBox.Text = ""
     CommandBox.TextColor3 = Colors.Text
@@ -645,10 +648,10 @@ if CanUseSecret then
     local Execute = Instance.new("TextButton")
     Execute.Size = UDim2.new(1, -32, 0, 34)
     Execute.Position = UDim2.new(0, 16, 0, 102)
-    Execute.BackgroundColor3 = Colors.Gold
+    Execute.BackgroundColor3 = Colors.Accent
     Execute.BorderSizePixel = 0
     Execute.Text = "EXECUTE"
-    Execute.TextColor3 = Color3.fromRGB(10, 18, 30)
+    Execute.TextColor3 = Color3.fromRGB(0, 0, 0)
     Execute.TextSize = 12
     Execute.Font = Enum.Font.GothamBold
     Execute.AutoButtonColor = false
@@ -660,10 +663,10 @@ if CanUseSecret then
     EC.Parent = Execute
 
     Execute.MouseEnter:Connect(function()
-        Tween(Execute, {BackgroundColor3 = Color3.fromRGB(140, 220, 255)}, EaseOutFast)
+        Tween(Execute, {BackgroundColor3 = Color3.fromRGB(230, 230, 240)}, EaseOutFast)
     end)
     Execute.MouseLeave:Connect(function()
-        Tween(Execute, {BackgroundColor3 = Colors.Gold}, EaseOutFast)
+        Tween(Execute, {BackgroundColor3 = Colors.Accent}, EaseOutFast)
     end)
 
     local Help = Instance.new("TextLabel")
@@ -671,12 +674,12 @@ if CanUseSecret then
     Help.Position = UDim2.new(0, 16, 0, 148)
     Help.BackgroundTransparency = 1
     Help.Text =
-        ":alert Message\n\n" ..
+        ":annc Message   →  top banner\n\n" ..
         ":tag PlayerName Custom Tag\n\n" ..
         ":untag PlayerName\n\n" ..
-        "📢 ALERT = GLOBAL\n" ..
-        "🏷️ TAG = PERMANENT\n" ..
-        "🟢 Target must be using the script"
+        "📢 :annc shows a TOP-CENTER banner\n" ..
+        "🏷️ :tag only works on script users\n" ..
+        "🕸️ Target must be running the script"
     Help.TextColor3 = Colors.TextDim
     Help.TextSize = 11
     Help.Font = Enum.Font.Code
@@ -697,13 +700,72 @@ if CanUseSecret then
     end)
 
     local function ExecuteCommand()
-        if not CommandRemote then
-            Notify("COMMAND REMOTE NOT FOUND", "Left")
+        local cmd = tostring(CommandBox.Text or "")
+        cmd = cmd:gsub("^%s+", ""):gsub("%s+$", "")
+        if cmd == "" then return end
+
+        if CommandRemote then
+            pcall(function() CommandRemote:FireServer(cmd) end)
+        end
+
+        local lower = cmd:lower()
+
+        if lower:sub(1,5) == ":annc" or lower:sub(1,6) == ":alert" then
+            local msg = (lower:sub(1,5) == ":annc") and cmd:sub(6) or cmd:sub(7)
+            msg = msg:gsub("^%s+", "")
+            if msg == "" then
+                Notify("USAGE: :annc Message", "Left")
+            else
+                ShowGlobalAlert(msg)
+            end
+            CommandBox.Text = ""
             return
         end
-        local cmd = CommandBox.Text
-        if cmd == "" then return end
-        CommandRemote:FireServer(cmd)
+
+        if lower:sub(1,4) == ":tag" then
+            local rest = cmd:sub(5):gsub("^%s+", "")
+            local sp = rest:find("%s")
+            if not sp then
+                Notify("USAGE: :tag PlayerName CustomTag", "Left")
+                CommandBox.Text = ""
+                return
+            end
+            local targetName = rest:sub(1, sp - 1)
+            local tagText    = rest:sub(sp + 1):gsub("^%s+", "")
+            local target     = Players:FindFirstChild(targetName)
+            if not target then
+                Notify("Player not found: " .. targetName, "Left")
+                CommandBox.Text = ""
+                return
+            end
+            if not RegisteredPlayers[target.UserId] and target ~= Player then
+                Notify("❌ Target is not running the script", "Left")
+                CommandBox.Text = ""
+                return
+            end
+            CustomTags[target.UserId] = tagText
+            MakeCustomTag(target, tagText)
+            Notify("🏷️ Custom tag set on " .. target.Name, "Left")
+            CommandBox.Text = ""
+            return
+        end
+
+        if lower:sub(1,6) == ":untag" then
+            local targetName = cmd:sub(7):gsub("^%s+", "")
+            local target = Players:FindFirstChild(targetName)
+            if not target then
+                Notify("Player not found: " .. targetName, "Left")
+                CommandBox.Text = ""
+                return
+            end
+            CustomTags[target.UserId] = nil
+            RemoveTag(target, CUSTOM_TAG)
+            Notify("🏷️ Custom tag removed", "Left")
+            CommandBox.Text = ""
+            return
+        end
+
+        Notify("Unknown cmd. Use :annc / :tag / :untag", "Left")
         CommandBox.Text = ""
     end
 
@@ -714,7 +776,7 @@ if CanUseSecret then
 end
 
 --//======================================================
---// TAG SYSTEM (owner tags w/ BLUE /2v6 typewriter caption)
+--// TAG SYSTEM
 --//======================================================
 local function RemoveTag(Target, Name)
     if not Target or not Target.Character then return end
@@ -726,36 +788,55 @@ local function RemoveTag(Target, Name)
     end
 end
 
-local function RunTypewriter(label, message)
+--//======================================================
+--// CAPCUT-STYLE CAPTION (word-by-word pop-in)
+--//======================================================
+local function RunCapCutCaption(container, message)
+    local words = {}
+    for word in message:gmatch("%S+") do
+        table.insert(words, word)
+    end
+
     task.spawn(function()
-        local TYPE_SPEED  = 0.09
-        local ERASE_SPEED = 0.045
-        local HOLD_TIME   = 2.2
-        local PAUSE_TIME  = 0.6
-        local BLINK       = 0.35
+        while container.Parent do
+            for _, child in ipairs(container:GetChildren()) do
+                if child:IsA("TextLabel") then child:Destroy() end
+            end
+            task.wait(0.25)
 
-        while label.Parent do
-            for i = 1, #message do
-                if not label.Parent then return end
-                label.Text = string.sub(message, 1, i)
-                task.wait(TYPE_SPEED)
+            for i, word in ipairs(words) do
+                if not container.Parent then return end
+
+                local lbl = Instance.new("TextLabel")
+                lbl.BackgroundTransparency = 1
+                lbl.AutomaticSize = Enum.AutomaticSize.X
+                lbl.Size = UDim2.new(0, 0, 1, 0)
+                lbl.Text = word
+                lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+                lbl.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+                lbl.TextStrokeTransparency = 0
+                lbl.TextSize = 20
+                lbl.Font = Enum.Font.GothamBlack
+                lbl.LayoutOrder = i
+                lbl.Parent = container
+
+                local scale = Instance.new("UIScale")
+                scale.Scale = 0
+                scale.Parent = lbl
+
+                TweenService:Create(scale, CapCutPop, {Scale = 1}):Play()
+                task.wait(0.16)
             end
 
-            local t = 0
-            while t < HOLD_TIME do
-                if not label.Parent then return end
-                label.Text = message .. ((math.floor(t / BLINK) % 2 == 0) and "|" or "")
-                task.wait(BLINK)
-                t = t + BLINK
-            end
+            task.wait(2.2)
 
-            for i = #message, 0, -1 do
-                if not label.Parent then return end
-                label.Text = string.sub(message, 1, i)
-                task.wait(ERASE_SPEED)
+            for _, child in ipairs(container:GetChildren()) do
+                if child:IsA("TextLabel") then
+                    Tween(child, {TextTransparency = 1, TextStrokeTransparency = 1},
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out))
+                end
             end
-
-            task.wait(PAUSE_TIME)
+            task.wait(0.5)
         end
     end)
 end
@@ -779,6 +860,7 @@ local function MakeTag(Target, Name, Text, Color, Size)
     Billboard.ResetOnSpawn = false
     Billboard.Parent = Head
 
+    -- SCRIPT USER → 🕸️
     if Name == USER_TAG then
         Billboard.StudsOffset = Vector3.new(0, 4, 0)
         Billboard.Size = UDim2.new(0, 220, 0, 45)
@@ -787,11 +869,11 @@ local function MakeTag(Target, Name, Text, Color, Size)
         Label.Name = "ScriptUserEmoji"
         Label.Size = UDim2.fromScale(1, 1)
         Label.BackgroundTransparency = 1
-        Label.Text = "🟢"
-        Label.TextColor3 = Color3.fromRGB(0, 255, 0)
+        Label.Text = "🕸️"
+        Label.TextColor3 = Color3.fromRGB(255, 255, 255)
         Label.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
         Label.TextStrokeTransparency = 0
-        Label.TextSize = 32
+        Label.TextSize = 36
         Label.Font = Enum.Font.GothamBold
         Label.TextXAlignment = Enum.TextXAlignment.Center
         Label.TextYAlignment = Enum.TextYAlignment.Center
@@ -799,7 +881,7 @@ local function MakeTag(Target, Name, Text, Color, Size)
         return
     end
 
-    -- Lowered offset (was 5.5) so both the 👑 OWNER name and /2v6 caption sit lower
+    -- OWNER / CO-OWNER
     Billboard.StudsOffset = Vector3.new(0, 4.8, 0)
     Billboard.Size = UDim2.new(0, 270, 0, 74)
 
@@ -818,22 +900,22 @@ local function MakeTag(Target, Name, Text, Color, Size)
     NameLabel.TextYAlignment = Enum.TextYAlignment.Center
     NameLabel.Parent = Billboard
 
-    local Caption = Instance.new("TextLabel")
-    Caption.Name = "JoinCaption"
-    Caption.Size = UDim2.new(1, 0, 0, 28)
-    Caption.Position = UDim2.new(0, 0, 0, 42)
-    Caption.BackgroundTransparency = 1
-    Caption.Text = ""
-    Caption.TextColor3 = Color3.fromRGB(100, 200, 255)
-    Caption.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    Caption.TextStrokeTransparency = 0
-    Caption.TextSize = 18
-    Caption.Font = Enum.Font.GothamBlack
-    Caption.TextXAlignment = Enum.TextXAlignment.Center
-    Caption.TextYAlignment = Enum.TextYAlignment.Center
-    Caption.Parent = Billboard
+    local CaptionContainer = Instance.new("Frame")
+    CaptionContainer.Name = "JoinCaption"
+    CaptionContainer.Size = UDim2.new(1, 0, 0, 28)
+    CaptionContainer.Position = UDim2.new(0, 0, 0, 42)
+    CaptionContainer.BackgroundTransparency = 1
+    CaptionContainer.Parent = Billboard
 
-    RunTypewriter(Caption, "☁ join /2v6")
+    local CaptionLayout = Instance.new("UIListLayout")
+    CaptionLayout.FillDirection = Enum.FillDirection.Horizontal
+    CaptionLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    CaptionLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    CaptionLayout.Padding = UDim.new(0, 8)
+    CaptionLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    CaptionLayout.Parent = CaptionContainer
+
+    RunCapCutCaption(CaptionContainer, "☁ join /2v6")
 end
 
 local function MakeCustomTag(Target, Text)
@@ -876,6 +958,9 @@ local function UpdateCustomTags()
     end
 end
 
+--//======================================================
+--// UPDATE TAGS
+--//======================================================
 local function UpdateTags()
     for _, Target in ipairs(Players:GetPlayers()) do
         if Target.Name == OWNER_USERNAME then
@@ -885,7 +970,7 @@ local function UpdateTags()
             MakeTag(Target, CO_OWNER_TAG, "👑 CO OWNER", Color3.fromRGB(255, 255, 0), 21)
             RemoveTag(Target, OWNER_TAG); RemoveTag(Target, USER_TAG)
         elseif RegisteredPlayers[Target.UserId] then
-            MakeTag(Target, USER_TAG, "🟢", Color3.fromRGB(0, 255, 0), 32)
+            MakeTag(Target, USER_TAG, "🕸️", Color3.fromRGB(255, 255, 255), 36)
             RemoveTag(Target, OWNER_TAG); RemoveTag(Target, CO_OWNER_TAG)
         else
             RemoveTag(Target, OWNER_TAG); RemoveTag(Target, CO_OWNER_TAG); RemoveTag(Target, USER_TAG)
@@ -926,6 +1011,7 @@ task.spawn(function()
     RegisterRemote.OnClientEvent:Connect(function(Action, Data)
         if Action == "RegisteredList" and typeof(Data) == "table" then
             table.clear(RegisteredPlayers)
+            RegisteredPlayers[Player.UserId] = true
             for _, Info in ipairs(Data) do
                 if typeof(Info) == "table" and typeof(Info.UserId) == "number" then
                     RegisteredPlayers[Info.UserId] = true
@@ -937,7 +1023,7 @@ task.spawn(function()
                 RegisteredPlayers[Data.UserId] = true
                 UpdateTags()
                 if Data.UserId ~= Player.UserId then
-                    Notify("🟢 Script user joined", "Right")
+                    Notify("🕸️ Script user joined", "Right")
                 end
             end
         end
@@ -954,12 +1040,12 @@ task.spawn(function()
     if not CommandRemote then return end
 
     CommandRemote.OnClientEvent:Connect(function(Action, TargetUserId, Data)
-        if Action == "Alert" then
+        if Action == "Alert" or Action == "Annc" then
             ShowGlobalAlert(tostring(Data)); return
         end
         if Action == "TagTargetStatus" then
             if Data == true then
-                Notify("🟢 You can use this cmd on this player.", "Left")
+                Notify("🕸️ You can use this cmd on this player.", "Left")
             else
                 Notify("This person is not using the script so you can't use this cmd on them.", "Left")
             end
@@ -970,7 +1056,7 @@ task.spawn(function()
         end
         if Action == "TagSet" then
             local Target = Players:GetPlayerByUserId(TargetUserId)
-            if Target then
+            if Target and (RegisteredPlayers[TargetUserId] or Target == Player) then
                 CustomTags[TargetUserId] = tostring(Data)
                 MakeCustomTag(Target, tostring(Data))
                 Notify("🏷️ Custom tag set", "Left")

@@ -1,8 +1,5 @@
 --// SPYHUB🕸️ - Refined Edition (BLACK)
 --// Owner: krampus_159 | Co Owner: ZvajCPuukT
---// Name color source: copied VERBATIM from original file
---// Owner tag caption is now a CapCut-style word-pop animation
---// Script-user indicator changed 🟢 → 🕸️  |  GUI palette is now black
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -54,10 +51,14 @@ local RequestCount = 0
 local ColorIndex = 1
 local FontIndex  = 1
 
+-- NEW: local-only toggle so each script user can hide their OWN emoji
+-- on their own screen. Other clients are unaffected.
+local HideSelfEmoji = false
+
 local Event, RegisterRemote, CommandRemote, FastLvlHiderEvent
 
 --//======================================================
---// CLEANUP (kills previous SPYHUB + old LazerMadeTsFN + CrashServerUI)
+--// CLEANUP
 --//======================================================
 for _, name in ipairs({"SPYHUB", "LazerMadeTsFN", "CrashServerUI"}) do
     local old = PlayerGui:FindFirstChild(name)
@@ -229,7 +230,7 @@ local function Notify(text, side)
 end
 
 --//======================================================
---// TOP-CENTER ANNOUNCEMENT BANNER (slides in from top)
+--// TOP-CENTER ANNOUNCEMENT BANNER
 --//======================================================
 local function ShowGlobalAlert(message)
     local existing = ScreenGui:FindFirstChild("LazerGlobalAlert")
@@ -310,7 +311,8 @@ end
 --// MAIN FRAME
 --//======================================================
 local MAIN_W = 300
-local MAIN_H = CanUseSecret and 426 or 368
+-- owners: 426  |  script users: 405 (extra Hide-My-Emoji button)
+local MAIN_H = CanUseSecret and 426 or 405
 
 local Main = Instance.new("Frame")
 Main.Name = "Main"
@@ -490,6 +492,14 @@ y = y + ButtonHeight + ButtonGap
 local DiscordButton = MakeButton("☁  Join Discord", y)
 y = y + ButtonHeight + ButtonGap + 4
 
+-- NEW: Hide-My-Emoji button — ONLY for script users (not owners/co-owner)
+local HideEmojiButton
+if not CanUseSecret then
+    HideEmojiButton = MakeButton("🕸️  Hide My Emoji", y)
+    y = y + ButtonHeight + ButtonGap
+end
+
+-- Secret section — ONLY for owners / co-owner
 local SecretButton
 if CanUseSecret then
     MakeSectionLabel("PRIVILEGED", y)
@@ -568,215 +578,7 @@ OpenButton.MouseButton1Click:Connect(function()
 end)
 
 --//======================================================
---// SECRET COMMANDS PANEL
---//======================================================
-local SecretPanel
-
-if CanUseSecret then
-    SecretPanel = Instance.new("Frame")
-    SecretPanel.Name = "SecretPanel"
-    SecretPanel.Size = UDim2.new(0, 300, 0, 330)
-    SecretPanel.Position = UDim2.new(0.5, -150, 0.5, -165)
-    SecretPanel.BackgroundColor3 = Colors.Bg
-    SecretPanel.BackgroundTransparency = 0.05
-    SecretPanel.BorderSizePixel = 0
-    SecretPanel.Visible = false
-    SecretPanel.ZIndex = 200
-    SecretPanel.Parent = ScreenGui
-
-    local PC = Instance.new("UICorner")
-    PC.CornerRadius = UDim.new(0, 16)
-    PC.Parent = SecretPanel
-
-    local PS = Instance.new("UIStroke")
-    PS.Color = Colors.Gold
-    PS.Transparency = 0.3
-    PS.Parent = SecretPanel
-
-    local ST = Instance.new("TextLabel")
-    ST.Size = UDim2.new(1, -50, 0, 26)
-    ST.Position = UDim2.new(0, 16, 0, 14)
-    ST.BackgroundTransparency = 1
-    ST.Text = "🔒  SECRET COMMANDS"
-    ST.TextColor3 = Colors.Gold
-    ST.TextSize = 14
-    ST.Font = Enum.Font.GothamBold
-    ST.TextXAlignment = Enum.TextXAlignment.Left
-    ST.ZIndex = 201
-    ST.Parent = SecretPanel
-
-    local SC = Instance.new("TextButton")
-    SC.Size = UDim2.new(0, 28, 0, 28)
-    SC.Position = UDim2.new(1, -40, 0, 10)
-    SC.BackgroundColor3 = Colors.Surface
-    SC.BorderSizePixel = 0
-    SC.Text = "×"
-    SC.TextColor3 = Colors.TextDim
-    SC.TextSize = 18
-    SC.Font = Enum.Font.GothamBold
-    SC.AutoButtonColor = false
-    SC.ZIndex = 201
-    SC.Parent = SecretPanel
-    local SCC = Instance.new("UICorner")
-    SCC.CornerRadius = UDim.new(0, 8)
-    SCC.Parent = SC
-
-    local CommandBox = Instance.new("TextBox")
-    CommandBox.Size = UDim2.new(1, -32, 0, 42)
-    CommandBox.Position = UDim2.new(0, 16, 0, 52)
-    CommandBox.BackgroundColor3 = Colors.Surface
-    CommandBox.BorderSizePixel = 0
-    CommandBox.PlaceholderText = ":annc Message"
-    CommandBox.PlaceholderColor3 = Colors.TextDim
-    CommandBox.Text = ""
-    CommandBox.TextColor3 = Colors.Text
-    CommandBox.TextSize = 12
-    CommandBox.Font = Enum.Font.Code
-    CommandBox.TextXAlignment = Enum.TextXAlignment.Left
-    CommandBox.ClearTextOnFocus = false
-    CommandBox.ZIndex = 201
-    CommandBox.Parent = SecretPanel
-
-    local CPC = Instance.new("UICorner")
-    CPC.CornerRadius = UDim.new(0, 9)
-    CPC.Parent = CommandBox
-
-    local CPD = Instance.new("UIPadding")
-    CPD.PaddingLeft = UDim.new(0, 12)
-    CPD.Parent = CommandBox
-
-    local Execute = Instance.new("TextButton")
-    Execute.Size = UDim2.new(1, -32, 0, 34)
-    Execute.Position = UDim2.new(0, 16, 0, 102)
-    Execute.BackgroundColor3 = Colors.Accent
-    Execute.BorderSizePixel = 0
-    Execute.Text = "EXECUTE"
-    Execute.TextColor3 = Color3.fromRGB(0, 0, 0)
-    Execute.TextSize = 12
-    Execute.Font = Enum.Font.GothamBold
-    Execute.AutoButtonColor = false
-    Execute.ZIndex = 201
-    Execute.Parent = SecretPanel
-
-    local EC = Instance.new("UICorner")
-    EC.CornerRadius = UDim.new(0, 9)
-    EC.Parent = Execute
-
-    Execute.MouseEnter:Connect(function()
-        Tween(Execute, {BackgroundColor3 = Color3.fromRGB(230, 230, 240)}, EaseOutFast)
-    end)
-    Execute.MouseLeave:Connect(function()
-        Tween(Execute, {BackgroundColor3 = Colors.Accent}, EaseOutFast)
-    end)
-
-    local Help = Instance.new("TextLabel")
-    Help.Size = UDim2.new(1, -32, 0, 170)
-    Help.Position = UDim2.new(0, 16, 0, 148)
-    Help.BackgroundTransparency = 1
-    Help.Text =
-        ":annc Message   →  top banner\n\n" ..
-        ":tag PlayerName Custom Tag\n\n" ..
-        ":untag PlayerName\n\n" ..
-        "📢 :annc shows a TOP-CENTER banner\n" ..
-        "🏷️ :tag only works on script users\n" ..
-        "🕸️ Target must be running the script"
-    Help.TextColor3 = Colors.TextDim
-    Help.TextSize = 11
-    Help.Font = Enum.Font.Code
-    Help.TextXAlignment = Enum.TextXAlignment.Left
-    Help.TextYAlignment = Enum.TextYAlignment.Top
-    Help.TextWrapped = true
-    Help.ZIndex = 201
-    Help.Parent = SecretPanel
-
-    SecretButton.MouseButton1Click:Connect(function()
-        Main.Visible = false
-        SecretPanel.Visible = true
-    end)
-
-    SC.MouseButton1Click:Connect(function()
-        SecretPanel.Visible = false
-        Main.Visible = true
-    end)
-
-    local function ExecuteCommand()
-        local cmd = tostring(CommandBox.Text or "")
-        cmd = cmd:gsub("^%s+", ""):gsub("%s+$", "")
-        if cmd == "" then return end
-
-        if CommandRemote then
-            pcall(function() CommandRemote:FireServer(cmd) end)
-        end
-
-        local lower = cmd:lower()
-
-        if lower:sub(1,5) == ":annc" or lower:sub(1,6) == ":alert" then
-            local msg = (lower:sub(1,5) == ":annc") and cmd:sub(6) or cmd:sub(7)
-            msg = msg:gsub("^%s+", "")
-            if msg == "" then
-                Notify("USAGE: :annc Message", "Left")
-            else
-                ShowGlobalAlert(msg)
-            end
-            CommandBox.Text = ""
-            return
-        end
-
-        if lower:sub(1,4) == ":tag" then
-            local rest = cmd:sub(5):gsub("^%s+", "")
-            local sp = rest:find("%s")
-            if not sp then
-                Notify("USAGE: :tag PlayerName CustomTag", "Left")
-                CommandBox.Text = ""
-                return
-            end
-            local targetName = rest:sub(1, sp - 1)
-            local tagText    = rest:sub(sp + 1):gsub("^%s+", "")
-            local target     = Players:FindFirstChild(targetName)
-            if not target then
-                Notify("Player not found: " .. targetName, "Left")
-                CommandBox.Text = ""
-                return
-            end
-            if not RegisteredPlayers[target.UserId] and target ~= Player then
-                Notify("❌ Target is not running the script", "Left")
-                CommandBox.Text = ""
-                return
-            end
-            CustomTags[target.UserId] = tagText
-            MakeCustomTag(target, tagText)
-            Notify("🏷️ Custom tag set on " .. target.Name, "Left")
-            CommandBox.Text = ""
-            return
-        end
-
-        if lower:sub(1,6) == ":untag" then
-            local targetName = cmd:sub(7):gsub("^%s+", "")
-            local target = Players:FindFirstChild(targetName)
-            if not target then
-                Notify("Player not found: " .. targetName, "Left")
-                CommandBox.Text = ""
-                return
-            end
-            CustomTags[target.UserId] = nil
-            RemoveTag(target, CUSTOM_TAG)
-            Notify("🏷️ Custom tag removed", "Left")
-            CommandBox.Text = ""
-            return
-        end
-
-        Notify("Unknown cmd. Use :annc / :tag / :untag", "Left")
-        CommandBox.Text = ""
-    end
-
-    Execute.MouseButton1Click:Connect(ExecuteCommand)
-    CommandBox.FocusLost:Connect(function(enter)
-        if enter then ExecuteCommand() end
-    end)
-end
-
---//======================================================
---// TAG SYSTEM
+--// TAG SYSTEM (declared before ExecuteCommand uses them)
 --//======================================================
 local function RemoveTag(Target, Name)
     if not Target or not Target.Character then return end
@@ -788,9 +590,6 @@ local function RemoveTag(Target, Name)
     end
 end
 
---//======================================================
---// CAPCUT-STYLE CAPTION (word-by-word pop-in)
---//======================================================
 local function RunCapCutCaption(container, message)
     local words = {}
     for word in message:gmatch("%S+") do
@@ -860,7 +659,7 @@ local function MakeTag(Target, Name, Text, Color, Size)
     Billboard.ResetOnSpawn = false
     Billboard.Parent = Head
 
-    -- SCRIPT USER → 🕸️
+    -- SCRIPT USER → 🕸️ emoji ONLY (no text label)
     if Name == USER_TAG then
         Billboard.StudsOffset = Vector3.new(0, 4, 0)
         Billboard.Size = UDim2.new(0, 220, 0, 45)
@@ -959,6 +758,246 @@ local function UpdateCustomTags()
 end
 
 --//======================================================
+--// SECRET COMMANDS PANEL (owners / co-owner ONLY)
+--//======================================================
+if CanUseSecret then
+    local SecretPanel = Instance.new("Frame")
+    SecretPanel.Name = "SecretPanel"
+    SecretPanel.Size = UDim2.new(0, 300, 0, 330)
+    SecretPanel.Position = UDim2.new(0.5, -150, 0.5, -165)
+    SecretPanel.BackgroundColor3 = Colors.Bg
+    SecretPanel.BackgroundTransparency = 0.05
+    SecretPanel.BorderSizePixel = 0
+    SecretPanel.Visible = false
+    SecretPanel.ZIndex = 200
+    SecretPanel.Parent = ScreenGui
+
+    local PC = Instance.new("UICorner")
+    PC.CornerRadius = UDim.new(0, 16)
+    PC.Parent = SecretPanel
+
+    local PS = Instance.new("UIStroke")
+    PS.Color = Colors.Gold
+    PS.Transparency = 0.3
+    PS.Parent = SecretPanel
+
+    local ST = Instance.new("TextLabel")
+    ST.Size = UDim2.new(1, -50, 0, 26)
+    ST.Position = UDim2.new(0, 16, 0, 14)
+    ST.BackgroundTransparency = 1
+    ST.Text = "🔒  SECRET COMMANDS"
+    ST.TextColor3 = Colors.Gold
+    ST.TextSize = 14
+    ST.Font = Enum.Font.GothamBold
+    ST.TextXAlignment = Enum.TextXAlignment.Left
+    ST.ZIndex = 201
+    ST.Parent = SecretPanel
+
+    local SC = Instance.new("TextButton")
+    SC.Size = UDim2.new(0, 28, 0, 28)
+    SC.Position = UDim2.new(1, -40, 0, 10)
+    SC.BackgroundColor3 = Colors.Surface
+    SC.BorderSizePixel = 0
+    SC.Text = "×"
+    SC.TextColor3 = Colors.TextDim
+    SC.TextSize = 18
+    SC.Font = Enum.Font.GothamBold
+    SC.AutoButtonColor = false
+    SC.ZIndex = 201
+    SC.Parent = SecretPanel
+    local SCC = Instance.new("UICorner")
+    SCC.CornerRadius = UDim.new(0, 8)
+    SCC.Parent = SC
+
+    local CommandBox = Instance.new("TextBox")
+    CommandBox.Size = UDim2.new(1, -32, 0, 42)
+    CommandBox.Position = UDim2.new(0, 16, 0, 52)
+    CommandBox.BackgroundColor3 = Colors.Surface
+    CommandBox.BorderSizePixel = 0
+    CommandBox.PlaceholderText = "annc Msg | bring Player | tag Player Tag"
+    CommandBox.PlaceholderColor3 = Colors.TextDim
+    CommandBox.Text = ""
+    CommandBox.TextColor3 = Colors.Text
+    CommandBox.TextSize = 12
+    CommandBox.Font = Enum.Font.Code
+    CommandBox.TextXAlignment = Enum.TextXAlignment.Left
+    CommandBox.ClearTextOnFocus = false
+    CommandBox.ZIndex = 201
+    CommandBox.Parent = SecretPanel
+
+    local CPC = Instance.new("UICorner")
+    CPC.CornerRadius = UDim.new(0, 9)
+    CPC.Parent = CommandBox
+
+    local CPD = Instance.new("UIPadding")
+    CPD.PaddingLeft = UDim.new(0, 12)
+    CPD.Parent = CommandBox
+
+    local Execute = Instance.new("TextButton")
+    Execute.Size = UDim2.new(1, -32, 0, 34)
+    Execute.Position = UDim2.new(0, 16, 0, 102)
+    Execute.BackgroundColor3 = Colors.Accent
+    Execute.BorderSizePixel = 0
+    Execute.Text = "EXECUTE"
+    Execute.TextColor3 = Color3.fromRGB(0, 0, 0)
+    Execute.TextSize = 12
+    Execute.Font = Enum.Font.GothamBold
+    Execute.AutoButtonColor = false
+    Execute.ZIndex = 201
+    Execute.Parent = SecretPanel
+
+    local EC = Instance.new("UICorner")
+    EC.CornerRadius = UDim.new(0, 9)
+    EC.Parent = Execute
+
+    Execute.MouseEnter:Connect(function()
+        Tween(Execute, {BackgroundColor3 = Color3.fromRGB(230, 230, 240)}, EaseOutFast)
+    end)
+    Execute.MouseLeave:Connect(function()
+        Tween(Execute, {BackgroundColor3 = Colors.Accent}, EaseOutFast)
+    end)
+
+    local Help = Instance.new("TextLabel")
+    Help.Size = UDim2.new(1, -32, 0, 170)
+    Help.Position = UDim2.new(0, 16, 0, 148)
+    Help.BackgroundTransparency = 1
+    Help.Text =
+        "Commands work with or without ':'\n\n" ..
+        "annc Message        →  top banner\n\n" ..
+        "bring PlayerName    →  pull script user to you\n\n" ..
+        "tag PlayerName Tag  →  set custom tag\n\n" ..
+        "untag PlayerName    →  remove custom tag\n\n" ..
+        "🕸️ Target must be running the script"
+    Help.TextColor3 = Colors.TextDim
+    Help.TextSize = 11
+    Help.Font = Enum.Font.Code
+    Help.TextXAlignment = Enum.TextXAlignment.Left
+    Help.TextYAlignment = Enum.TextYAlignment.Top
+    Help.TextWrapped = true
+    Help.ZIndex = 201
+    Help.Parent = SecretPanel
+
+    SecretButton.MouseButton1Click:Connect(function()
+        Main.Visible = false
+        SecretPanel.Visible = true
+    end)
+
+    SC.MouseButton1Click:Connect(function()
+        SecretPanel.Visible = false
+        Main.Visible = true
+    end)
+
+    --======================================================
+    -- COMMAND EXECUTION (colon optional)
+    --======================================================
+    local function ExecuteCommand()
+        local rawCmd = tostring(CommandBox.Text or "")
+        rawCmd = rawCmd:gsub("^%s+", ""):gsub("%s+$", "")
+        if rawCmd == "" then return end
+
+        local serverCmd = rawCmd
+        if serverCmd:sub(1, 1) ~= ":" then serverCmd = ":" .. serverCmd end
+        if CommandRemote then
+            pcall(function() CommandRemote:FireServer(serverCmd) end)
+        end
+
+        local cmd = rawCmd
+        if cmd:sub(1, 1) == ":" then cmd = cmd:sub(2) end
+        local firstWord, rest = cmd:match("^(%S+)%s*(.*)$")
+        if not firstWord then return end
+        local fw = firstWord:lower()
+
+        if fw == "annc" or fw == "alert" then
+            local msg = rest:gsub("^%s+", "")
+            if msg == "" then
+                Notify("USAGE: annc Message", "Left")
+            else
+                ShowGlobalAlert(msg)
+            end
+            CommandBox.Text = ""
+            return
+        end
+
+        if fw == "bring" then
+            local targetName = rest:gsub("^%s+", ""):gsub("%s+$", "")
+            if targetName == "" then
+                Notify("USAGE: bring PlayerName", "Left")
+                CommandBox.Text = ""
+                return
+            end
+            local target = Players:FindFirstChild(targetName)
+            if not target then
+                Notify("Player not found: " .. targetName, "Left")
+                CommandBox.Text = ""
+                return
+            end
+            if not RegisteredPlayers[target.UserId] and target ~= Player then
+                Notify("❌ Target is not running the script", "Left")
+                CommandBox.Text = ""
+                return
+            end
+            if CommandRemote then
+                pcall(function() CommandRemote:FireServer(":bring " .. target.Name) end)
+            end
+            Notify("🕸️ Bring request sent for " .. target.Name, "Left")
+            CommandBox.Text = ""
+            return
+        end
+
+        if fw == "tag" then
+            local rest2 = rest:gsub("^%s+", "")
+            local sp = rest2:find("%s")
+            if not sp then
+                Notify("USAGE: tag PlayerName CustomTag", "Left")
+                CommandBox.Text = ""
+                return
+            end
+            local targetName = rest2:sub(1, sp - 1)
+            local tagText    = rest2:sub(sp + 1):gsub("^%s+", "")
+            local target     = Players:FindFirstChild(targetName)
+            if not target then
+                Notify("Player not found: " .. targetName, "Left")
+                CommandBox.Text = ""
+                return
+            end
+            if not RegisteredPlayers[target.UserId] and target ~= Player then
+                Notify("❌ Target is not running the script", "Left")
+                CommandBox.Text = ""
+                return
+            end
+            CustomTags[target.UserId] = tagText
+            MakeCustomTag(target, tagText)
+            Notify("🏷️ Custom tag set on " .. target.Name, "Left")
+            CommandBox.Text = ""
+            return
+        end
+
+        if fw == "untag" then
+            local targetName = rest:gsub("^%s+", ""):gsub("%s+$", "")
+            local target = Players:FindFirstChild(targetName)
+            if not target then
+                Notify("Player not found: " .. targetName, "Left")
+                CommandBox.Text = ""
+                return
+            end
+            CustomTags[target.UserId] = nil
+            RemoveTag(target, CUSTOM_TAG)
+            Notify("🏷️ Custom tag removed", "Left")
+            CommandBox.Text = ""
+            return
+        end
+
+        Notify("Unknown cmd. Use annc / bring / tag / untag", "Left")
+        CommandBox.Text = ""
+    end
+
+    Execute.MouseButton1Click:Connect(ExecuteCommand)
+    CommandBox.FocusLost:Connect(function(enter)
+        if enter then ExecuteCommand() end
+    end)
+end
+
+--//======================================================
 --// UPDATE TAGS
 --//======================================================
 local function UpdateTags()
@@ -970,7 +1009,12 @@ local function UpdateTags()
             MakeTag(Target, CO_OWNER_TAG, "👑 CO OWNER", Color3.fromRGB(255, 255, 0), 21)
             RemoveTag(Target, OWNER_TAG); RemoveTag(Target, USER_TAG)
         elseif RegisteredPlayers[Target.UserId] then
-            MakeTag(Target, USER_TAG, "🕸️", Color3.fromRGB(255, 255, 255), 36)
+            -- Only hide YOUR OWN emoji locally — never anyone else's.
+            if Target == Player and HideSelfEmoji then
+                RemoveTag(Target, USER_TAG)
+            else
+                MakeTag(Target, USER_TAG, "🕸️", Color3.fromRGB(255, 255, 255), 36)
+            end
             RemoveTag(Target, OWNER_TAG); RemoveTag(Target, CO_OWNER_TAG)
         else
             RemoveTag(Target, OWNER_TAG); RemoveTag(Target, CO_OWNER_TAG); RemoveTag(Target, USER_TAG)
@@ -1074,7 +1118,7 @@ task.spawn(function()
 end)
 
 --//======================================================
---// === NAME COLOR REMOTE (VERBATIM FROM ORIGINAL) ===
+--// NAME COLOR REMOTE
 --//======================================================
 task.spawn(function()
     Event = ReplicatedStorage:WaitForChild(REMOTE_NAME, 10)
@@ -1242,6 +1286,25 @@ DiscordButton.MouseButton1Click:Connect(function()
 end)
 
 --//======================================================
+--// HIDE / SHOW MY EMOJI (script users only, local-only)
+--//======================================================
+if HideEmojiButton then
+    HideEmojiButton.MouseButton1Click:Connect(function()
+        HideSelfEmoji = not HideSelfEmoji
+        if HideSelfEmoji then
+            HideEmojiButton.Text = "🕸️  Show My Emoji"
+        else
+            HideEmojiButton.Text = "🕸️  Hide My Emoji"
+        end
+        SetToggleVisual(HideEmojiButton, HideSelfEmoji)
+        UpdateTags()
+        Notify(HideSelfEmoji
+            and "🕸️ Your emoji is now hidden (only you can't see it)"
+            or  "🕸️ Your emoji is visible again", "Left")
+    end)
+end
+
+--//======================================================
 --// DRAG
 --//======================================================
 local function MakeDraggable(Object)
@@ -1276,7 +1339,10 @@ end
 
 MakeDraggable(Main)
 MakeDraggable(OpenButton)
-if SecretPanel then MakeDraggable(SecretPanel) end
+if CanUseSecret then
+    local sp = ScreenGui:FindFirstChild("SecretPanel")
+    if sp then MakeDraggable(sp) end
+end
 
 --//======================================================
 --// PLAYER JOIN / LEAVE
@@ -1293,6 +1359,11 @@ Players.PlayerAdded:Connect(function(Target)
 end)
 
 Players.PlayerRemoving:Connect(function(Target)
+    if Target.Name == OWNER_USERNAME then
+        Notify("👑 Owner of the script has left the server", "Left")
+    elseif Target.Name == CO_OWNER_USERNAME then
+        Notify("👑 Co Owner has left the server", "Right")
+    end
     RegisteredPlayers[Target.UserId] = nil
     CustomTags[Target.UserId] = nil
     UpdateTags()
